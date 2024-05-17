@@ -17,3 +17,24 @@
 
 4. **Follow TensorFlow Docker Instructions**  
    Detailed instructions can be found here: [TensorFlow Docker Install](https://www.tensorflow.org/install/docker)
+
+5. **Build docker image**    
+   Run from project root dir: `docker build -t minus1-tensorflow .`
+
+6. **Configure PyCharm to use Docker**
+   1. settings -> project -> interpreter settings
+   2. Add interpreter -> Docker
+   3. Configure Docker interpreter
+      - Server: Docker
+      - Dockerfile: Dockerfile
+      - Context Folder: .
+   4. Use system interpreter
+
+7. **Edit Pycharm rum configuration for python script to run**
+   1. Top right dropdown: current file
+   2. 3 dots in current file option -> Run with parameters
+   3. at bottom of configuration -> Docker container settings -> klick on Browse (folder symbol)
+   4. at bottom run options -> add `--gpus all`
+
+7. **Important**
+   - The docker image needs `--gpus all` as run option to see gpu
