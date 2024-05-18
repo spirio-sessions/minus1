@@ -38,3 +38,4 @@
 
 8. **Important**
    - The Docker image needs `--gpus all` as a run option to access the GPU.
+   - To add new pip-Packages: Update requirements.txt and rebuild docker image (should happen automatically with correct pycharm setup).
