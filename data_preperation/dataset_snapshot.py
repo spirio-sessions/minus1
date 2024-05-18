@@ -3,6 +3,8 @@ import mido
 import os
 import fnmatch
 
+import numpy as np
+
 # for progress bar:
 from tqdm import tqdm
 
@@ -19,7 +21,6 @@ def snapshot_active_notes_from_midi(file_path, interval):
     mid = mido.MidiFile(file_path)
 
     snapshots = []
-    snapshot_times = []
     # no notes are played initially
     active_notes = [False] * 128
 
@@ -50,7 +51,6 @@ def snapshot_active_notes_from_midi(file_path, interval):
 
             # Save the snapshot (copy the list to avoid reference issues)
             snapshots.append(active_notes[:])
-            snapshot_times.append(snapshot_time)
 
             snapshot_time += interval
 
@@ -67,23 +67,13 @@ def snapshot_active_notes_from_midi(file_path, interval):
 
         previous_event_time = current_time
 
-    snapshots_with_times = list(zip(snapshots, snapshot_times))
+    snapshots = np.array(snapshots)
 
-    # Truncate snapshots at the beginning and end where no notes are active
-    # might be unneccesary?
-    start_idx = 0
-    for snapshot, _ in snapshots_with_times:
-        if any(snapshot):
-            break
-        start_idx += 1
+    # Remove initial and final empty snapshots
+    start_idx = next((i for i, snapshot in enumerate(snapshots) if any(snapshot)), 0)
+    end_idx = next((i for i, snapshot in enumerate(reversed(snapshots)) if any(snapshot)), len(snapshots))
 
-    end_idx = len(snapshots_with_times)
-    for snapshot, _ in reversed(snapshots_with_times):
-        if any(snapshot):
-            break
-        end_idx -= 1
-
-    return snapshots_with_times[start_idx:end_idx]
+    return snapshots[start_idx:len(snapshots) - end_idx]
 
 
 def find_midi_files(root_dir):
@@ -104,10 +94,8 @@ def process_dataset(dataset_dir, interval):
     progress_bar = tqdm(total=len(midi_files))
 
     for midi_file in midi_files:
-        snapshots_with_times = snapshot_active_notes_from_midi(midi_file, interval)
-        files_as_snapshots.append((midi_file, snapshots_with_times))
-
-        # Update the progress bar
+        snapshots_array = snapshot_active_notes_from_midi(midi_file, interval)
+        files_as_snapshots.append((midi_file, snapshots_array))
         progress_bar.update(1)
         progress_bar.set_description(f"Processed dataset ({progress_bar.n}/{progress_bar.total})")
 
@@ -118,8 +106,8 @@ def process_dataset(dataset_dir, interval):
 
 
 def __process_single_midi(midi_file, interval):
-    snapshots_with_times = snapshot_active_notes_from_midi(midi_file, interval)
-    return (midi_file, snapshots_with_times)
+    snapshots_array = snapshot_active_notes_from_midi(midi_file, interval)
+    return midi_file, snapshots_array
 
 
 def process_dataset_multithreaded(dataset_dir, interval):
@@ -164,9 +152,9 @@ def print_snapshot(snapshot):
         print("No active notes.")
 
 
-def print_snapshots(snapshots_with_times):
-    for i, (snapshot, time) in enumerate(snapshots_with_times):
-        print(f"Snapshot {i} at time {time:.2f}s:")
+def print_snapshots(snapshots_array):
+    for i, snapshot in enumerate(snapshots_array):
+        print(f"Snapshot {i}:")
         print_snapshot(snapshot)
         print()
 
@@ -174,9 +162,8 @@ def print_snapshots(snapshots_with_times):
 def print_dataset(dataset_as_snapshots):
     print("Number of files in Dataset:", len(dataset_as_snapshots))
     print("==============================")
-
-    for filename, snapshots in dataset_as_snapshots:
+    for filename, snapshots_array in dataset_as_snapshots:
         print(f"Snapshots of file {filename}:")
         print()
-        print_snapshots(snapshots)
+        print_snapshots(snapshots_array)
         print("==============================")
