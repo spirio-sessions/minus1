@@ -19,36 +19,29 @@ import concurrent.futures
 def snapshot_active_notes_from_midi(file_path, interval):
     # load midi-messages from file
     mid = mido.MidiFile(file_path)
-
     snapshots = []
     # no notes are played initially
-    active_notes = [False] * 128
-
+    active_notes = [0] * 128
     current_time = 0
     snapshot_time = 0
-
     previous_event_time = 0
 
     # if iterating through the midi file, time is in seconds https://mido.readthedocs.io/en/stable/files/midi.html#about-the-time-attribute
     # if iterating through a track the time is in ticks
     # in this case the time is the delta time to the previous event in seconds
     for msg in mid:
-
         # Snapshot every intervall
         # all note on and of events exactly at intervall should be considered before taking snapshot
         # -> need to wait for all events on intervall before processing
-        #
 
         # Update time at which event takes place
         current_time += msg.time
 
         # Check if it's time to take a snapshot or if the elapsed time has exceeded the next snapshot time
         while current_time >= snapshot_time + interval:  # Take a snapshot every intervall
-
             # prevent snapshot to first process all snapshots happening at the same time
             if current_time == previous_event_time:
                 break
-
             # Save the snapshot (copy the list to avoid reference issues)
             snapshots.append(active_notes[:])
 
@@ -58,12 +51,12 @@ def snapshot_active_notes_from_midi(file_path, interval):
         # note_on with a velocity of 0 count as note off events
         if msg.type == 'note_on':
             if msg.velocity == 0:
-                active_notes[msg.note] = False
+                active_notes[msg.note] = 0
             else:
-                active_notes[msg.note] = True
+                active_notes[msg.note] = 1
 
         elif msg.type == 'note_off':
-            active_notes[msg.note] = False
+            active_notes[msg.note] = 0
 
         previous_event_time = current_time
 
@@ -72,7 +65,6 @@ def snapshot_active_notes_from_midi(file_path, interval):
     # Remove initial and final empty snapshots
     start_idx = next((i for i, snapshot in enumerate(snapshots) if any(snapshot)), 0)
     end_idx = next((i for i, snapshot in enumerate(reversed(snapshots)) if any(snapshot)), len(snapshots))
-
     return snapshots[start_idx:len(snapshots) - end_idx]
 
 
@@ -124,15 +116,9 @@ def process_dataset_multithreaded(dataset_dir, interval):
 
     # Use ProcessPoolExecutor for multiprocessing
     with concurrent.futures.ProcessPoolExecutor() as executor:
-        # Submit each chunk of MIDI files for processing
-        futures = []
-        for midi_files_chunk in midi_file_chunks:
-            futures.extend(executor.submit(__process_single_midi, midi_file, interval) for midi_file in midi_files_chunk)
-
-        # Iterate through the completed futures to retrieve the results
+        futures = [executor.submit(__process_single_midi, midi_file, interval) for chunk in midi_file_chunks for midi_file in chunk]
         for future in concurrent.futures.as_completed(futures):
             files_as_snapshots.append(future.result())
-            # Update the progress bar
             progress_bar.update(1)
             progress_bar.set_description(f"Processed dataset ({progress_bar.n}/{progress_bar.total})")
 
