@@ -130,6 +130,16 @@ def process_dataset_multithreaded(dataset_dir, interval):
     return files_as_snapshots
 
 
+def filter_piano_range(dataset_as_snapshots):
+    filtered_dataset = []
+
+    for filename, snapshots in dataset_as_snapshots:
+        filtered_snapshots = [snapshot[21:109] for snapshot in snapshots]
+        filtered_dataset.append((filename, np.array(filtered_snapshots)))
+
+    return filtered_dataset
+
+
 def print_snapshot(snapshot):
     active_notes = [note_number for note_number, active in enumerate(snapshot) if active]
     if active_notes:
