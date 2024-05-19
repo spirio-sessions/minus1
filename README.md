@@ -28,6 +28,7 @@
       - Server: Docker
       - Dockerfile: Dockerfile
       - Context Folder: .
+      - Alternatively: do not use the dockerfile but the image you built previously
    4. Use the system interpreter.
 
 7. **Edit PyCharm Run Configuration for Python Script to Run**

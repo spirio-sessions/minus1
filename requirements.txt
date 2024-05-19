@@ -2,3 +2,4 @@ tensorflow
 numpy
 mido
 tqdm
+scikit-learn
