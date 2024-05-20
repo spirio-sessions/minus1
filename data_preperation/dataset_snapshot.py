@@ -72,8 +72,8 @@ def find_midi_files(root_dir, pattern=None):
     midi_files = []
     for dirpath, dirnames, filenames in os.walk(root_dir):
         for filename in filenames:
-            if fnmatch.fnmatch(filename, '*.midi') or fnmatch.fnmatch(filename, '*.mid'):
-                if pattern is None or fnmatch.fnmatch(filename, f'*{pattern}*'):
+            if fnmatch.fnmatch(filename.lower(), '*.midi') or fnmatch.fnmatch(filename.lower(), '*.mid'):
+                if pattern is None or fnmatch.fnmatch(filename.lower(), f'*{pattern.lower()}*'):
                     midi_files.append(os.path.join(dirpath, filename))
     return midi_files
 
