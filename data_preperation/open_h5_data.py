@@ -7,6 +7,7 @@ import os
 filename = "path_to_your_metadata_file.h5"
 metadata_file = h5py.File(filename, 'r')
 
+
 # Assume that the genre information is stored in a dataset called 'genre'
 # and song details are in a dataset called 'songs'
 # (You might need to explore the HDF5 structure to find the correct paths)
@@ -20,6 +21,7 @@ def explore_h5_group(group, indent=0):
             explore_h5_group(item, indent + 1)
         elif isinstance(item, h5py.Dataset):
             print('  ' * indent + f"Dataset: {key} - Shape: {item.shape} - Datatype: {item.dtype}")
+
 
 print("Exploring the HDF5 file structure:")
 explore_h5_group(metadata_file)
@@ -36,6 +38,7 @@ df['genre'] = genres
 # Filter for jazz songs
 jazz_songs = df[df['genre'] == 'Jazz']
 
+
 # Define a function to download songs given their URL or identifier
 def download_song(song_id, download_path):
     # This is a placeholder URL format; adjust based on the actual source
@@ -46,6 +49,7 @@ def download_song(song_id, download_path):
             f.write(response.content)
     else:
         print(f"Failed to download song {song_id}")
+
 
 # Create a directory to save the downloaded songs
 download_path = "path_to_save_jazz_songs"
