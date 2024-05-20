@@ -68,17 +68,18 @@ def snapshot_active_notes_from_midi(file_path, interval):
     return snapshots[start_idx:len(snapshots) - end_idx]
 
 
-def find_midi_files(root_dir):
+def find_midi_files(root_dir, pattern=None):
     midi_files = []
     for dirpath, dirnames, filenames in os.walk(root_dir):
         for filename in filenames:
-            if fnmatch.fnmatch(filename, '*.midi') or fnmatch.fnmatch(filename, '*.mid'):
-                midi_files.append(os.path.join(dirpath, filename))
+            if fnmatch.fnmatch(filename.lower(), '*.midi') or fnmatch.fnmatch(filename.lower(), '*.mid'):
+                if pattern is None or fnmatch.fnmatch(filename.lower(), f'*{pattern.lower()}*'):
+                    midi_files.append(os.path.join(dirpath, filename))
     return midi_files
 
 
-def process_dataset(dataset_dir, interval):
-    midi_files = find_midi_files(dataset_dir)
+def process_dataset(dataset_dir, interval, pattern=None):
+    midi_files = find_midi_files(dataset_dir, pattern)
 
     files_as_snapshots = []
 
@@ -102,8 +103,8 @@ def __process_single_midi(midi_file, interval):
     return midi_file, snapshots_array
 
 
-def process_dataset_multithreaded(dataset_dir, interval):
-    midi_files = find_midi_files(dataset_dir)
+def process_dataset_multithreaded(dataset_dir, interval, pattern=None):
+    midi_files = find_midi_files(dataset_dir, pattern)
 
     files_as_snapshots = []
 
