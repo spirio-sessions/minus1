@@ -1,29 +1,38 @@
-import pandas as pd
 import numpy as np
+import pandas as pd
 
 
 def load_csv_features(csv_path):
     df = pd.read_csv(csv_path)
     return df
 
-
 def convert_features_to_snapshots(df, interval):
     snapshots = []
     for _, row in df.iterrows():
-        # Example conversion, here we will use duration and tempo to simulate intervals
         duration = row['duration']
-        tempo = row['tempo']
         num_snapshots = int(duration / interval)
 
-        # Simulate active notes based on some features (this is an arbitrary example)
-        active_notes = [0] * 128
-        active_notes[int(tempo) % 128] = 1  # Simplified example
+        # Create feature dictionary
+        features = {
+            'track_id': row['track_id'],
+            'artist_name': row['artist_name'],
+            'title': row['title'],
+            'tempo': row['tempo'],
+            'duration': row['duration'],
+            'year': row['year'],
+            'key': row['key'],
+            'mode': row['mode'],
+            'time_signature': row['time_signature'],
+            'bars_start': list(enumerate(row['bars_start'][:num_snapshots])),
+            'beats_start': list(enumerate(row['beats_start'][:num_snapshots])),
+            'segments_start': list(enumerate(row['segments_start'][:num_snapshots])),
+            'segments_pitches': [list(enumerate(pitch)) for pitch in row['segments_pitches'][:num_snapshots]],
+            'segments_timbre': [list(enumerate(timbre)) for timbre in row['segments_timbre'][:num_snapshots]],
+            'sections_start': list(enumerate(row['sections_start'][:num_snapshots])),
+            'tatums_start': list(enumerate(row['tatums_start'][:num_snapshots]))
+        }
 
-        track_snapshots = []
-        for _ in range(num_snapshots):
-            track_snapshots.append(active_notes[:])
-
-        snapshots.append(track_snapshots)
+        snapshots.append(features)
     return snapshots
 
 

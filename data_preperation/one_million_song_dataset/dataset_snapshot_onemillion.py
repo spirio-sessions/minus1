@@ -193,7 +193,7 @@ def convert_features_to_snapshots(df, interval):
 
 # Example usage
 dataset_dir = 'path_to_midi_files'
-csv_path = 'jazz_songs.csv'
+csv_path = '../../datasets/millionsongdataset/jazz_songs.csv'
 interval = 1.0
 
 # Process with single-threaded version

@@ -68,20 +68,13 @@ def extract_jazz_songs(artist_term_db, track_metadata_db, h5_files):
                         'key': key,
                         'mode': mode,
                         'time_signature': time_signature,
-                        'bars_start_mean': np.mean(bars_start) if len(bars_start) > 0 else np.nan,
-                        'bars_start_std': np.std(bars_start) if len(bars_start) > 0 else np.nan,
-                        'beats_start_mean': np.mean(beats_start) if len(beats_start) > 0 else np.nan,
-                        'beats_start_std': np.std(beats_start) if len(beats_start) > 0 else np.nan,
-                        'segments_start_mean': np.mean(segments_start) if len(segments_start) > 0 else np.nan,
-                        'segments_start_std': np.std(segments_start) if len(segments_start) > 0 else np.nan,
-                        'segments_pitches_mean': np.mean(segments_pitches, axis=0) if len(segments_pitches) > 0 else np.nan,
-                        'segments_pitches_std': np.std(segments_pitches, axis=0) if len(segments_pitches) > 0 else np.nan,
-                        'segments_timbre_mean': np.mean(segments_timbre, axis=0) if len(segments_timbre) > 0 else np.nan,
-                        'segments_timbre_std': np.std(segments_timbre, axis=0) if len(segments_timbre) > 0 else np.nan,
-                        'sections_start_mean': np.mean(sections_start) if len(sections_start) > 0 else np.nan,
-                        'sections_start_std': np.std(sections_start) if len(sections_start) > 0 else np.nan,
-                        'tatums_start_mean': np.mean(tatums_start) if len(tatums_start) > 0 else np.nan,
-                        'tatums_start_std': np.std(tatums_start) if len(tatums_start) > 0 else np.nan
+                        'bars_start': bars_start if len(bars_start) > 0 else [],
+                        'beats_start': beats_start if len(beats_start) > 0 else [],
+                        'segments_start': segments_start if len(segments_start) > 0 else [],
+                        'segments_pitches': segments_pitches if len(segments_pitches) > 0 else [],
+                        'segments_timbre': segments_timbre if len(segments_timbre) > 0 else [],
+                        'sections_start': sections_start if len(sections_start) > 0 else [],
+                        'tatums_start': tatums_start if len(tatums_start) > 0 else []
                     }
 
                     jazz_songs.append(features)
@@ -93,6 +86,7 @@ def extract_jazz_songs(artist_term_db, track_metadata_db, h5_files):
     conn_track_metadata.close()
 
     return pd.DataFrame(jazz_songs)
+
 
 # Main script
 if __name__ == "__main__":
