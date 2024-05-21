@@ -8,7 +8,7 @@ import numpy as np
 # for progress bar:
 from tqdm import tqdm
 
-#for multithread:
+# for multithread:
 import concurrent.futures
 
 
@@ -117,7 +117,8 @@ def process_dataset_multithreaded(dataset_dir, interval, pattern=None):
 
     # Use ProcessPoolExecutor for multiprocessing
     with concurrent.futures.ProcessPoolExecutor() as executor:
-        futures = [executor.submit(__process_single_midi, midi_file, interval) for chunk in midi_file_chunks for midi_file in chunk]
+        futures = [executor.submit(__process_single_midi, midi_file, interval) for chunk in midi_file_chunks for
+                   midi_file in chunk]
         for future in concurrent.futures.as_completed(futures):
             files_as_snapshots.append(future.result())
             progress_bar.update(1)
@@ -129,6 +130,29 @@ def process_dataset_multithreaded(dataset_dir, interval, pattern=None):
     print(f"processed {len(files_as_snapshots)} of {len(midi_files)} files")
 
     return files_as_snapshots
+
+
+def extract_melody_and_harmony(dataset_as_snapshots):
+    melody_harmony_dataset = []
+
+    for filename, snapshots in dataset_as_snapshots:
+        melody_snapshots = []
+        harmony_snapshots = []
+        for snapshot in snapshots:
+            highest_note = max([note for note, active in enumerate(snapshot) if active], default=None)
+            if highest_note is not None:
+                melody_snapshot = [0] * 128
+                harmony_snapshot = snapshot[:]
+                melody_snapshot[highest_note] = 1
+                harmony_snapshot[highest_note] = 0
+                melody_snapshots.append(melody_snapshot)
+                harmony_snapshots.append(harmony_snapshot)
+            else:
+                melody_snapshots.append([0] * 128)
+                harmony_snapshots.append(snapshot[:])
+        melody_harmony_dataset.append((filename, np.array(melody_snapshots), np.array(harmony_snapshots)))
+
+    return melody_harmony_dataset
 
 
 def filter_piano_range(dataset_as_snapshots):
@@ -163,4 +187,24 @@ def print_dataset(dataset_as_snapshots):
         print(f"Snapshots of file {filename}:")
         print()
         print_snapshots(snapshots_array)
+        print("==============================")
+
+
+def print_melody_harmony_snapshots(melody_snapshots, harmony_snapshots):
+    for i, (melody_snapshot, harmony_snapshot) in enumerate(zip(melody_snapshots, harmony_snapshots)):
+        print(f"Snapshot {i}:")
+        print("Melody:")
+        print_snapshot(melody_snapshot)
+        print("Harmony:")
+        print_snapshot(harmony_snapshot)
+        print()
+
+
+def print_melody_harmony_dataset(dataset_as_snapshots):
+    print("Number of files in Dataset:", len(dataset_as_snapshots))
+    print("==============================")
+    for filename, melody_snapshots, harmony_snapshots in dataset_as_snapshots:
+        print(f"File: {filename}")
+        print("Melody and Harmony Snapshots:")
+        print_melody_harmony_snapshots(melody_snapshots, harmony_snapshots)
         print("==============================")
