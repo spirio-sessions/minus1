@@ -15,7 +15,7 @@
 3. **Install NVIDIA Container Toolkit**  
    Follow the guide here: [NVIDIA Container Toolkit Install Guide](https://docs.nvidia.com/datacenter/cloud-native/container-toolkit/latest/install-guide.html).
 
-4. **Follow TensorFlow Docker Instructions**  
+4. **For More Details on TensorFlow Docker see documentation**  
    Detailed instructions can be found here: [TensorFlow Docker Install](https://www.tensorflow.org/install/docker).
 
 5. **Build Docker Image**  
