@@ -2,6 +2,8 @@
 
 # TensorFlow GPU Support
 
+**Tensorflow is deprecated for this project, use Pytorch instead**
+
 ## Using the TensorFlow Docker Image
 
 1. **Install Docker Engine**  
