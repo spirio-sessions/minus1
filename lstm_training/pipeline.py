@@ -19,7 +19,6 @@ class MelodyHarmonyDataset(Dataset):
     def __getitem__(self, idx):
         return torch.tensor(self.melody[idx], dtype=torch.float32), torch.tensor(self.harmony[idx], dtype=torch.float32)
 
-
 def load_data_from_csv(directory):
     melody_data = []
     harmony_data = []
@@ -38,39 +37,35 @@ def load_data_from_csv(directory):
     return np.concatenate(melody_data), np.concatenate(harmony_data)
 
 
-melody, harmony = load_data_from_csv(
-    'G:\\Schule\\Studium\\8. Semester\\Bachelor-Minus1\\minus1\\datasets\\jazz_mlready_dataset\\small_batch\\csv')
+melody, harmony = load_data_from_csv('G:\\Schule\\Studium\\8. Semester\\Bachelor-Minus1\\minus1\\datasets'
+                                     '\\jazz_mlready_dataset\\small_batch\\csv')
 
-# Model_definition
-import torch.nn as nn
-
-
-import torch.nn as nn
 
 class LSTMModel(nn.Module):
     def __init__(self, input_size, hidden_size, num_layers, output_size):
         super(LSTMModel, self).__init__()
         self.hidden_size = hidden_size
         self.num_layers = num_layers
-        self.lstm = nn.LSTM(input_size, hidden_size, num_layers, batch_first=True)
-        self.fc = nn.Linear(hidden_size, output_size)
+        self.output_size = output_size
+        self.input_size = input_size
+        self.lstm = nn.LSTM(self.input_size, self.hidden_size, self.num_layers, batch_first=True)
+        self.fc = nn.Linear(self.hidden_size, self.output_size)
 
     def forward(self, x):
         # Initialize hidden state with zeros
         h_0 = torch.zeros(self.num_layers, x.size(0), self.hidden_size).to(x.device)
         c_0 = torch.zeros(self.num_layers, x.size(0), self.hidden_size).to(x.device)
 
-        # Forward propagate LSTM
         out, _ = self.lstm(x, (h_0, c_0))
-
-        # Decode the hidden state of t
+        out = self.fc(out[:, -1, :])
+        return out
 
 
 # Hyperparameters
-input_size = 128
+input_size = 88  # Adjust based on the actual feature size of your melody data
 hidden_size = 64
 num_layers = 2
-output_size = 128
+output_size = 88  # Adjust based on the actual feature size of your harmony data
 learning_rate = 0.001
 num_epochs = 50
 batch_size = 32
@@ -119,8 +114,6 @@ for epoch in range(num_epochs):
     print(f'Epoch [{epoch+1}/{num_epochs}], Loss: {loss.item():.4f}, Val Loss: {val_loss:.4f}')
 
 
-
-# Prediction in Real-time
 def predict_harmony(model, melody):
     model.eval()
     with torch.no_grad():
@@ -129,7 +122,8 @@ def predict_harmony(model, melody):
         return harmony.squeeze(0).cpu().numpy()
 
 
-new_melody = pd.read_csv('G:\Schule\Studium\8. Semester\Bachelor-Minus1\minus1\datasets\jazz_mlready_dataset\small_batch\csv').values
+# Load and predict new melody
+new_melody = pd.read_csv('G:\\Schule\\Studium\\8. Semester\\Bachelor-Minus1\\minus1\\datasets\\jazz_mlready_dataset'
+                         '\\small_batch\\predict_melody\\AFifthofBeethoven_melody.csv').values
 predicted_harmony = predict_harmony(model, new_melody)
 print(predicted_harmony)
-

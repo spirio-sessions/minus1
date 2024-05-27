@@ -1,7 +1,7 @@
 from data_preperation import dataset_snapshot
 from data_preperation.dataset_snapshot import *
 
-dataset_as_snapshots = dataset_snapshot.process_dataset("../datasets/jazz_mlready_dataset/small_batch/", .1)
+dataset_as_snapshots = dataset_snapshot.process_dataset("../datasets/jazz_mlready_dataset/small_batch/mid/", .1)
 
 filtered_dataset = filter_piano_range(dataset_as_snapshots)
 
