@@ -8,7 +8,7 @@ from sklearn.model_selection import train_test_split
 
 ## Get dataset ##
 dataset_as_snapshots = dataset_snapshot.process_dataset(
-    "../datasets/GiantMIDI-PIano/surname_checked_midis_v1.2/surname_checked_midis", 0.1, 'mozart')
+    "../../datasets/GiantMIDI-PIano/surname_checked_midis_v1.2/surname_checked_midis", 0.1, 'mozart')
 piano_range_dataset = dataset_snapshot.filter_piano_range(dataset_as_snapshots)
 
 
