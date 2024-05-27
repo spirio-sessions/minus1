@@ -15,11 +15,6 @@ from lstm_training.print_results import print_results
 melody, harmony = load_data_from_csv('G:\\Schule\\Studium\\8. Semester\\Bachelor-Minus1\\minus1\\datasets'
                                      '\\jazz_mlready_dataset\\small_batch\\csv')
 
-# Scale everything????
-scaler = MinMaxScaler()
-melody_scaled = scaler.fit_transform(melody)
-harmony_scaled = scaler.fit_transform(harmony)
-
 # Parameters
 input_size = 88
 hidden_size = 64
