@@ -19,8 +19,8 @@ input_size = 88
 hidden_size = 64
 num_layers = 2
 output_size = 88
-learning_rate = 0.001
-num_epochs = 25
+learning_rate = 0.01
+num_epochs = 5
 batch_size = 32
 
 # Check if cuda is available
@@ -71,7 +71,7 @@ for epoch in range(num_epochs):
 new_melody = pd.read_csv(
     'G:\\Schule\\Studium\\8. Semester\\Bachelor-Minus1\\minus1\\datasets\\jazz_mlready_dataset\\small_batch'
     '\\predict_melody'
-    '\\AFifthofBeethoven_melody.csv').values
+    '\\AgeOfAquarius_harmony.csv').values
 predicted_harmony = predict_harmony(model, new_melody)
 
 # Export to CSV
