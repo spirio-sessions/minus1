@@ -3,7 +3,6 @@ import torch
 import torch.nn as nn
 from torch.utils.data import DataLoader
 from sklearn.model_selection import train_test_split
-from sklearn.preprocessing import MinMaxScaler
 
 from lstm_training.LSTMModel import LSTMModel
 from lstm_training.MelodyHarmonyDataset import MelodyHarmonyDataset
