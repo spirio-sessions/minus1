@@ -142,14 +142,14 @@ def extract_melody_and_harmony(dataset_as_snapshots):
         for snapshot in snapshots:
             highest_note = max([note for note, active in enumerate(snapshot) if active], default=None)
             if highest_note is not None:
-                melody_snapshot = [0] * 128
+                melody_snapshot = [0] * 88
                 harmony_snapshot = snapshot[:]
                 melody_snapshot[highest_note] = 1
                 harmony_snapshot[highest_note] = 0
                 melody_snapshots.append(melody_snapshot)
                 harmony_snapshots.append(harmony_snapshot)
             else:
-                melody_snapshots.append([0] * 128)
+                melody_snapshots.append([0] * 88)
                 harmony_snapshots.append(snapshot[:])
         melody_harmony_dataset.append((filename, np.array(melody_snapshots), np.array(harmony_snapshots)))
 
