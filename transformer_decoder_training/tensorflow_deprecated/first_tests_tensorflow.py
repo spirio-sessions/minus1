@@ -5,7 +5,7 @@
 import numpy as np
 from data_preperation import dataset_snapshot
 
-snapshots = dataset_snapshot.process_dataset("../datasets/midi_test_files", 0.1)
+snapshots = dataset_snapshot.process_dataset("../../datasets/midi_test_files", 0.1)
 
 print(snapshots)
 
