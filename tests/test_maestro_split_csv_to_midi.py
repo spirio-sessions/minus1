@@ -6,8 +6,10 @@ from tests.test_data_preparation import INTERVAL
 # Load the CSV files
 # predicted_harmony_df = pd.read_csv('G:\Schule\Studium\8. Semester\Bachelor-Minus1\minus1\datasets\jazz_mlready_dataset\small_batch\predicted_melody\predicted_harmony.csv')
 # original_melody_df = pd.read_csv('G:\Schule\Studium\8. Semester\Bachelor-Minus1\minus1\datasets\jazz_mlready_dataset\small_batch\predict_melody\AgeOfAquarius_melody.csv')
-predicted_harmony_df = pd.read_csv('../datasets/maestro-split-v3/small_batch_lstm/predict_melody/MIDI-Unprocessed_01_R1_2008_01-04_ORIG_MID--AUDIO_01_R1_2008_wav--1-split_leftH.csv')
-original_melody_df = pd.read_csv('../datasets/maestro-split-v3/small_batch_lstm/predict_melody/MIDI-Unprocessed_01_R1_2008_01-04_ORIG_MID--AUDIO_01_R1_2008_wav--1-split_rightH.csv')
+predicted_harmony_df = pd.read_csv(
+    '../datasets/maestro-split-v3/small_batch_lstm/original_validation/MIDI-Unprocessed_01_R1_2008_01-04_ORIG_MID--AUDIO_01_R1_2008_wav--1-split_leftH.csv')
+original_melody_df = pd.read_csv(
+    '../datasets/maestro-split-v3/small_batch_lstm/original_validation/MIDI-Unprocessed_01_R1_2008_01-04_ORIG_MID--AUDIO_01_R1_2008_wav--1-split_rightH.csv')
 
 # Apply threshold to predicted harmony data
 predicted_harmony_df = predicted_harmony_df.applymap(lambda x: 1 if x > 0.25 else 0)

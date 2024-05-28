@@ -7,10 +7,10 @@ def load_data_from_csv(directory):
     melody_data = []
     harmony_data = []
 
-    melody_files = [f for f in os.listdir(directory) if f.endswith('_melody.csv')]
+    melody_files = [f for f in os.listdir(directory) if f.endswith('_rightH.csv')]
     for melody_file in melody_files:
-        base_filename = melody_file.replace('_melody.csv', '')
-        harmony_file = base_filename + '_harmony.csv'
+        base_filename = melody_file.replace('_rightH.csv', '')
+        harmony_file = base_filename + '_leftH.csv'
 
         melody_df = pd.read_csv(os.path.join(directory, melody_file))
         harmony_df = pd.read_csv(os.path.join(directory, harmony_file))

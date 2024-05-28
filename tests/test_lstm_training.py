@@ -11,16 +11,15 @@ from lstm_training.predict_harmony import predict_harmony
 from lstm_training.print_results import print_results
 
 # Load melody and harmony from csv
-melody, harmony = load_data_from_csv('G:\\Schule\\Studium\\8. Semester\\Bachelor-Minus1\\minus1\\datasets'
-                                     '\\jazz_mlready_dataset\\small_batch\\csv')
+melody, harmony = load_data_from_csv('../datasets/maestro-split-v3/small_batch_lstm/csv')
 
 # Parameters
 input_size = 88
 hidden_size = 64
 num_layers = 2
 output_size = 88
-learning_rate = 0.01
-num_epochs = 5
+learning_rate = 0.005
+num_epochs = 25
 batch_size = 32
 
 # Check if cuda is available
@@ -69,14 +68,12 @@ for epoch in range(num_epochs):
 
 # Predict new melody
 new_melody = pd.read_csv(
-    'G:\\Schule\\Studium\\8. Semester\\Bachelor-Minus1\\minus1\\datasets\\jazz_mlready_dataset\\small_batch'
-    '\\predict_melody'
-    '\\AgeOfAquarius_harmony.csv').values
+    '../datasets/maestro-split-v3/small_batch_lstm/original_validation/MIDI-Unprocessed_01_R1_2008_01-04_ORIG_MID'
+    '--AUDIO_01_R1_2008_wav--1-split_rightH.csv').values
 predicted_harmony = predict_harmony(model, new_melody)
 
 # Export to CSV
-output_path = 'G:\\Schule\\Studium\\8. Semester\\Bachelor-Minus1\\minus1\\datasets\\jazz_mlready_dataset\\small_batch' \
-              '\\predicted_melody\\'
+output_path = '../datasets/maestro-split-v3/small_batch_lstm/predicted_leftH'
 
 predicted_harmony_df = pd.DataFrame(predicted_harmony)
 new_melody_df = pd.DataFrame(new_melody)
