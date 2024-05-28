@@ -171,6 +171,17 @@ def export_melody_harmony_to_csv(melody_harmony_dataset, output_dir):
         melody_df.to_csv(melody_filename, index=False)
         harmony_df.to_csv(harmony_filename, index=False)
 
+
+def export_maestro_hands_to_csv(filtered_dataset, output_dir):
+    for filename, snapshots in filtered_dataset:
+        base_filename = filename.split('\\')[1].split('.')[0]
+        output = f"{output_dir}/{base_filename}.csv"
+        snapshot_df = pd.DataFrame(snapshots)
+        snapshot_df.to_csv(output, index=False)
+        print(f"{base_filename} successfully exported to {output_dir} as .csv")
+
+
+
 def filter_piano_range(dataset_as_snapshots):
     filtered_dataset = []
 

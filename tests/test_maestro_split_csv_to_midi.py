@@ -18,8 +18,8 @@ mid.tracks.append(melody_track)
 mid.tracks.append(harmony_track)
 
 # Constants
-TIME_PER_SNAPSHOT = 0.1  # seconds
-TICKS_PER_BEAT = mid.TICKS_PER_BEAT
+TIME_PER_SNAPSHOT = 0.01  # seconds
+TICKS_PER_BEAT = mid.ticks_per_beat
 TEMPO = 500000  # microseconds per beat, equivalent to 120 BPM
 TICKS_PER_SNAPSHOT = int(TICKS_PER_BEAT * (TIME_PER_SNAPSHOT / (60 / 120)))  # for 120 BPM
 
