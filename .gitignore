@@ -3,6 +3,7 @@ datasets/*
 !datasets/datasets.md
 # Do not exclude specific test files
 !datasets/midi_test_files/
+!datasets/maestro-split-v3/all_data
 
 # Created by https://www.toptal.com/developers/gitignore/api/python,pycharm,visualstudiocode
 # Edit at https://www.toptal.com/developers/gitignore?templates=python,pycharm,visualstudiocode
