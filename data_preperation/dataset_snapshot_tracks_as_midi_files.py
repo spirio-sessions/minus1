@@ -13,6 +13,7 @@ from tqdm import tqdm
 # for multithread:
 import concurrent.futures
 
+
 # interval in seconds
 # function will process all events happening in an intervall
 # including intervall start, excluding intervall end
@@ -56,6 +57,7 @@ def snapshot_active_notes_from_midi(file_path, interval):
 
     return np.array(snapshots)
 
+
 def find_midi_files(root_dir, pattern=None):
     """
     Recursively searches for MIDI files in the specified root directory and groups them
@@ -89,6 +91,7 @@ def find_midi_files(root_dir, pattern=None):
 
     return midi_groups
 
+
 def trim_snapshots(group_snapshots):
     """
     Trims the leading and trailing empty snapshots for each group of snapshots.
@@ -116,9 +119,15 @@ def trim_snapshots(group_snapshots):
                 max_end = last_non_empty
 
     # Trim the snapshots for each file in the group
-    trimmed_group_snapshots = [snapshots[min_start:max_end+1] for snapshots in group_snapshots]
+    trimmed_group_snapshots = [snapshots[min_start:max_end + 1] for snapshots in group_snapshots]
 
     return trimmed_group_snapshots
+
+
+def __process_single_midi(midi_file, interval):
+    snapshots_array = snapshot_active_notes_from_midi(midi_file, interval)
+    return midi_file, snapshots_array
+
 
 def process_dataset(dataset_dir, interval, pattern=None):
     """
@@ -158,3 +167,75 @@ def process_dataset(dataset_dir, interval, pattern=None):
     progress_bar.close()
 
     return files_as_snapshots
+
+
+def process_dataset_multithreaded(dataset_dir, interval, pattern=None):
+    """
+    Processes a dataset of MIDI files, taking snapshots of active notes at specified intervals,
+    grouping related files together, and using multithreading for efficiency.
+
+    Args:
+        dataset_dir (str): The directory containing the dataset of MIDI files.
+        interval (float): The interval (in seconds) at which snapshots are taken.
+        pattern (str, optional): An optional pattern to filter the MIDI files.
+
+    Returns:
+        list: A list of snapshots for each group of MIDI files.
+    """
+    midi_files = find_midi_files(dataset_dir, pattern)
+
+    files_as_snapshots = []
+
+    # Initialize tqdm with the total number of MIDI files
+    total_files = sum(len(files) for files in midi_files.values())
+    progress_bar = tqdm(total=total_files)
+
+    # Use ProcessPoolExecutor for multiprocessing
+    with concurrent.futures.ProcessPoolExecutor() as executor:
+        future_to_midi = {executor.submit(__process_single_midi, midi_file, interval): midi_file
+                          for group_files in midi_files.values() for midi_file in group_files}
+
+        for future in concurrent.futures.as_completed(future_to_midi):
+            midi_file, snapshots_array = future.result()
+            files_as_snapshots.append((midi_file, snapshots_array))
+            progress_bar.update(1)
+            progress_bar.set_description(f"Processed dataset ({progress_bar.n}/{progress_bar.total})")
+
+    progress_bar.close()
+
+    # Group the snapshots by their base pattern
+    grouped_snapshots = defaultdict(list)
+    for midi_file, snapshots_array in files_as_snapshots:
+        base_pattern = '_'.join(os.path.basename(midi_file).lower().split('_')[:-2])
+        grouped_snapshots[base_pattern].append(snapshots_array)
+
+    # Trim the snapshots for each group
+    final_grouped_snapshots = [trim_snapshots(group_snapshots) for group_snapshots in grouped_snapshots.values()]
+
+    print(f"Processed {len(files_as_snapshots)} of {total_files} files")
+
+    return final_grouped_snapshots
+
+
+def filter_piano_range(grouped_snapshots):
+    """
+    Filters the snapshots to keep only the notes in the piano range (MIDI notes 21 to 108).
+
+    Args:
+        grouped_snapshots (list): A list of lists, where each sublist contains numpy arrays of snapshots
+                                  for a group of MIDI files.
+
+    Returns:
+        list: A list of lists, where each sublist contains numpy arrays of filtered snapshots
+              for a group of MIDI files, keeping only the piano range notes.
+    """
+    filtered_groups = []
+
+    for group in grouped_snapshots:
+        filtered_group = []
+        for snapshots in group:
+            filtered_snapshots = [snapshot[21:109] for snapshot in snapshots]
+            filtered_group.append(np.array(filtered_snapshots))
+        filtered_groups.append(filtered_group)
+
+    return filtered_groups
