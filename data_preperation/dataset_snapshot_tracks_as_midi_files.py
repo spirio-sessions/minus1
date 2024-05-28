@@ -61,7 +61,7 @@ def snapshot_active_notes_from_midi(file_path, interval):
 def find_midi_files(root_dir, pattern=None):
     """
     Recursively searches for MIDI files in the specified root directory and groups them
-    based on their base patterns, excluding the track and track number suffix.
+    based on their base patterns, excluding the track suffix (e.g., rightH, leftH, surplusX).
 
     Args:
         root_dir (str): The root directory to start the search.
@@ -86,7 +86,12 @@ def find_midi_files(root_dir, pattern=None):
             if fnmatch.fnmatch(filename.lower(), '*.midi') or fnmatch.fnmatch(filename.lower(), '*.mid'):
                 if pattern is None or fnmatch.fnmatch(filename.lower(), f'*{pattern.lower()}*'):
                     filepath = os.path.join(dirpath, filename)
-                    base_pattern = '_'.join(filename.lower().split('_')[:-2])
+                    # Split the filename on underscores and exclude the last part (track name)
+                    parts = filename.lower().split('_')
+                    if parts[-1].startswith('righth') or parts[-1].startswith('lefth') or parts[-1].startswith('surplus'):
+                        base_pattern = '_'.join(parts[:-1])
+                    else:
+                        base_pattern = '_'.join(parts)
                     midi_groups[base_pattern].append(filepath)
 
     return midi_groups

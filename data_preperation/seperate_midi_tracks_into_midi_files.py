@@ -51,19 +51,21 @@ def split_midi_tracks(input_file, output_dir):
 
     # Iterate through the tracks and save each as a separate MIDI file
     for i, track in enumerate(mid.tracks):
-        # Create a new MIDI file for each track
+        # Determine the track name based on the index
+        track_name = 'rightH' if i == 0 else 'leftH' if i == 1 else f'surplus{i}'
+
+        # Create a new MIDI file with a single track
         new_midi = MidiFile()
         new_track = MidiTrack()
+        new_midi.tracks.append(new_track)
 
         # Copy the messages from the original track to the new track
         for msg in track:
             new_track.append(msg)
 
-        # Append the new track to the new MIDI file
-        new_midi.tracks.append(new_track)
 
         # Create the output filename
-        output_file = os.path.join(output_dir, f'{original_filename}_track_{i + 1}.mid')
+        output_file = os.path.join(output_dir, f'{original_filename}_{track_name}.mid')
 
         # Save the new MIDI file
         new_midi.save(output_file)
