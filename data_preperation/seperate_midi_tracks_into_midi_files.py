@@ -1,10 +1,45 @@
 import os
-import mido
+import fnmatch
 from mido import MidiFile, MidiTrack
 
+def find_all_midi_files(root_dir):
+    """
+    Recursively searches for all MIDI files in the specified root directory and its subdirectories.
 
-# Function to split MIDI tracks
+    Args:
+        root_dir (str): The root directory to start the search.
+
+    Returns:
+        list: A list of paths to all found MIDI files.
+
+    Example:
+        midi_files = find_all_midi_files('/path/to/root_dir')
+    """
+    midi_files = []
+    for dirpath, dirnames, filenames in os.walk(root_dir):
+        for filename in filenames:
+            if fnmatch.fnmatch(filename.lower(), '*.midi') or fnmatch.fnmatch(filename.lower(), '*.mid'):
+                midi_files.append(os.path.join(dirpath, filename))
+    return midi_files
+
 def split_midi_tracks(input_file, output_dir):
+    """
+    Splits the tracks of a MIDI file into separate MIDI files and saves them in the specified output directory.
+
+    Args:
+        input_file (str): The path to the input MIDI file.
+        output_dir (str): The directory where the split MIDI files will be saved.
+
+    Returns:
+        None
+
+    Example:
+        split_midi_tracks('path/to/input_file.mid', 'path/to/output_dir')
+
+    This function loads a MIDI file, iterates through its tracks, and saves each track as a separate MIDI file
+    in the specified output directory. The output filenames are created by appending '_track_X' to the original
+    filename, where X is the track number.
+    """
     # Load the MIDI file
     mid = MidiFile(input_file)
 
@@ -34,12 +69,23 @@ def split_midi_tracks(input_file, output_dir):
         new_midi.save(output_file)
         print(f'Saved {output_file}')
 
+def split_all_midi_files(root_dir, output_dir):
+    """
+    Finds all MIDI files in the specified root directory and its subdirectories, and splits each file into separate tracks.
 
-# Path to your input MIDI file
-input_midi_file = '/home/falaxdb/Repos/minus1/datasets/temp/MIDI-Unprocessed_01_R1_2006_01-09_ORIG_MID--AUDIO_01_R1_2006_01_Track01_wav-split.midi'
+    Args:
+        root_dir (str): The root directory to start the search for MIDI files.
+        output_dir (str): The directory where the split MIDI files will be saved.
 
-# Specify the output directory
-output_directory = '/home/falaxdb/Repos/minus1/datasets/temp/output'
+    Returns:
+        None
 
-# Split the MIDI tracks
-split_midi_tracks(input_midi_file, output_directory)
+    Example:
+        split_all_midi_files('/path/to/root_dir', '/path/to/output_dir')
+
+    This function finds all MIDI files in the specified root directory and its subdirectories, splits each file
+    into separate tracks, and saves the resulting files in the specified output directory.
+    """
+    midi_files = find_all_midi_files(root_dir)
+    for midi_file in midi_files:
+        split_midi_tracks(midi_file, output_dir)
