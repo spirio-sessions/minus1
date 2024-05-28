@@ -1,6 +1,8 @@
 import pandas as pd
 from mido import MidiFile, MidiTrack, Message
 
+from tests.test_data_preparation import INTERVAL
+
 # Load the CSV files
 # predicted_harmony_df = pd.read_csv('G:\Schule\Studium\8. Semester\Bachelor-Minus1\minus1\datasets\jazz_mlready_dataset\small_batch\predicted_melody\predicted_harmony.csv')
 # original_melody_df = pd.read_csv('G:\Schule\Studium\8. Semester\Bachelor-Minus1\minus1\datasets\jazz_mlready_dataset\small_batch\predict_melody\AgeOfAquarius_melody.csv')
@@ -18,7 +20,7 @@ mid.tracks.append(melody_track)
 mid.tracks.append(harmony_track)
 
 # Constants
-TIME_PER_SNAPSHOT = 0.01  # seconds
+TIME_PER_SNAPSHOT = INTERVAL  # seconds
 TICKS_PER_BEAT = mid.ticks_per_beat
 TEMPO = 500000  # microseconds per beat, equivalent to 120 BPM
 TICKS_PER_SNAPSHOT = int(TICKS_PER_BEAT * (TIME_PER_SNAPSHOT / (60 / 120)))  # for 120 BPM

@@ -181,7 +181,6 @@ def export_maestro_hands_to_csv(filtered_dataset, output_dir):
         print(f"{base_filename} successfully exported to {output_dir} as .csv")
 
 
-
 def filter_piano_range(dataset_as_snapshots):
     filtered_dataset = []
 
