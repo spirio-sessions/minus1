@@ -175,12 +175,10 @@ def export_snapshots_to_csv(filtered_dataset, output_dir):
 
         if snapshots_track_0.size > 0:
             df_track_0 = pd.DataFrame(snapshots_track_0)
-            df_track_0 = df_track_0.loc[:, (df_track_0 != 0).any(axis=0)]
             df_track_0.to_csv(csv_filename_track_0, index=False)
 
         if snapshots_track_1.size > 0:
             df_track_1 = pd.DataFrame(snapshots_track_1)
-            df_track_1 = df_track_1.loc[:, (df_track_1 != 0).any(axis=0)]
             df_track_1.to_csv(csv_filename_track_1, index=False)
 
         print(f"Exported {csv_filename_track_0} and {csv_filename_track_1}")

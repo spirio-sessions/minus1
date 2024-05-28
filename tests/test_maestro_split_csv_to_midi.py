@@ -57,7 +57,7 @@ for index in range(len(original_melody_df)):
     harmony_track.append(Message('note_on', note=0, velocity=0, time=ticks_per_snapshot))
 
 # Save the MIDI file
-output_path = '..\datasets\jazz_mlready_dataset\small_batch\output_midi\lstm_output.mid'
+output_path = '../datasets/maestro-split-v3/small_batch_lstm/output_midi/output.mid'
 mid.save(output_path)
 
 print(f'MIDI file saved to {output_path}')
