@@ -19,47 +19,77 @@ import concurrent.futures
 # snapshot will show all active notes at the end of the intervall
 def snapshot_active_notes_from_midi(file_path, interval):
     mid = mido.MidiFile(file_path)
+
+    if len(mid.tracks) < 2:
+        raise ValueError("MIDI file must contain at least two tracks.")
+
+    # Initialize variables for track 0 and track 1
+    snapshots_track_0 = []
     snapshots_track_1 = []
-    snapshots_track_2 = []
+    active_notes_track_0 = [0] * 128
     active_notes_track_1 = [0] * 128
-    active_notes_track_2 = [0] * 128
-    current_time = 0
-    snapshot_time = 0
+    current_time_0 = 0
+    current_time_1 = 0
+    snapshot_time_0 = 0
+    snapshot_time_1 = 0
+    previous_event_time_0 = 0
+    previous_event_time_1 = 0
 
-    track_1_index = 0
-    track_2_index = 1
+    # Process track 0
+    for msg in mid.tracks[0]:
+        current_time_0 += msg.time
 
-    for msg in mid:
-        current_time += msg.time
+        while current_time_0 >= snapshot_time_0 + interval:
+            # prevent snapshot to first process all snapshots happening at the same time
+            if current_time_0 == previous_event_time_0:
+                break
 
-        while current_time >= snapshot_time + interval:
-            if track_1_index < len(mid.tracks):
-                snapshots_track_1.append(active_notes_track_1[:])
-            if track_2_index < len(mid.tracks):
-                snapshots_track_2.append(active_notes_track_2[:])
-            snapshot_time += interval
+            snapshots_track_0.append(active_notes_track_0[:])
+            snapshot_time_0 += interval
 
-        if msg.type == 'note_on':
-            if msg.velocity == 0:
-                if msg.channel == track_1_index:
-                    active_notes_track_1[msg.note] = 0
-                elif msg.channel == track_2_index:
-                    active_notes_track_2[msg.note] = 0
+        if msg.type == 'note_on' or msg.type == 'note_off':
+            if msg.type == 'note_off' or (msg.type == 'note_on' and msg.velocity == 0):
+                active_notes_track_0[msg.note] = 0
             else:
-                if msg.channel == track_1_index:
-                    active_notes_track_1[msg.note] = 1
-                elif msg.channel == track_2_index:
-                    active_notes_track_2[msg.note] = 1
-        elif msg.type == 'note_off':
-            if msg.channel == track_1_index:
+                active_notes_track_0[msg.note] = 1
+
+        previous_event_time_0 = current_time_0
+
+    # Convert to numpy arrays
+    snapshots_track_0 = np.array(snapshots_track_0)
+
+    # Remove initial and final empty snapshots
+    start_idx_track_0 = next((i for i, snapshot in enumerate(snapshots_track_0) if any(snapshot)), 0)
+    end_idx_track_0 = next((i for i, snapshot in enumerate(reversed(snapshots_track_0)) if any(snapshot)), len(snapshots_track_0))
+
+    # Process track 1
+    for msg in mid.tracks[1]:
+        current_time_1 += msg.time
+
+        while current_time_1 >= snapshot_time_1 + interval:
+            # prevent snapshot to first process all snapshots happening at the same time
+            if current_time_1 == previous_event_time_1:
+                break
+
+            snapshots_track_1.append(active_notes_track_1[:])
+            snapshot_time_1 += interval
+
+        if msg.type == 'note_on' or msg.type == 'note_off':
+            if msg.type == 'note_off' or (msg.type == 'note_on' and msg.velocity == 0):
                 active_notes_track_1[msg.note] = 0
-            elif msg.channel == track_2_index:
-                active_notes_track_2[msg.note] = 0
+            else:
+                active_notes_track_1[msg.note] = 1
 
+        previous_event_time_1 = current_time_1
+
+    # Convert to numpy arrays
     snapshots_track_1 = np.array(snapshots_track_1)
-    snapshots_track_2 = np.array(snapshots_track_2)
 
-    return snapshots_track_1, snapshots_track_2
+    # Remove initial and final empty snapshots
+    start_idx_track_1 = next((i for i, snapshot in enumerate(snapshots_track_1) if any(snapshot)), 0)
+    end_idx_track_1 = next((i for i, snapshot in enumerate(reversed(snapshots_track_1)) if any(snapshot)), len(snapshots_track_1))
+
+    return snapshots_track_0[start_idx_track_0:len(snapshots_track_0) - end_idx_track_0], snapshots_track_1[start_idx_track_1:len(snapshots_track_1) - end_idx_track_1]
 
 
 def find_midi_files(root_dir, pattern=None):
@@ -129,28 +159,28 @@ def process_dataset_multithreaded(dataset_dir, interval, pattern=None):
 def filter_piano_range(dataset_as_snapshots):
     filtered_dataset = []
 
-    for filename, snapshots_track_1, snapshots_track_2 in dataset_as_snapshots:
+    for filename, snapshots_track_0, snapshots_track_1 in dataset_as_snapshots:
+        filtered_snapshots_track_0 = [snapshot[21:109] for snapshot in snapshots_track_0]
         filtered_snapshots_track_1 = [snapshot[21:109] for snapshot in snapshots_track_1]
-        filtered_snapshots_track_2 = [snapshot[21:109] for snapshot in snapshots_track_2]
-        filtered_dataset.append((filename, np.array(filtered_snapshots_track_1), np.array(filtered_snapshots_track_2)))
+        filtered_dataset.append((filename, np.array(filtered_snapshots_track_0), np.array(filtered_snapshots_track_1)))
 
     return filtered_dataset
 
 
 def export_snapshots_to_csv(filtered_dataset, output_dir):
-    for filename, snapshots_track_1, snapshots_track_2 in filtered_dataset:
+    for filename, snapshots_track_0, snapshots_track_1 in filtered_dataset:
         base_filename = os.path.splitext(os.path.basename(filename))[0]
-        csv_filename_track_1 = os.path.join(output_dir, f"{base_filename}_track_1.csv")
-        csv_filename_track_2 = os.path.join(output_dir, f"{base_filename}_track_2.csv")
+        csv_filename_track_0 = os.path.join(output_dir, f"{base_filename}_rightH.csv")
+        csv_filename_track_1 = os.path.join(output_dir, f"{base_filename}_leftH.csv")
+
+        if snapshots_track_0.size > 0:
+            df_track_0 = pd.DataFrame(snapshots_track_0)
+            df_track_0 = df_track_0.loc[:, (df_track_0 != 0).any(axis=0)]
+            df_track_0.to_csv(csv_filename_track_0, index=False)
 
         if snapshots_track_1.size > 0:
             df_track_1 = pd.DataFrame(snapshots_track_1)
             df_track_1 = df_track_1.loc[:, (df_track_1 != 0).any(axis=0)]
             df_track_1.to_csv(csv_filename_track_1, index=False)
 
-        if snapshots_track_2.size > 0:
-            df_track_2 = pd.DataFrame(snapshots_track_2)
-            df_track_2 = df_track_2.loc[:, (df_track_2 != 0).any(axis=0)]
-            df_track_2.to_csv(csv_filename_track_2, index=False)
-
-        print(f"Exported {csv_filename_track_1} and {csv_filename_track_2}")
+        print(f"Exported {csv_filename_track_0} and {csv_filename_track_1}")
