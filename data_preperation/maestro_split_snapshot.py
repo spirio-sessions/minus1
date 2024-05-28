@@ -60,7 +60,7 @@ def snapshot_active_notes_from_midi(file_path, interval):
 
     # Remove initial and final empty snapshots
     start_idx_track_0 = next((i for i, snapshot in enumerate(snapshots_track_0) if any(snapshot)), 0)
-    end_idx_track_0 = next((i for i, snapshot in enumerate(reversed(snapshots_track_0)) if any(snapshot)), len(snapshots_track_0))
+    end_idx_track_0 = len(snapshots_track_0) - next((i for i, snapshot in enumerate(reversed(snapshots_track_0)) if any(snapshot)), 0)
 
     # Process track 1
     for msg in mid.tracks[1]:
@@ -87,7 +87,7 @@ def snapshot_active_notes_from_midi(file_path, interval):
 
     # Remove initial and final empty snapshots
     start_idx_track_1 = next((i for i, snapshot in enumerate(snapshots_track_1) if any(snapshot)), 0)
-    end_idx_track_1 = next((i for i, snapshot in enumerate(reversed(snapshots_track_1)) if any(snapshot)), len(snapshots_track_1))
+    end_idx_track_1 = len(snapshots_track_1) - next((i for i, snapshot in enumerate(reversed(snapshots_track_1)) if any(snapshot)), 0)
 
     return snapshots_track_0[start_idx_track_0:len(snapshots_track_0) - end_idx_track_0], snapshots_track_1[start_idx_track_1:len(snapshots_track_1) - end_idx_track_1]
 

@@ -18,10 +18,10 @@ mid.tracks.append(melody_track)
 mid.tracks.append(harmony_track)
 
 # Constants
-time_per_snapshot = 0.1  # seconds
-ticks_per_beat = mid.ticks_per_beat
-tempo = 500000  # microseconds per beat, equivalent to 120 BPM
-ticks_per_snapshot = int(ticks_per_beat * (time_per_snapshot / (60 / 120)))  # for 120 BPM
+TIME_PER_SNAPSHOT = 0.1  # seconds
+TICKS_PER_BEAT = mid.TICKS_PER_BEAT
+TEMPO = 500000  # microseconds per beat, equivalent to 120 BPM
+TICKS_PER_SNAPSHOT = int(TICKS_PER_BEAT * (TIME_PER_SNAPSHOT / (60 / 120)))  # for 120 BPM
 
 # Initial states of the keys
 previous_melody_keys = [0] * 88
@@ -53,8 +53,8 @@ for index in range(len(original_melody_df)):
     previous_harmony_keys = harmony_keys
 
     # Add time delay (advance time) for each track
-    melody_track.append(Message('note_on', note=0, velocity=0, time=ticks_per_snapshot))
-    harmony_track.append(Message('note_on', note=0, velocity=0, time=ticks_per_snapshot))
+    melody_track.append(Message('note_on', note=0, velocity=0, time=TICKS_PER_SNAPSHOT))
+    harmony_track.append(Message('note_on', note=0, velocity=0, time=TICKS_PER_SNAPSHOT))
 
 # Save the MIDI file
 output_path = '../datasets/maestro-split-v3/small_batch_lstm/output_midi/output.mid'
