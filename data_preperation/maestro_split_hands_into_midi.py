@@ -11,7 +11,11 @@ def split_midi_tracks(input_folder, output_folder):
     for filename in os.listdir(input_folder):
         if filename.endswith(".midi"):
             input_midi_path = os.path.join(input_folder, filename)
-            midi = MidiFile(input_midi_path)
+            try:
+                midi = MidiFile(input_midi_path)
+            except EOFError:
+                print(f"Error: Could not read {input_midi_path}. Skipping file.")
+                continue
 
             for i, track in enumerate(midi.tracks):
                 # Determine the track name based on the index
@@ -31,5 +35,9 @@ def split_midi_tracks(input_folder, output_folder):
                 output_midi_path = os.path.join(output_folder, output_filename)
 
                 # Save the new MIDI file
-                new_midi.save(output_midi_path)
-                print(f"Saved: {output_midi_path}")
+                try:
+                    # Save the new MIDI file
+                    new_midi.save(output_midi_path)
+                    print(f"Saved: {output_midi_path}")
+                except IOError as e:
+                    print(f"Error: Could not save {output_midi_path}. {e}")

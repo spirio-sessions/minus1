@@ -7,9 +7,9 @@ from tests.test_data_preparation import INTERVAL
 # predicted_harmony_df = pd.read_csv('G:\Schule\Studium\8. Semester\Bachelor-Minus1\minus1\datasets\jazz_mlready_dataset\small_batch\predicted_melody\predicted_harmony.csv')
 # original_melody_df = pd.read_csv('G:\Schule\Studium\8. Semester\Bachelor-Minus1\minus1\datasets\jazz_mlready_dataset\small_batch\predict_melody\AgeOfAquarius_melody.csv')
 predicted_harmony_df = pd.read_csv(
-    '../datasets/maestro-split-v3/small_batch_lstm/original_validation/MIDI-Unprocessed_01_R1_2008_01-04_ORIG_MID--AUDIO_01_R1_2008_wav--1-split_leftH.csv')
+    '../datasets/maestro_v3_split/small_batch_lstm/original_validation/MIDI-Unprocessed_01_R1_2008_01-04_ORIG_MID--AUDIO_01_R1_2008_wav--1-split_leftH.csv')
 original_melody_df = pd.read_csv(
-    '../datasets/maestro-split-v3/small_batch_lstm/original_validation/MIDI-Unprocessed_01_R1_2008_01-04_ORIG_MID--AUDIO_01_R1_2008_wav--1-split_rightH.csv')
+    '../datasets/maestro_v3_split/small_batch_lstm/original_validation/MIDI-Unprocessed_01_R1_2008_01-04_ORIG_MID--AUDIO_01_R1_2008_wav--1-split_rightH.csv')
 
 # Apply threshold to predicted harmony data
 predicted_harmony_df = predicted_harmony_df.applymap(lambda x: 1 if x > 0.25 else 0)
@@ -61,7 +61,7 @@ for index in range(len(original_melody_df)):
     harmony_track.append(Message('note_on', note=0, velocity=0, time=TICKS_PER_SNAPSHOT))
 
 # Save the MIDI file
-output_path = '../datasets/maestro-split-v3/small_batch_lstm/output_midi/output.mid'
+output_path = '../datasets/maestro_v3_split/small_batch_lstm/output_midi/output.mid'
 mid.save(output_path)
 
 print(f'MIDI file saved to {output_path}')

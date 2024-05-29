@@ -11,7 +11,7 @@ from lstm_training.predict_harmony import predict_harmony
 from lstm_training.print_results import print_results
 
 # Load melody and harmony from csv
-melody, harmony = load_data_from_csv('../datasets/maestro-split-v3/small_batch_lstm/csv')
+melody, harmony = load_data_from_csv('../datasets/maestro_v3_split/small_batch_lstm/csv')
 
 # Parameters
 input_size = 88
@@ -68,12 +68,12 @@ for epoch in range(num_epochs):
 
 # Predict new melody
 new_melody = pd.read_csv(
-    '../datasets/maestro-split-v3/small_batch_lstm/original_validation/MIDI-Unprocessed_01_R1_2008_01-04_ORIG_MID'
+    '../datasets/maestro_v3_split-v3/small_batch_lstm/original_validation/MIDI-Unprocessed_01_R1_2008_01-04_ORIG_MID'
     '--AUDIO_01_R1_2008_wav--1-split_rightH.csv').values
 predicted_harmony = predict_harmony(model, new_melody)
 
 # Export to CSV
-output_path = '../datasets/maestro-split-v3/small_batch_lstm/predicted_leftH'
+output_path = '../datasets/maestro_v3_split/small_batch_lstm/predicted_leftH'
 
 predicted_harmony_df = pd.DataFrame(predicted_harmony)
 new_melody_df = pd.DataFrame(new_melody)
