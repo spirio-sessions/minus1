@@ -2,14 +2,22 @@ import os
 from mido import MidiFile, MidiTrack
 
 
-def split_midi_tracks(input_folder, output_folder):
+def split_midi_tracks(input_folder, output_folder, use_all_data=True, amount_data=0):
     # Ensure the output folder exists
     if not os.path.exists(output_folder):
         os.makedirs(output_folder)
 
+    data_count = 0
     # Iterate through each MIDI file in the input folder
     for filename in os.listdir(input_folder):
         if filename.endswith(".midi"):
+            # Limits the data if needed
+            if not use_all_data and data_count == 0:
+                print("Limiting data to", amount_data, "files.")
+            if not use_all_data and data_count == amount_data:
+                break
+            else:
+                data_count += 1
             input_midi_path = os.path.join(input_folder, filename)
             try:
                 midi = MidiFile(input_midi_path)

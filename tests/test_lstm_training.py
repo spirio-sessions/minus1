@@ -18,7 +18,7 @@ input_size = 88
 hidden_size = 64
 num_layers = 2
 output_size = 88
-learning_rate = 0.005
+learning_rate = 0.01
 num_epochs = 25
 batch_size = 32
 

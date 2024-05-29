@@ -1,16 +1,11 @@
 import mido
-
 import os
 import fnmatch
-
 import numpy as np
 import pandas as pd
 
 # for progress bar:
 from tqdm import tqdm
-
-# for multithread:
-import concurrent.futures
 
 
 # interval in seconds
@@ -85,11 +80,14 @@ def snapshot_active_notes_from_midi(file_path, interval):
     # Convert to numpy arrays
     snapshots_track_1 = np.array(snapshots_track_1)
 
-    # Remove initial and final empty snapshots
-    start_idx_track_1 = next((i for i, snapshot in enumerate(snapshots_track_1) if any(snapshot)), 0)
-    end_idx_track_1 = len(snapshots_track_1) - next((i for i, snapshot in enumerate(reversed(snapshots_track_1)) if any(snapshot)), 0)
+    # Use start and end of the track_0, so both tracks are cut at the same tick for data-consistency in ML
+    snapshots_track_0 = snapshots_track_0[start_idx_track_0:len(snapshots_track_0) - end_idx_track_0]
+    snapshots_track_1 = snapshots_track_1[start_idx_track_0:len(snapshots_track_1) - end_idx_track_0]
 
-    return snapshots_track_0[start_idx_track_0:len(snapshots_track_0) - end_idx_track_0], snapshots_track_1[start_idx_track_1:len(snapshots_track_1) - end_idx_track_1]
+    print("Length of Snapshots:", len(snapshots_track_0), "|||", len(snapshots_track_1))
+
+    return snapshots_track_0, snapshots_track_1
+
 
 
 def find_midi_files(root_dir, pattern=None):
@@ -118,40 +116,6 @@ def process_dataset(dataset_dir, interval, pattern=None):
 
     # Close the progress bar
     progress_bar.close()
-
-    return files_as_snapshots
-
-
-def __process_single_midi(midi_file, interval):
-    snapshots_array_1, snapshots_array_2 = snapshot_active_notes_from_midi(midi_file, interval)
-    return midi_file, snapshots_array_1, snapshots_array_2
-
-
-def process_dataset_multithreaded(dataset_dir, interval, pattern=None):
-    midi_files = find_midi_files(dataset_dir, pattern)
-
-    files_as_snapshots = []
-
-    # Split MIDI files into chunks for processing
-    num_chunks = min(len(midi_files), os.cpu_count() or 1)  # Use CPU count as a default if os.cpu_count() returns None
-    midi_file_chunks = [midi_files[i::num_chunks] for i in range(num_chunks)]
-
-    # Initialize tqdm with the total number of MIDI files
-    progress_bar = tqdm(total=len(midi_files))
-
-    # Use ProcessPoolExecutor for multiprocessing
-    with concurrent.futures.ProcessPoolExecutor() as executor:
-        futures = [executor.submit(__process_single_midi, midi_file, interval) for chunk in midi_file_chunks for
-                   midi_file in chunk]
-        for future in concurrent.futures.as_completed(futures):
-            files_as_snapshots.append(future.result())
-            progress_bar.update(1)
-            progress_bar.set_description(f"Processed dataset ({progress_bar.n}/{progress_bar.total})")
-
-    # Close the progress bar
-    progress_bar.close()
-
-    print(f"processed {len(files_as_snapshots)} of {len(midi_files)} files")
 
     return files_as_snapshots
 

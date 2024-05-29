@@ -4,7 +4,7 @@ from data_preperation.dataset_snapshot import *
 
 INTERVAL = 0.05
 dataset_as_snapshots = dataset_snapshot.process_dataset("../datasets/maestro_v3_split/small_batch_lstm/mid_split",
-                                                        INTERVAL)
+                                                        INTERVAL, False, 20)
 
 filtered_dataset = filter_piano_range(dataset_as_snapshots)
 

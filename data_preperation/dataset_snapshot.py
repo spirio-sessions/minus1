@@ -79,8 +79,15 @@ def find_midi_files(root_dir, pattern=None):
     return midi_files
 
 
-def process_dataset(dataset_dir, interval, pattern=None):
+def process_dataset(dataset_dir, interval, use_all_data=True, amount_data=0, pattern=None):
     midi_files = find_midi_files(dataset_dir, pattern)
+    midi_files_length = len(midi_files)/2
+    # Limit amount of data if needed
+    if not use_all_data:
+        midi_files = midi_files[:amount_data*2]
+        print("Using only", amount_data, "of", midi_files_length, "MIDI-files")
+    else:
+        print("Using all data of", midi_files_length, "MIDI-files")
 
     files_as_snapshots = []
 
