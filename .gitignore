@@ -6,6 +6,9 @@ datasets/*
 # Do not exclude common dataset
 !datasets/maestro_v3_split
 
+# Do exclude the .csv directory for storage purposes
+datasets/maestro_v3_split/small_batch_lstm/csv
+
 # Created by https://www.toptal.com/developers/gitignore/api/python,pycharm,visualstudiocode
 # Edit at https://www.toptal.com/developers/gitignore?templates=python,pycharm,visualstudiocode
 
