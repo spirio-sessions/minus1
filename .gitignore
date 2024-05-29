@@ -8,6 +8,8 @@ datasets/*
 
 # Do exclude the .csv directory for storage purposes
 datasets/maestro_v3_split/small_batch_lstm/csv
+datasets/maestro_v3_split/small_batch_lstm/mid
+datasets/maestro_v3_split/small_batch_lstm/mid_split
 
 # Created by https://www.toptal.com/developers/gitignore/api/python,pycharm,visualstudiocode
 # Edit at https://www.toptal.com/developers/gitignore?templates=python,pycharm,visualstudiocode
