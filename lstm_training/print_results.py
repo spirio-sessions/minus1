@@ -2,10 +2,11 @@ import numpy as np
 import pandas as pd
 import seaborn as sns
 from matplotlib import pyplot as plt
+from matplotlib.colors import LinearSegmentedColormap, BoundaryNorm
 from sklearn.metrics import mean_squared_error
 
 
-def print_results(predicted_harmony):
+def print_results(predicted_harmony, actual_melody, actual_harmony):
     # Print different stats
     print("Shape of Harmony")
     print('- ' * 20)
@@ -22,10 +23,6 @@ def print_results(predicted_harmony):
 
     print("Mean-Square-Error")
     print('- ' * 20)
-    # Assuming actual_harmony is available
-    actual_harmony = pd.read_csv(
-        'G:\\Schule\\Studium\\8. Semester\\Bachelor-Minus1\\minus1\\datasets\\jazz_mlready_dataset\\small_batch'
-        '\\predict_melody\\AgeOfAquarius_harmony.csv').values
     mse = mean_squared_error(actual_harmony, predicted_harmony)
     print(f'Mean Squared Error: {mse}')
     print('- ' * 20)
@@ -54,15 +51,6 @@ def print_results(predicted_harmony):
         plt.title(f'Predicted Harmony for Melody Row {i}')
         plt.show()
 
-    for i in range(5):
-        plt.figure()
-        plt.plot(predicted_harmony[i], label='Predicted')
-        plt.plot(actual_harmony[i], label='Actual')
-        plt.title(f'Harmony Prediction for Sample {i}')
-        plt.xlabel('Keys on piano')
-        plt.ylabel('probability of pressing (One-Hot-Encoding)')
-        plt.legend()
-        plt.show()
 
     # Create a heatmap
     plt.figure(figsize=(20, 10))  # Adjust the size as necessary
@@ -72,3 +60,19 @@ def print_results(predicted_harmony):
     plt.ylabel('probability of pressing (One-Hot-Encoding)')
     plt.show()
 
+
+    # Create a second heatmap
+    # Define the boundaries and colors for the custom colormap
+    boundaries = [0, 0.15, 1]
+    colors = ["#0096FF", "#00008b", "#FF474C", "#8b0000"]
+
+    # Create a custom colormap
+    custom_cmap = LinearSegmentedColormap.from_list("custom_cmap", colors, N=256)
+
+    # Create a norm to map data values to the colormap
+    norm = BoundaryNorm(boundaries, custom_cmap.N, extend='both')
+
+    # Plot the heatmap
+    plt.figure(figsize=(10, 8))
+    sns.heatmap(predicted_harmony, cmap=custom_cmap, norm=norm, cbar=True)
+    plt.show()

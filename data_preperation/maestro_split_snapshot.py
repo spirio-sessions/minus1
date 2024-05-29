@@ -100,8 +100,15 @@ def find_midi_files(root_dir, pattern=None):
     return midi_files
 
 
-def process_dataset(dataset_dir, interval, pattern=None):
+def process_dataset(dataset_dir, interval, use_all_data=True, amount_data=0, pattern=None):
     midi_files = find_midi_files(dataset_dir, pattern)
+    midi_files_length = len(midi_files)/2
+    # Limit amount of data if needed
+    if not use_all_data:
+        midi_files = midi_files[:amount_data*2]
+        print("Using only", amount_data, "of", midi_files_length, "MIDI-files")
+    else:
+        print("Using all data of", midi_files_length, "MIDI-files")
 
     files_as_snapshots = []
 
@@ -109,8 +116,8 @@ def process_dataset(dataset_dir, interval, pattern=None):
     progress_bar = tqdm(total=len(midi_files))
 
     for midi_file in midi_files:
-        snapshots_array_1, snapshots_array_2 = snapshot_active_notes_from_midi(midi_file, interval)
-        files_as_snapshots.append((midi_file, snapshots_array_1, snapshots_array_2))
+        snapshots_array = snapshot_active_notes_from_midi(midi_file, interval)
+        files_as_snapshots.append((midi_file, snapshots_array))
         progress_bar.update(1)
         progress_bar.set_description(f"Processed dataset ({progress_bar.n}/{progress_bar.total})")
 
