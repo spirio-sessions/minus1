@@ -76,15 +76,21 @@ def find_midi_files(root_dir, pattern=None):
             if fnmatch.fnmatch(filename.lower(), '*.midi') or fnmatch.fnmatch(filename.lower(), '*.mid'):
                 if pattern is None or fnmatch.fnmatch(filename.lower(), f'*{pattern.lower()}*'):
                     midi_files.append(os.path.join(dirpath, filename))
-    return midi_files
+    return sorted(midi_files)
+
+
+def align_snapshots(left_snapshots, right_snapshots):
+    min_length = min(len(left_snapshots), len(right_snapshots))
+    return left_snapshots[:min_length], right_snapshots[:min_length]
 
 
 def process_dataset(dataset_dir, interval, use_all_data=True, amount_data=0, pattern=None):
     midi_files = find_midi_files(dataset_dir, pattern)
-    midi_files_length = len(midi_files)/2
+
     # Limit amount of data if needed
+    midi_files_length = len(midi_files) // 2
     if not use_all_data:
-        midi_files = midi_files[:amount_data*2]
+        midi_files = midi_files[:amount_data * 2]
         print("Using only", amount_data, "of", midi_files_length, "MIDI-files")
     else:
         print("Using all data of", midi_files_length, "MIDI-files")
@@ -92,17 +98,27 @@ def process_dataset(dataset_dir, interval, use_all_data=True, amount_data=0, pat
     files_as_snapshots = []
 
     # Initialize tqdm with the number of MIDI files
-    progress_bar = tqdm(total=len(midi_files))
+    progress_bar = tqdm(total=len(midi_files) // 2)
 
-    for midi_file in midi_files:
-        snapshots_array = snapshot_active_notes_from_midi(midi_file, interval)
-        files_as_snapshots.append((midi_file, snapshots_array))
-        progress_bar.update(1)
-        progress_bar.set_description(f"Processed dataset ({progress_bar.n}/{progress_bar.total})")
+    for i in range(0, len(midi_files), 2):
+        left_file = midi_files[i]
+        right_file = midi_files[i + 1]
+
+        if "_leftH" in left_file and "_rightH" in right_file and left_file.replace("_leftH", "") == right_file.replace("_rightH", ""):
+            left_snapshots = snapshot_active_notes_from_midi(left_file, interval)
+            right_snapshots = snapshot_active_notes_from_midi(right_file, interval)
+            left_snapshots, right_snapshots = align_snapshots(left_snapshots, right_snapshots)
+
+            files_as_snapshots.append((left_file, left_snapshots))
+            files_as_snapshots.append((right_file, right_snapshots))
+
+            progress_bar.update(1)
+            progress_bar.set_description(f"Processed dataset ({progress_bar.n}/{progress_bar.total})")
+        else:
+            print(f"Unmatched pair: {left_file}, {right_file}")
 
     # Close the progress bar
     progress_bar.close()
-
     return files_as_snapshots
 
 
@@ -180,13 +196,25 @@ def export_melody_harmony_to_csv(melody_harmony_dataset, output_dir):
 
 
 def export_maestro_hands_to_csv(filtered_dataset, output_dir):
+    # Create the directory if it doesn't exist
+    if not os.path.exists(output_dir):
+        os.makedirs(output_dir)
+
+    # Initialize the progress bar
+    progress_bar = tqdm(total=len(filtered_dataset), desc="Exporting CSVs", unit="file", colour='#800080')
+
     for filename, snapshots in filtered_dataset:
         base_filename = filename.split('\\')[1].split('.')[0]
         output = f"{output_dir}/{base_filename}.csv"
         snapshot_df = pd.DataFrame(snapshots)
         snapshot_df.to_csv(output, index=False)
-        print(f"{base_filename} successfully exported to {output_dir} as .csv")
 
+        # Update the progress bar
+        progress_bar.update(1)
+        progress_bar.set_postfix(file=base_filename)
+
+    # Close the progress bar
+    progress_bar.close()
 
 def filter_piano_range(dataset_as_snapshots):
     filtered_dataset = []

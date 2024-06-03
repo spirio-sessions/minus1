@@ -1,4 +1,3 @@
-import pandas as pd
 import torch
 import torch.nn as nn
 from torch.utils.data import DataLoader
@@ -7,8 +6,7 @@ from sklearn.model_selection import train_test_split
 from lstm_training.LSTMModel import LSTMModel
 from lstm_training.MelodyHarmonyDataset import MelodyHarmonyDataset
 from lstm_training.load_data_from_csv import load_data_from_csv
-from lstm_training.predict_harmony import predict_harmony
-from lstm_training.print_results import print_results
+from lstm_training.save_model import save_model
 
 # Load melody and harmony from csv
 melody, harmony = load_data_from_csv('../datasets/maestro_v3_split/small_batch_lstm/csv')
@@ -18,8 +16,8 @@ input_size = 88
 hidden_size = 64
 num_layers = 2
 output_size = 88
-learning_rate = 0.01
-num_epochs = 25
+learning_rate = 0.1
+num_epochs = 1
 batch_size = 32
 
 # Check if cuda is available
@@ -40,6 +38,7 @@ criterion = nn.MSELoss()
 optimizer = torch.optim.Adam(model.parameters(), lr=learning_rate)
 
 # Training loop
+print('Starting training...')
 for epoch in range(num_epochs):
     model.train()
     for melodies, harmonies in train_loader:
@@ -66,20 +65,7 @@ for epoch in range(num_epochs):
     val_loss /= len(val_loader)
     print(f'Epoch [{epoch + 1}/{num_epochs}], Loss: {loss.item():.4f}, Val Loss: {val_loss:.4f}')
 
-# Predict new melody
-new_melody = pd.read_csv(
-    '../datasets/maestro_v3_split-v3/small_batch_lstm/original_validation/MIDI-Unprocessed_01_R1_2008_01-04_ORIG_MID'
-    '--AUDIO_01_R1_2008_wav--1-split_rightH.csv').values
-predicted_harmony = predict_harmony(model, new_melody)
-
-# Export to CSV
-output_path = '../datasets/maestro_v3_split/small_batch_lstm/predicted_leftH'
-
-predicted_harmony_df = pd.DataFrame(predicted_harmony)
-new_melody_df = pd.DataFrame(new_melody)
-
-new_melody_df.to_csv(output_path+"original_melody.csv", index=False)
-predicted_harmony_df.to_csv(output_path+"predicted_harmony.csv", index=False)
-
-
-print_results(predicted_harmony)
+# Save the trained model
+print(f"Model type: {type(model)}")  # Debugging line
+save_parameter = [input_size, hidden_size, num_layers, output_size, learning_rate, num_epochs, batch_size]
+save_model('/lstm_training/saved_models/', save_parameter, model)

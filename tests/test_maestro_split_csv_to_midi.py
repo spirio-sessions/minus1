@@ -1,18 +1,15 @@
 import pandas as pd
 from mido import MidiFile, MidiTrack, Message
 
-from tests.test_data_preparation import INTERVAL
+from data_preperation.globals import INTERVAL
+
 
 # Load the CSV files
-# predicted_harmony_df = pd.read_csv('G:\Schule\Studium\8. Semester\Bachelor-Minus1\minus1\datasets\jazz_mlready_dataset\small_batch\predicted_melody\predicted_harmony.csv')
-# original_melody_df = pd.read_csv('G:\Schule\Studium\8. Semester\Bachelor-Minus1\minus1\datasets\jazz_mlready_dataset\small_batch\predict_melody\AgeOfAquarius_melody.csv')
-predicted_harmony_df = pd.read_csv(
-    '../datasets/maestro_v3_split/small_batch_lstm/original_validation/MIDI-Unprocessed_01_R1_2008_01-04_ORIG_MID--AUDIO_01_R1_2008_wav--1-split_leftH.csv')
-original_melody_df = pd.read_csv(
-    '../datasets/maestro_v3_split/small_batch_lstm/original_validation/MIDI-Unprocessed_01_R1_2008_01-04_ORIG_MID--AUDIO_01_R1_2008_wav--1-split_rightH.csv')
+predicted_harmony_df = pd.read_csv('../datasets/maestro_v3_split/small_batch_lstm/predicted_leftH/predicted_harmony.csv')
+original_melody_df = pd.read_csv('../datasets/maestro_v3_split/small_batch_lstm/predicted_leftH/original_melody.csv')
 
 # Apply threshold to predicted harmony data
-predicted_harmony_df = predicted_harmony_df.applymap(lambda x: 1 if x > 0.25 else 0)
+predicted_harmony_df = predicted_harmony_df.map(lambda x: 1 if x > 0.15 else 0)
 
 # Create a new MIDI file and two tracks
 mid = MidiFile()
