@@ -7,6 +7,7 @@ data = dataset_snapshot_tracks_as_midi_files.process_dataset(dataset_dir, 0.1)
 filtered_data = dataset_snapshot_tracks_as_midi_files.filter_piano_range(data)
 
 for song in filtered_data:
+    print("song:")
     for track in song:
         print(track.shape)
 
@@ -57,7 +58,6 @@ def snapshots_to_midi(filtered_data, output_directory='.', output_filename='outp
     mid.save(output_file)
 
 
-# Example usage
-# Assuming filtered_data is already defined as per the format you described
-output_directory = '/home/falaxdb/Repos/minus1/datasets/temp/output'  # Replace with your desired output directory
+
+output_directory = '/home/falaxdb/Repos/minus1/datasets/temp/output'
 snapshots_to_midi(filtered_data, output_directory, 'output.mid')
