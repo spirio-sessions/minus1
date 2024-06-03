@@ -6,6 +6,7 @@ from sklearn.model_selection import train_test_split
 from data_preperation import dataset_snapshot_tracks_as_midi_files
 from dataset import create_dataloader
 from transformer_decoder_only_model import TransformerDecoderModel
+from data_model_specific_preperation import split_sequences
 
 # Seed für Reproduzierbarkeit setzen
 torch.manual_seed(42)
@@ -18,10 +19,11 @@ device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 dataset_dir = "/home/falaxdb/Repos/minus1/datasets/maestro_v3_split/hands_split_into_seperate_midis"
 data = dataset_snapshot_tracks_as_midi_files.process_dataset_multithreaded(dataset_dir, 0.1)
 filtered_data = dataset_snapshot_tracks_as_midi_files.filter_piano_range(data)
+split_data = split_sequences(filtered_data, max_len=1000)
 
 # Datenaufteilung in Trainings-, Validierungs- und Testdatensätze
-train_data, test_data = train_test_split(filtered_data, test_size=0.2, random_state=42)
-train_data, val_data = train_test_split(train_data, test_size=0.2, random_state=42)
+train_data, test_data = train_test_split(split_data, test_size=0.2, random_state=42)
+train_data, val_data = train_test_split(split_data, test_size=0.2, random_state=42)
 
 # DataLoader erstellen
 train_loader = create_dataloader(train_data, batch_size=32, shuffle=True)
