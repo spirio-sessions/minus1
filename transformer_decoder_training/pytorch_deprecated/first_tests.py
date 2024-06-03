@@ -1,21 +1,25 @@
+import random
 import torch
 import torch.nn as nn
 import torch.optim as optim
 from torch.utils.data import Dataset, DataLoader
 from sklearn.model_selection import train_test_split
+from data_preperation import dataset_snapshot
 import numpy as np
 import math
-from tqdm import tqdm
-from data_preperation import dataset_snapshot
+from tqdm import tqdm  # Fortschrittsbalken
 
-# Check if a GPU is available
+# Prüfen, ob eine GPU verfügbar ist
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-print(f"Using device: {device}")
 
-# Data preparation
-dataset_as_snapshots = dataset_snapshot.process_dataset_multithreaded("../datasets/temp", 0.1)
+# Datenvorbereitung
+dataset_as_snapshots = dataset_snapshot.process_dataset_multithreaded(
+    "../../datasets/temp", 0.1)
+
+# Liste von Tupeln (Dateiname und Numpy-Array von Snapshots mit variierender Länge)
 piano_range_dataset = dataset_snapshot.filter_piano_range(dataset_as_snapshots)
 
+# Alle Snapshots extrahieren
 all_snapshots = []
 for filename, snapshots in piano_range_dataset:
     for i in range(1, len(snapshots)):
@@ -23,12 +27,14 @@ for filename, snapshots in piano_range_dataset:
         target_seq = snapshots[i:i + 1]
         all_snapshots.append((input_seq, target_seq))
 
+# Datenaufteilung in Trainings-, Validierungs- und Test-Sets
 train_data, test_data = train_test_split(all_snapshots, test_size=0.3, random_state=42)
 val_data, test_data = train_test_split(test_data, test_size=0.5, random_state=42)
 
 print(f'Train size: {len(train_data)}, Validation size: {len(val_data)}, Test size: {len(test_data)}')
 
 
+# Dataset Klasse
 class PianoDataset(Dataset):
     def __init__(self, data):
         self.data = data
@@ -41,6 +47,7 @@ class PianoDataset(Dataset):
         return torch.tensor(input_seq, dtype=torch.float32), torch.tensor(target_seq, dtype=torch.float32)
 
 
+# Collate Funktion
 def collate_fn(batch):
     inputs, targets = zip(*batch)
     inputs_padded = torch.nn.utils.rnn.pad_sequence(inputs, batch_first=True)
@@ -48,12 +55,31 @@ def collate_fn(batch):
     return inputs_padded, targets_padded
 
 
-batch_size = 32  # Reduced batch size
-train_loader = DataLoader(PianoDataset(train_data), batch_size=batch_size, shuffle=True, collate_fn=collate_fn)
-val_loader = DataLoader(PianoDataset(val_data), batch_size=batch_size, shuffle=False, collate_fn=collate_fn)
-test_loader = DataLoader(PianoDataset(test_data), batch_size=batch_size, shuffle=False, collate_fn=collate_fn)
+# DataLoader erstellen
+train_dataset = PianoDataset(train_data)
+val_dataset = PianoDataset(val_data)
+test_dataset = PianoDataset(test_data)
+
+# Reduziere die Batch-Größe
+batch_size = 16
+
+train_loader = DataLoader(train_dataset, batch_size=batch_size, shuffle=True, collate_fn=collate_fn)
+val_loader = DataLoader(val_dataset, batch_size=batch_size, shuffle=False, collate_fn=collate_fn)
+test_loader = DataLoader(test_dataset, batch_size=batch_size, shuffle=False, collate_fn=collate_fn)
 
 
+# Funktion zur Generierung der Positionskodierung
+def generate_positional_encoding(seq_len, d_model):
+    pos_enc = torch.zeros(seq_len, d_model)
+    for pos in range(seq_len):
+        for i in range(0, d_model, 2):
+            pos_enc[pos, i] = math.sin(pos / (10000 ** ((2 * i) / d_model)))
+            if i + 1 < d_model:
+                pos_enc[pos, i + 1] = math.cos(pos / (10000 ** ((2 * (i + 1)) / d_model)))
+    return pos_enc
+
+
+# Transformer-Decoder Modell
 class MusicTransformerDecoder(nn.Module):
     def __init__(self, input_dim, hidden_dim, num_layers, num_heads, dropout=0.1):
         super(MusicTransformerDecoder, self).__init__()
@@ -63,25 +89,32 @@ class MusicTransformerDecoder(nn.Module):
         self.output_layer = nn.Linear(hidden_dim, input_dim)
 
     def forward(self, tgt, memory):
-        tgt = self.embedding(tgt)
-        memory = self.embedding(memory)
-        tgt = tgt.permute(1, 0, 2)
-        memory = memory.permute(1, 0, 2)
+        seq_len_tgt = tgt.size(1)
+        seq_len_mem = memory.size(1)
+        pos_enc_tgt = generate_positional_encoding(seq_len_tgt, self.embedding.out_features).to(tgt.device)
+        pos_enc_mem = generate_positional_encoding(seq_len_mem, self.embedding.out_features).to(memory.device)
+
+        tgt = self.embedding(tgt) + pos_enc_tgt
+        memory = self.embedding(memory) + pos_enc_mem
+        tgt = tgt.permute(1, 0, 2)  # Change to (seq_len, batch, feature)
+        memory = memory.permute(1, 0, 2)  # Change to (seq_len, batch, feature)
         output = self.transformer_decoder(tgt, memory)
-        output = output.permute(1, 0, 2)
+        output = output.permute(1, 0, 2)  # Change back to (batch, seq_len, feature)
         return self.output_layer(output)
 
 
+# Parameter
 input_dim = 88
-hidden_dim = 256
-num_layers = 4
-num_heads = 4
+hidden_dim = 512
+num_layers = 6
+num_heads = 8
 dropout = 0.1
 
 model = MusicTransformerDecoder(input_dim, hidden_dim, num_layers, num_heads, dropout).to(device)
 
 
-def train_model(model, train_loader, val_loader, num_epochs=10, learning_rate=0.001, accumulation_steps=2):
+# Training Funktion
+def train_model(model, train_loader, val_loader, num_epochs=20, learning_rate=0.001, accumulation_steps=2):
     criterion = nn.BCEWithLogitsLoss()
     optimizer = optim.Adam(model.parameters(), lr=learning_rate)
 
@@ -89,7 +122,9 @@ def train_model(model, train_loader, val_loader, num_epochs=10, learning_rate=0.
         model.train()
         running_loss = 0.0
         optimizer.zero_grad()
-        for i, (inputs, targets) in enumerate(tqdm(train_loader)):
+
+        progress_bar = tqdm(enumerate(train_loader), total=len(train_loader))
+        for i, (inputs, targets) in progress_bar:
             inputs, targets = inputs.to(device), targets.to(device)
             outputs = model(targets, inputs)
             loss = criterion(outputs, targets)
@@ -100,9 +135,11 @@ def train_model(model, train_loader, val_loader, num_epochs=10, learning_rate=0.
                 optimizer.zero_grad()
 
             running_loss += loss.item()
+            progress_bar.set_description(f'Epoch {epoch + 1}/{num_epochs} Loss: {running_loss / (i + 1):.4f}')
 
         avg_train_loss = running_loss / len(train_loader)
 
+        # Validation
         model.eval()
         val_loss = 0.0
         with torch.no_grad():
@@ -113,14 +150,13 @@ def train_model(model, train_loader, val_loader, num_epochs=10, learning_rate=0.
 
         avg_val_loss = val_loss / len(val_loader)
         print(f'Epoch {epoch + 1}/{num_epochs}, Train Loss: {avg_train_loss:.4f}, Val Loss: {avg_val_loss:.4f}')
-        # Print average loss for each epoch
-        print(
-            f'Epoch [{epoch + 1}/{num_epochs}], Training Loss: {avg_train_loss:.4f}, Validation Loss: {avg_val_loss:.4f}')
 
 
+# Modelltraining
 train_model(model, train_loader, val_loader)
 
 
+# Modellbewertung
 def evaluate_model(model, test_loader):
     model.eval()
     test_loss = 0.0
@@ -135,9 +171,11 @@ def evaluate_model(model, test_loader):
     print(f'Test Loss: {avg_test_loss:.4f}')
 
 
+# Modellbewertung
 evaluate_model(model, test_loader)
 
 
+# Echtzeit-Generierung
 def generate_accompaniment(model, melody, max_length=100):
     model.eval()
     accompaniment = torch.zeros_like(melody).to(device)
@@ -151,6 +189,6 @@ def generate_accompaniment(model, melody, max_length=100):
     return accompaniment
 
 
-# Example melody (replace with actual data)
-melody = torch.zeros((1, 100, 88))
+# Beispiel-Melodie (du musst sie mit deinen echten Daten implementieren)
+melody = torch.zeros((1, 100, 88))  # Placeholder
 accompaniment = generate_accompaniment(model, melody)

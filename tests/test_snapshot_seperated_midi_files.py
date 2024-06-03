@@ -57,7 +57,6 @@ def snapshots_to_midi(filtered_data, output_directory='.', output_filename='outp
     mid.save(output_file)
 
 
-# Example usage
-# Assuming filtered_data is already defined as per the format you described
-output_directory = '/home/falaxdb/Repos/minus1/datasets/temp/output'  # Replace with your desired output directory
+
+output_directory = '/home/falaxdb/Repos/minus1/datasets/temp/output'
 snapshots_to_midi(filtered_data, output_directory, 'output.mid')

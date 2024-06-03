@@ -8,13 +8,14 @@ from data_preperation import dataset_snapshot
 import numpy as np
 import math
 from tqdm import tqdm  # Fortschrittsbalken
+import time  # Für Zeitmessung
 
-# Prüfen, ob eine GPU verfügbar ist
-device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+# Prüfen, ob eine GPU verfügbar ist (für den Vergleich verwenden wir die CPU)
+device = torch.device("cpu")
 
 # Datenvorbereitung
 dataset_as_snapshots = dataset_snapshot.process_dataset_multithreaded(
-    "../datasets/temp", 0.1)
+    "../../datasets/temp", 0.1)
 
 # Liste von Tupeln (Dateiname und Numpy-Array von Snapshots mit variierender Länge)
 piano_range_dataset = dataset_snapshot.filter_piano_range(dataset_as_snapshots)
@@ -61,11 +62,14 @@ val_dataset = PianoDataset(val_data)
 test_dataset = PianoDataset(test_data)
 
 # Reduziere die Batch-Größe
-batch_size = 16
+batch_size = 8
 
-train_loader = DataLoader(train_dataset, batch_size=batch_size, shuffle=True, collate_fn=collate_fn)
-val_loader = DataLoader(val_dataset, batch_size=batch_size, shuffle=False, collate_fn=collate_fn)
-test_loader = DataLoader(test_dataset, batch_size=batch_size, shuffle=False, collate_fn=collate_fn)
+train_loader = DataLoader(train_dataset, batch_size=batch_size, shuffle=True, collate_fn=collate_fn, num_workers=4,
+                          pin_memory=True)
+val_loader = DataLoader(val_dataset, batch_size=batch_size, shuffle=False, collate_fn=collate_fn, num_workers=4,
+                        pin_memory=True)
+test_loader = DataLoader(test_dataset, batch_size=batch_size, shuffle=False, collate_fn=collate_fn, num_workers=4,
+                         pin_memory=True)
 
 
 # Funktion zur Generierung der Positionskodierung
@@ -105,16 +109,16 @@ class MusicTransformerDecoder(nn.Module):
 
 # Parameter
 input_dim = 88
-hidden_dim = 512
-num_layers = 6
-num_heads = 8
+hidden_dim = 256  # Reduzierte Größe für weniger Speicherverbrauch
+num_layers = 4  # Weniger Schichten für weniger Speicherverbrauch
+num_heads = 4  # Weniger Köpfe für weniger Speicherverbrauch
 dropout = 0.1
 
 model = MusicTransformerDecoder(input_dim, hidden_dim, num_layers, num_heads, dropout).to(device)
 
 
 # Training Funktion
-def train_model(model, train_loader, val_loader, num_epochs=20, learning_rate=0.001, accumulation_steps=2):
+def train_model(model, train_loader, val_loader, num_epochs=20, learning_rate=0.001, accumulation_steps=4):
     criterion = nn.BCEWithLogitsLoss()
     optimizer = optim.Adam(model.parameters(), lr=learning_rate)
 
@@ -123,9 +127,10 @@ def train_model(model, train_loader, val_loader, num_epochs=20, learning_rate=0.
         running_loss = 0.0
         optimizer.zero_grad()
 
+        start_time = time.time()  # Zeitmessung starten
         progress_bar = tqdm(enumerate(train_loader), total=len(train_loader))
         for i, (inputs, targets) in progress_bar:
-            inputs, targets = inputs.to(device), targets.to(device)
+            inputs, targets = inputs.to(device, non_blocking=True), targets.to(device, non_blocking=True)
             outputs = model(targets, inputs)
             loss = criterion(outputs, targets)
             loss.backward()
@@ -137,6 +142,10 @@ def train_model(model, train_loader, val_loader, num_epochs=20, learning_rate=0.
             running_loss += loss.item()
             progress_bar.set_description(f'Epoch {epoch + 1}/{num_epochs} Loss: {running_loss / (i + 1):.4f}')
 
+        end_time = time.time()  # Zeitmessung beenden
+        epoch_duration = end_time - start_time
+        print(f'Time for epoch {epoch + 1}: {epoch_duration:.2f} seconds')
+
         avg_train_loss = running_loss / len(train_loader)
 
         # Validation
@@ -144,7 +153,8 @@ def train_model(model, train_loader, val_loader, num_epochs=20, learning_rate=0.
         val_loss = 0.0
         with torch.no_grad():
             for val_inputs, val_targets in val_loader:
-                val_inputs, val_targets = val_inputs.to(device), val_targets.to(device)
+                val_inputs, val_targets = val_inputs.to(device, non_blocking=True), val_targets.to(device,
+                                                                                                   non_blocking=True)
                 val_outputs = model(val_targets, val_inputs)
                 val_loss += criterion(val_outputs, val_targets).item()
 
@@ -163,7 +173,8 @@ def evaluate_model(model, test_loader):
     criterion = nn.BCEWithLogitsLoss()
     with torch.no_grad():
         for test_inputs, test_targets in test_loader:
-            test_inputs, test_targets = test_inputs.to(device), test_targets.to(device)
+            test_inputs, test_targets = test_inputs.to(device, non_blocking=True), test_targets.to(device,
+                                                                                                   non_blocking=True)
             test_outputs = model(test_targets, test_inputs)
             test_loss += criterion(test_outputs, test_targets).item()
 

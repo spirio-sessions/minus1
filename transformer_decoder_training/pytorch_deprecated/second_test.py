@@ -9,13 +9,15 @@ import numpy as np
 import math
 from tqdm import tqdm  # Fortschrittsbalken
 import time  # Für Zeitmessung
+from torch.cuda.amp import autocast, GradScaler  # Mixed Precision
 
-# Prüfen, ob eine GPU verfügbar ist (für den Vergleich verwenden wir die CPU)
-device = torch.device("cpu")
+# Prüfen, ob eine GPU verfügbar ist
+device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+print(f"Using device: {device}")
 
 # Datenvorbereitung
 dataset_as_snapshots = dataset_snapshot.process_dataset_multithreaded(
-    "../datasets/temp", 0.1)
+    "../../datasets/temp", 0.1)
 
 # Liste von Tupeln (Dateiname und Numpy-Array von Snapshots mit variierender Länge)
 piano_range_dataset = dataset_snapshot.filter_piano_range(dataset_as_snapshots)
@@ -61,14 +63,14 @@ train_dataset = PianoDataset(train_data)
 val_dataset = PianoDataset(val_data)
 test_dataset = PianoDataset(test_data)
 
-# Reduziere die Batch-Größe
-batch_size = 8
+# Erhöhung der Batch-Größe
+batch_size = 32
 
-train_loader = DataLoader(train_dataset, batch_size=batch_size, shuffle=True, collate_fn=collate_fn, num_workers=4,
+train_loader = DataLoader(train_dataset, batch_size=batch_size, shuffle=True, collate_fn=collate_fn, num_workers=8,
                           pin_memory=True)
-val_loader = DataLoader(val_dataset, batch_size=batch_size, shuffle=False, collate_fn=collate_fn, num_workers=4,
+val_loader = DataLoader(val_dataset, batch_size=batch_size, shuffle=False, collate_fn=collate_fn, num_workers=8,
                         pin_memory=True)
-test_loader = DataLoader(test_dataset, batch_size=batch_size, shuffle=False, collate_fn=collate_fn, num_workers=4,
+test_loader = DataLoader(test_dataset, batch_size=batch_size, shuffle=False, collate_fn=collate_fn, num_workers=8,
                          pin_memory=True)
 
 
@@ -118,9 +120,10 @@ model = MusicTransformerDecoder(input_dim, hidden_dim, num_layers, num_heads, dr
 
 
 # Training Funktion
-def train_model(model, train_loader, val_loader, num_epochs=20, learning_rate=0.001, accumulation_steps=4):
+def train_model(model, train_loader, val_loader, num_epochs=20, learning_rate=0.001, accumulation_steps=2):
     criterion = nn.BCEWithLogitsLoss()
     optimizer = optim.Adam(model.parameters(), lr=learning_rate)
+    scaler = GradScaler()  # Für Mixed Precision
 
     for epoch in range(num_epochs):
         model.train()
@@ -131,12 +134,16 @@ def train_model(model, train_loader, val_loader, num_epochs=20, learning_rate=0.
         progress_bar = tqdm(enumerate(train_loader), total=len(train_loader))
         for i, (inputs, targets) in progress_bar:
             inputs, targets = inputs.to(device, non_blocking=True), targets.to(device, non_blocking=True)
-            outputs = model(targets, inputs)
-            loss = criterion(outputs, targets)
-            loss.backward()
+
+            with autocast():  # Mixed Precision
+                outputs = model(targets, inputs)
+                loss = criterion(outputs, targets)
+
+            scaler.scale(loss).backward()
 
             if (i + 1) % accumulation_steps == 0:
-                optimizer.step()
+                scaler.step(optimizer)
+                scaler.update()
                 optimizer.zero_grad()
 
             running_loss += loss.item()
