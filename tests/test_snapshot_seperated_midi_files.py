@@ -7,6 +7,7 @@ data = dataset_snapshot_tracks_as_midi_files.process_dataset(dataset_dir, 0.1)
 filtered_data = dataset_snapshot_tracks_as_midi_files.filter_piano_range(data)
 
 for song in filtered_data:
+    print("song:")
     for track in song:
         print(track.shape)
 

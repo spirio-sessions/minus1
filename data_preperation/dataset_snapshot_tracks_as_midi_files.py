@@ -1,23 +1,11 @@
 import mido
-
 import os
 import fnmatch
 from collections import defaultdict
-
 import numpy as np
-import pandas as pd
-
-# for progress bar:
 from tqdm import tqdm
-
-# for multithread:
 import concurrent.futures
 
-
-# interval in seconds
-# function will process all events happening in an intervall
-# including intervall start, excluding intervall end
-# snapshot will show all active notes at the end of the intervall
 def snapshot_active_notes_from_midi(file_path, interval):
     """
     Processes a MIDI file and returns snapshots of active notes at specified intervals.
@@ -61,7 +49,7 @@ def snapshot_active_notes_from_midi(file_path, interval):
 def find_midi_files(root_dir, pattern=None):
     """
     Recursively searches for MIDI files in the specified root directory and groups them
-    based on their base patterns, excluding the track suffix (e.g., rightH, leftH, surplusX).
+    based on their base patterns, ensuring each group has exactly one 'rightH' and one 'leftH' file.
 
     Args:
         root_dir (str): The root directory to start the search.
@@ -69,30 +57,38 @@ def find_midi_files(root_dir, pattern=None):
                                  containing this pattern in their names will be included.
 
     Returns:
-        defaultdict: A dictionary where each key is a base pattern and the value is a list
-                     of file paths that match that base pattern.
+        defaultdict: A dictionary where each key is a base pattern and the value is a dictionary
+                     with 'rightH' and 'leftH' keys for corresponding file paths.
+
+    Raises:
+        ValueError: If any group does not have both 'rightH' and 'leftH' MIDI files.
 
     Example:
         midi_files = find_midi_files('/path/to/root_dir')
         for base_pattern, files in midi_files.items():
             print(f"Group: {base_pattern}")
-            for file in files:
-                print(f" - {file}")
+            print(f" - Right Hand: {files['rightH']}")
+            print(f" - Left Hand: {files['leftH']}")
     """
-    midi_groups = defaultdict(list)
+    midi_groups = defaultdict(dict)
 
     for dirpath, dirnames, filenames in os.walk(root_dir):
         for filename in filenames:
             if fnmatch.fnmatch(filename.lower(), '*.midi') or fnmatch.fnmatch(filename.lower(), '*.mid'):
                 if pattern is None or fnmatch.fnmatch(filename.lower(), f'*{pattern.lower()}*'):
                     filepath = os.path.join(dirpath, filename)
-                    # Split the filename on underscores and exclude the last part (track name)
                     parts = filename.lower().split('_')
-                    if parts[-1].startswith('righth') or parts[-1].startswith('lefth') or parts[-1].startswith('surplus'):
+                    if 'righth' in parts[-1]:
                         base_pattern = '_'.join(parts[:-1])
-                    else:
-                        base_pattern = '_'.join(parts)
-                    midi_groups[base_pattern].append(filepath)
+                        midi_groups[base_pattern]['rightH'] = filepath
+                    elif 'lefth' in parts[-1]:
+                        base_pattern = '_'.join(parts[:-1])
+                        midi_groups[base_pattern]['leftH'] = filepath
+
+    # Ensure each group has exactly one 'rightH' and one 'leftH'
+    for base_pattern, files in midi_groups.items():
+        if 'rightH' not in files or 'leftH' not in files:
+            raise ValueError(f"Group {base_pattern} does not have both 'rightH' and 'leftH' MIDI files.")
 
     return midi_groups
 
@@ -108,12 +104,10 @@ def trim_snapshots(group_snapshots):
     Returns:
         list: A list of trimmed numpy arrays with empty snapshots removed from the beginning and end.
     """
-    # Determine the minimum starting index with a non-empty snapshot
     min_start = float('inf')
     max_end = 0
 
     for snapshots in group_snapshots:
-        # Find the first non-empty snapshot index
         non_empty_indices = np.where(snapshots.any(axis=1))[0]
         if non_empty_indices.size > 0:
             first_non_empty = non_empty_indices[0]
@@ -123,13 +117,22 @@ def trim_snapshots(group_snapshots):
             if last_non_empty > max_end:
                 max_end = last_non_empty
 
-    # Trim the snapshots for each file in the group
     trimmed_group_snapshots = [snapshots[min_start:max_end + 1] for snapshots in group_snapshots]
 
     return trimmed_group_snapshots
 
 
 def __process_single_midi(midi_file, interval):
+    """
+    Helper function to process a single MIDI file and return its snapshots.
+
+    Args:
+        midi_file (str): The path to the MIDI file.
+        interval (float): The interval (in seconds) at which snapshots are taken.
+
+    Returns:
+        tuple: A tuple containing the MIDI file path and the array of snapshots.
+    """
     snapshots_array = snapshot_active_notes_from_midi(midi_file, interval)
     return midi_file, snapshots_array
 
@@ -145,27 +148,27 @@ def process_dataset(dataset_dir, interval, pattern=None):
         pattern (str, optional): An optional pattern to filter the MIDI files.
 
     Returns:
-        list: A list of snapshots for each group of MIDI files.
+        list: A list of snapshots for each group of MIDI files. The group will always have the right hand first [0]
+        and then the left hand [1]
     """
     midi_files = find_midi_files(dataset_dir, pattern)
 
     files_as_snapshots = []
     filenames = []
 
-    # Initialize tqdm with the number of MIDI groups
     total_files = sum(len(files) for files in midi_files.values())
     progress_bar = tqdm(total=total_files)
 
     for base_pattern, group_files in midi_files.items():
         group_snapshots = []
-        for midi_file in group_files:
+        for hand in ['rightH', 'leftH']:
+            midi_file = group_files[hand]
             snapshots_array = snapshot_active_notes_from_midi(midi_file, interval)
             group_snapshots.append(snapshots_array)
             filenames.append(midi_file)
             progress_bar.update(1)
             progress_bar.set_description(f"Processed dataset ({progress_bar.n}/{progress_bar.total})")
 
-        # Trim the snapshots to remove leading and trailing empty snapshots
         trimmed_group_snapshots = trim_snapshots(group_snapshots)
         files_as_snapshots.append(trimmed_group_snapshots)
 
@@ -185,20 +188,19 @@ def process_dataset_multithreaded(dataset_dir, interval, pattern=None):
         pattern (str, optional): An optional pattern to filter the MIDI files.
 
     Returns:
-        list: A list of snapshots for each group of MIDI files.
+        list: A list of snapshots for each group of MIDI files. The group will always have the right hand first [0]
+        and then the left hand [1]
     """
     midi_files = find_midi_files(dataset_dir, pattern)
 
     files_as_snapshots = []
 
-    # Initialize tqdm with the total number of MIDI files
     total_files = sum(len(files) for files in midi_files.values())
     progress_bar = tqdm(total=total_files)
 
-    # Use ProcessPoolExecutor for multiprocessing
     with concurrent.futures.ProcessPoolExecutor() as executor:
         future_to_midi = {executor.submit(__process_single_midi, midi_file, interval): midi_file
-                          for group_files in midi_files.values() for midi_file in group_files}
+                          for group_files in midi_files.values() for midi_file in group_files.values()}
 
         for future in concurrent.futures.as_completed(future_to_midi):
             midi_file, snapshots_array = future.result()
@@ -208,14 +210,18 @@ def process_dataset_multithreaded(dataset_dir, interval, pattern=None):
 
     progress_bar.close()
 
-    # Group the snapshots by their base pattern
-    grouped_snapshots = defaultdict(list)
+    grouped_snapshots = defaultdict(dict)
     for midi_file, snapshots_array in files_as_snapshots:
-        base_pattern = '_'.join(os.path.basename(midi_file).lower().split('_')[:-2])
-        grouped_snapshots[base_pattern].append(snapshots_array)
+        base_pattern = '_'.join(os.path.basename(midi_file).lower().split('_')[:-1])
+        if 'righth' in midi_file.lower():
+            grouped_snapshots[base_pattern]['rightH'] = snapshots_array
+        elif 'lefth' in midi_file.lower():
+            grouped_snapshots[base_pattern]['leftH'] = snapshots_array
 
-    # Trim the snapshots for each group
-    final_grouped_snapshots = [trim_snapshots(group_snapshots) for group_snapshots in grouped_snapshots.values()]
+    final_grouped_snapshots = []
+    for group in grouped_snapshots.values():
+        if group['rightH'] is not None and group['leftH'] is not None:
+            final_grouped_snapshots.append(trim_snapshots([group['rightH'], group['leftH']]))
 
     print(f"Processed {len(files_as_snapshots)} of {total_files} files")
 
