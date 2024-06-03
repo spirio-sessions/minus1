@@ -16,12 +16,13 @@ input_size = 88
 hidden_size = 64
 num_layers = 2
 output_size = 88
-learning_rate = 0.1
-num_epochs = 1
+learning_rate = 0.01
+num_epochs = 25
 batch_size = 32
 
 # Check if cuda is available
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+print(f'Using {device} as device.')
 
 # Preparing data
 melody_train, melody_val, harmony_train, harmony_val = train_test_split(melody, harmony, test_size=0.2, random_state=42)
@@ -66,6 +67,5 @@ for epoch in range(num_epochs):
     print(f'Epoch [{epoch + 1}/{num_epochs}], Loss: {loss.item():.4f}, Val Loss: {val_loss:.4f}')
 
 # Save the trained model
-print(f"Model type: {type(model)}")  # Debugging line
 save_parameter = [input_size, hidden_size, num_layers, output_size, learning_rate, num_epochs, batch_size]
 save_model('/lstm_training/saved_models/', save_parameter, model)

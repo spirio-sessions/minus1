@@ -1,5 +1,4 @@
 import numpy as np
-import pandas as pd
 import seaborn as sns
 from matplotlib import pyplot as plt
 from matplotlib.colors import LinearSegmentedColormap, BoundaryNorm
@@ -51,7 +50,6 @@ def print_results(predicted_harmony, actual_melody, actual_harmony):
         plt.title(f'Predicted Harmony for Melody Row {i}')
         plt.show()
 
-
     # Create a heatmap
     plt.figure(figsize=(20, 10))  # Adjust the size as necessary
     sns.heatmap(predicted_harmony, cmap='coolwarm', center=0, vmin=0, vmax=1)  # Adjust color map and limits based on your data
@@ -63,7 +61,7 @@ def print_results(predicted_harmony, actual_melody, actual_harmony):
 
     # Create a second heatmap
     # Define the boundaries and colors for the custom colormap
-    boundaries = [0, 0.15, 1]
+    boundaries = [0, 0.03, 1]
     colors = ["#0096FF", "#00008b", "#FF474C", "#8b0000"]
 
     # Create a custom colormap
