@@ -12,7 +12,7 @@ from lstm_training.print_results import print_results
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
 # Load the model and parameters
-model, parameters = load_lstm_model('lstm_00', device)
+model, parameters = load_lstm_model('models', 'lstm_00', device)
 
 
 # Predict new melody
@@ -21,7 +21,7 @@ predicted_harmony = predict_harmony(model, original_melody)
 
 
 # Export to CSV
-output_path = '../../datasets/maestro_v3_split/small_batch_lstm/predicted_leftH/'
+output_path = '../05_inference/predicted_leftH'
 
 # Create the directory if it doesn't exist
 if not os.path.exists(output_path):

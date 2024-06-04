@@ -1,3 +1,9 @@
+import os
+
+import pandas as pd
+from tqdm import tqdm
+
+
 def export_melody_harmony_to_csv(melody_harmony_dataset, output_dir):
     for filename, melody_snapshots, harmony_snapshots in melody_harmony_dataset:
         # Prepare filenames for CSV

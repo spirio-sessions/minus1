@@ -5,9 +5,9 @@ from lstm_training.LSTMModel import LSTMModel
 import torch
 
 
-def load_lstm_model(model_name, device='cpu'):
-    model_file_path = f'../lstm_training/saved_models/{model_name}.pt'
-    parameter_file_path = f'../lstm_training/saved_models/{model_name}.txt'
+def load_lstm_model(path, model_name, device='cpu'):
+    model_file_path = f'{path}{model_name}.pt'
+    parameter_file_path = f'{path}{model_name}.txt'
 
     with open(parameter_file_path, 'r') as f:
         save_parameters = [float(line.strip()) for line in f]
