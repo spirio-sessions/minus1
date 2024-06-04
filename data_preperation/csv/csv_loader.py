@@ -28,11 +28,17 @@ def export_maestro_hands_to_csv(filtered_dataset, output_dir):
     # Initialize the progress bar
     progress_bar = tqdm(total=len(filtered_dataset), desc="Exporting CSVs", unit="file", colour='#800080')
 
-    for filename, snapshots in filtered_dataset:
-        base_filename = filename.split('\\')[1].split('.')[0]
-        output = f"{output_dir}/{base_filename}.csv"
-        snapshot_df = pd.DataFrame(snapshots)
-        snapshot_df.to_csv(output, index=False)
+    for i, (left_hand_snapshots, right_hand_snapshots) in enumerate(filtered_dataset):
+        # Create filenames for left and right hand CSVs
+        base_filename = f"song_{i+1}"
+        left_hand_output = f"{output_dir}/{base_filename}_leftH.csv"
+        right_hand_output = f"{output_dir}/{base_filename}_rightH.csv"
+
+        # Convert snapshots to DataFrames and save to CSVs
+        left_hand_df = pd.DataFrame(left_hand_snapshots)
+        right_hand_df = pd.DataFrame(right_hand_snapshots)
+        left_hand_df.to_csv(left_hand_output, index=False)
+        right_hand_df.to_csv(right_hand_output, index=False)
 
         # Update the progress bar
         progress_bar.update(1)

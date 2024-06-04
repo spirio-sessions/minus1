@@ -9,7 +9,7 @@ from lstm_training.load_data_from_csv import load_data_from_csv
 from lstm_training.save_model import save_model
 
 # Load melody and harmony from csv
-melody, harmony = load_data_from_csv('/csv')
+melody, harmony = load_data_from_csv('csv')
 
 # Parameters
 input_size = 88
@@ -17,7 +17,7 @@ hidden_size = 64
 num_layers = 2
 output_size = 88
 learning_rate = 0.01
-num_epochs = 25
+num_epochs = 2
 batch_size = 32
 
 # Check if cuda is available
@@ -68,4 +68,4 @@ for epoch in range(num_epochs):
 
 # Save the trained model
 save_parameter = [input_size, hidden_size, num_layers, output_size, learning_rate, num_epochs, batch_size]
-save_model('../04_finished_model/models', save_parameter, model)
+save_model('04_finished_model/models', save_parameter, model)

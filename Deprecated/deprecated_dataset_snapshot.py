@@ -4,7 +4,6 @@ import os
 import fnmatch
 
 import numpy as np
-import pandas as pd
 
 # for progress bar:
 from tqdm import tqdm
@@ -178,12 +177,14 @@ def extract_melody_and_harmony(dataset_as_snapshots):
 
     return melody_harmony_dataset
 
+
 def filter_piano_range(dataset_as_snapshots):
     filtered_dataset = []
 
-    for filename, snapshots in dataset_as_snapshots:
-        filtered_snapshots = [snapshot[21:109] for snapshot in snapshots]
-        filtered_dataset.append((filename, np.array(filtered_snapshots)))
+    for left_hand_snapshots, right_hand_snapshots in dataset_as_snapshots:
+        filtered_left_hand_snapshots = [snapshot[21:109] for snapshot in left_hand_snapshots]
+        filtered_right_hand_snapshots = [snapshot[21:109] for snapshot in right_hand_snapshots]
+        filtered_dataset.append((np.array(filtered_left_hand_snapshots), np.array(filtered_right_hand_snapshots)))
 
     return filtered_dataset
 

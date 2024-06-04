@@ -130,10 +130,10 @@ def process_dataset(dataset_dir, interval, use_all_data=True, amount_data=0, pat
 def filter_piano_range(dataset_as_snapshots):
     filtered_dataset = []
 
-    for filename, snapshots_track_0, snapshots_track_1 in dataset_as_snapshots:
-        filtered_snapshots_track_0 = [snapshot[21:109] for snapshot in snapshots_track_0]
-        filtered_snapshots_track_1 = [snapshot[21:109] for snapshot in snapshots_track_1]
-        filtered_dataset.append((filename, np.array(filtered_snapshots_track_0), np.array(filtered_snapshots_track_1)))
+    for left_hand_snapshots, right_hand_snapshots in dataset_as_snapshots:
+        filtered_left_hand_snapshots = [snapshot[21:109] for snapshot in left_hand_snapshots]
+        filtered_right_hand_snapshots = [snapshot[21:109] for snapshot in right_hand_snapshots]
+        filtered_dataset.append((np.array(filtered_left_hand_snapshots), np.array(filtered_right_hand_snapshots)))
 
     return filtered_dataset
 
