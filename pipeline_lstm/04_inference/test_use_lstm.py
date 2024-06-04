@@ -21,7 +21,7 @@ predicted_harmony = predict_harmony(model, original_melody)
 
 
 # Export to CSV
-output_path = '../datasets/maestro_v3_split/small_batch_lstm/predicted_leftH/'
+output_path = '../../datasets/maestro_v3_split/small_batch_lstm/predicted_leftH/'
 
 # Create the directory if it doesn't exist
 if not os.path.exists(output_path):

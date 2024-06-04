@@ -1,5 +1,3 @@
-import torch
-
 from lstm_training.load_data_from_csv import load_data_from_csv
 from lstm_training.load_lstm_model import load_lstm_model
 from lstm_training.process_audio_stream import *

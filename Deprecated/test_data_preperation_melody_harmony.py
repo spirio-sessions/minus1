@@ -1,5 +1,4 @@
-from data_preperation import dataset_snapshot
-from data_preperation.dataset_snapshot import *
+from Deprecated.deprecated_dataset_snapshot import *
 
 dataset_as_snapshots = dataset_snapshot.process_dataset("../datasets/jazz_mlready_dataset/small_batch/mid/", .1)
 

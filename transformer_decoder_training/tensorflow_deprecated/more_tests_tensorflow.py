@@ -1,8 +1,6 @@
-from data_preperation import dataset_snapshot
-
 import numpy as np
 import tensorflow as tf
-from tensorflow.keras.layers import Layer, Embedding, MultiHeadAttention, Dense, Dropout, LayerNormalization, Input
+from tensorflow.keras.layers import Layer, MultiHeadAttention, Dense, Dropout, LayerNormalization, Input
 from tensorflow.keras import Model
 from sklearn.model_selection import train_test_split
 

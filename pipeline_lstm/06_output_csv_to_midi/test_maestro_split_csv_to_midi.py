@@ -5,8 +5,9 @@ from data_preperation.globals import INTERVAL
 
 
 # Load the CSV files
-predicted_harmony_df = pd.read_csv('../datasets/maestro_v3_split/small_batch_lstm/predicted_leftH/predicted_harmony.csv')
-original_melody_df = pd.read_csv('../datasets/maestro_v3_split/small_batch_lstm/predicted_leftH/original_melody.csv')
+predicted_harmony_df = pd.read_csv(
+    '../../datasets/maestro_v3_split/small_batch_lstm/predicted_leftH/predicted_harmony.csv')
+original_melody_df = pd.read_csv('../../datasets/maestro_v3_split/small_batch_lstm/predicted_leftH/original_melody.csv')
 
 # Apply threshold to predicted harmony data
 predicted_harmony_df = predicted_harmony_df.map(lambda x: 1 if x > 0.15 else 0)
@@ -58,7 +59,7 @@ for index in range(len(original_melody_df)):
     harmony_track.append(Message('note_on', note=0, velocity=0, time=TICKS_PER_SNAPSHOT))
 
 # Save the MIDI file
-output_path = '../datasets/maestro_v3_split/small_batch_lstm/output_midi/output.mid'
+output_path = '../../datasets/maestro_v3_split/small_batch_lstm/output_midi/output.mid'
 mid.save(output_path)
 
 print(f'MIDI file saved to {output_path}')

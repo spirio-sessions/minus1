@@ -1,4 +1,4 @@
-from data_preperation import dataset_snapshot_tracks_as_midi_files
+from data_preperation import dataset_snapshot
 
 dataset_dir = "/home/falaxdb/Repos/minus1/datasets/temp/seperated_midi"
 

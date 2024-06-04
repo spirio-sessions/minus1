@@ -1,11 +1,8 @@
-import random
 import torch
 import torch.nn as nn
 import torch.optim as optim
 from torch.utils.data import Dataset, DataLoader
 from sklearn.model_selection import train_test_split
-from data_preperation import dataset_snapshot
-import numpy as np
 import math
 from tqdm import tqdm  # Fortschrittsbalken
 
