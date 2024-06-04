@@ -25,4 +25,4 @@ input_size, hidden_size, num_layers, output_size, learning_rate, num_epochs, bat
 
 # Call the function to start processing
 # process_audio_stream(model, device, sequence_length, num_features)
-process_audio_stream_matplotlib(model, device, sequence_length, num_features)
+process_audio_stream(model, device, sequence_length, num_features)

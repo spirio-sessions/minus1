@@ -20,6 +20,6 @@ def extract_pitch(stream, pitch_o, buffer_size):
     if 21 <= rounded_pitch <= 108:
         piano_keys[rounded_pitch - 21] = 1
 
-    print("{} / {} -> {}".format(pitch, confidence, piano_keys))
+    print("{} / {} -> {}".format(pitch-21, confidence, piano_keys))
 
     return piano_keys
