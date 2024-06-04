@@ -6,10 +6,11 @@ datasets/*
 # Do not exclude common dataset
 !datasets/maestro_v3_split
 
-# Do exclude the .csv directory for storage purposes
-datasets/maestro_v3_split/small_batch_lstm/csv
-datasets/maestro_v3_split/small_batch_lstm/mid
-datasets/maestro_v3_split/small_batch_lstm/mid_split
+# Do exclude the LSTM .csv/mid directories for storage
+pipeline_lstm/02_dataprep_midi_to_csv/mid-split
+pipeline_lstm/03_lstm_training/csv
+pipeline_lstm/05_inference/predicted_leftH
+pipeline_lstm/06_output_csv_to_midi/output_mid
 
 # Created by https://www.toptal.com/developers/gitignore/api/python,pycharm,visualstudiocode
 # Edit at https://www.toptal.com/developers/gitignore?templates=python,pycharm,visualstudiocode
