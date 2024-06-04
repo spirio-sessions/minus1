@@ -1,10 +1,10 @@
 from data_preperation import dataset_snapshot
 
-dataset_dir = "/home/falaxdb/Repos/minus1/datasets/temp/seperated_midi"
+dataset_dir = "/home/falaxdb/Repos/minus1/datasets/maestro_v3_split/hands_split_into_seperate_midis"
 
-data = dataset_snapshot_tracks_as_midi_files.process_dataset(dataset_dir, 0.1)
+data = dataset_snapshot.process_dataset(dataset_dir, 0.1, amount=4)
 
-filtered_data = dataset_snapshot_tracks_as_midi_files.filter_piano_range(data)
+filtered_data = dataset_snapshot.filter_piano_range(data)
 
 for song in filtered_data:
     print("song:")

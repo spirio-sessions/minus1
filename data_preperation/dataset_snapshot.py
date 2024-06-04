@@ -5,6 +5,7 @@ from collections import defaultdict
 import numpy as np
 from tqdm import tqdm
 import concurrent.futures
+from itertools import islice
 
 def snapshot_active_notes_from_midi(file_path, interval):
     """
@@ -137,7 +138,7 @@ def __process_single_midi(midi_file, interval):
     return midi_file, snapshots_array
 
 
-def process_dataset(dataset_dir, interval, pattern=None):
+def process_dataset(dataset_dir, interval, pattern=None, amount=0):
     """
     Processes a dataset of MIDI files, taking snapshots of active notes at specified intervals
     and grouping related files together.
@@ -146,12 +147,17 @@ def process_dataset(dataset_dir, interval, pattern=None):
         dataset_dir (str): The directory containing the dataset of MIDI files.
         interval (float): The interval (in seconds) at which snapshots are taken.
         pattern (str, optional): An optional pattern to filter the MIDI files.
+        amount (int, optional): An optional amount of how many songs should be processed.
 
     Returns:
         list: A list of snapshots for each group of MIDI files. The group will always have the right hand first [0]
         and then the left hand [1]
     """
     midi_files = find_midi_files(dataset_dir, pattern)
+
+    # limit ammount of files
+    if amount > 0:
+        midi_files = {k: midi_files[k] for k in list(midi_files)[:amount]}
 
     files_as_snapshots = []
     filenames = []
@@ -177,7 +183,7 @@ def process_dataset(dataset_dir, interval, pattern=None):
     return files_as_snapshots
 
 
-def process_dataset_multithreaded(dataset_dir, interval, pattern=None):
+def process_dataset_multithreaded(dataset_dir, interval, pattern=None, amount=0):
     """
     Processes a dataset of MIDI files, taking snapshots of active notes at specified intervals,
     grouping related files together, and using multithreading for efficiency.
@@ -186,12 +192,17 @@ def process_dataset_multithreaded(dataset_dir, interval, pattern=None):
         dataset_dir (str): The directory containing the dataset of MIDI files.
         interval (float): The interval (in seconds) at which snapshots are taken.
         pattern (str, optional): An optional pattern to filter the MIDI files.
+        amount (int, optional): An optional amount of how many songs should be processed.
 
     Returns:
         list: A list of snapshots for each group of MIDI files. The group will always have the right hand first [0]
         and then the left hand [1]
     """
     midi_files = find_midi_files(dataset_dir, pattern)
+
+    # limit ammount of files
+    if amount > 0:
+        midi_files = {k: midi_files[k] for k in list(midi_files)[:amount]}
 
     files_as_snapshots = []
 
