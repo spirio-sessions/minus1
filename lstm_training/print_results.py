@@ -74,3 +74,5 @@ def print_results(predicted_harmony, actual_melody, actual_harmony):
     plt.figure(figsize=(10, 8))
     sns.heatmap(predicted_harmony, cmap=custom_cmap, norm=norm, cbar=True)
     plt.show()
+
+# TODO: Aussagekräftige Statistiken erstellen (Accuracy, etc.)

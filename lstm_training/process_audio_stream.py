@@ -38,3 +38,6 @@ def process_audio_stream(model, device, sequence_length, num_features):
 
         # Print the prediction
         print(f"Predicted left hand output: {left_hand_output}")
+
+# TODO: left_hand_output als linke Hand und pitch als rechte Hand kombinieren und MIDI erzeugen.
+# TODO: Richtigen Pitchextractor noch einbauen.

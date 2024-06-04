@@ -16,3 +16,5 @@ class LSTMModel(nn.Module):
         out, _ = self.lstm(x, (h_0, c_0))
         out = self.fc(out[:, -1, :])
         return out
+
+    # TODO: Hidden-Layer als Verbesserung des LSTM Modells?
