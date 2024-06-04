@@ -1,11 +1,11 @@
 import numpy as np
 import pyaudio
+import matplotlib.pyplot as plt
+from matplotlib.animation import FuncAnimation
 import torch
 
 from lstm_training.extract_pitch import extract_pitch
-
-
-def process_audio_stream(model, device, sequence_length, num_features):
+def process_audio_stream_matplotlib(model, device, sequence_length, num_features):
     CHUNK = 1024  # Number of audio samples per frame
     RATE = 44100  # Sampling rate
 
@@ -15,11 +15,22 @@ def process_audio_stream(model, device, sequence_length, num_features):
 
     # Initialize buffer for LSTM input
     buffer = np.zeros((sequence_length, num_features))
-    # hidden = model.init_hidden(1)
 
-    while True:
+    # Initialize plot
+    fig, ax = plt.subplots()
+    x = np.arange(0, CHUNK)
+    line, = ax.plot(x, np.random.rand(CHUNK))
+    ax.set_ylim(-32768, 32767)
+
+    def update_plot(frame):
+        # Read audio data from the microphone
         data = stream.read(CHUNK)
-        pitch = extract_pitch(data)  # Implement this function to extract pitch from audio data
+        # Convert byte data to numpy array
+        samples = np.frombuffer(data, dtype=np.int16)
+        line.set_ydata(samples)
+
+        # Extract pitch from audio data
+        pitch = extract_pitch(data, sample_rate=RATE, buffer_size=CHUNK)  # Adjusted buffer size
 
         # Update buffer with new pitch data
         buffer[:-1] = buffer[1:]
@@ -31,14 +42,19 @@ def process_audio_stream(model, device, sequence_length, num_features):
         # Predict the left hand accompaniment
         model.eval()
         with torch.no_grad():
-            # output, hidden = model(input_tensor, hidden)
             output = model(input_tensor)
 
         left_hand_output = output.cpu().numpy()
 
         # Print the prediction
-        print(f"Predicted left hand output: {left_hand_output}")
+        # print(f"Predicted left hand output: {left_hand_output}")
 
+        return line,
+    while True:
+        ani = FuncAnimation(fig, update_plot, blit=True)
+        plt.show()
 
-# TODO: left_hand_output als linke Hand und pitch als rechte Hand kombinieren und MIDI erzeugen.
-# TODO: Richtigen Pitchextractor noch einbauen.
+    # Stop the stream and close PyAudio
+    stream.stop_stream()
+    stream.close()
+    p.terminate()
