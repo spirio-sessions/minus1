@@ -1,23 +1,25 @@
 import numpy as np
+import pyaudio
 import aubio
 
 
-def extract_pitch(data, sample_rate=44100, buffer_size=1024, hop_size=512):
-    # Convert byte data to numpy array
-    samples = np.frombuffer(data, dtype=aubio.float_type)
+def extract_pitch(stream, pitch_o, buffer_size):
+    audiobuffer = stream.read(buffer_size)
+    signal = np.frombuffer(audiobuffer, dtype=np.float32)
 
-    # Create pitch detector
-    pitch_detector = aubio.pitch("yin", buffer_size, hop_size, sample_rate)
+    pitch = pitch_o(signal)[0]
+    confidence = pitch_o.get_confidence()
 
-    # Set pitch detector parameters
-    pitch_detector.set_unit("midi")
-    pitch_detector.set_silence(-40)
+    # Round the pitch to the nearest whole number
+    rounded_pitch = round(pitch)
 
-    # Compute pitch
-    pitch = pitch_detector(samples)[0]
+    # Create a list to represent the piano keys
+    piano_keys = [0] * (109 - 21)  # [21:108]
 
-    # If pitch is found, return the MIDI pitch value, otherwise return None
-    if pitch != 0:
-        return int(pitch)
-    else:
-        return None
+    # If the rounded pitch is within the range of piano keys, set the corresponding index to 1
+    if 21 <= rounded_pitch <= 108:
+        piano_keys[rounded_pitch - 21] = 1
+
+    print("{} / {} -> {}".format(pitch, confidence, piano_keys))
+
+    return piano_keys

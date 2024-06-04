@@ -1,7 +1,5 @@
 import csv
-
 import pyaudio
-import sys
 import numpy as np
 import aubio
 
@@ -91,5 +89,4 @@ with open('piano_keys_data.csv', 'w', newline='') as csvfile:
     csvwriter.writerow(['Frame'] + [f'Key_{i}' for i in range(21, 109)])
     for frame_idx, keys in enumerate(piano_keys_data):
         csvwriter.writerow([frame_idx] + keys)
-
 print("*** piano keys data saved to piano_keys_data.csv")
