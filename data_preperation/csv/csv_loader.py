@@ -4,23 +4,30 @@ import pandas as pd
 from tqdm import tqdm
 
 
-def export_melody_harmony_to_csv(melody_harmony_dataset, output_dir):
-    for filename, melody_snapshots, harmony_snapshots in melody_harmony_dataset:
-        # Prepare filenames for CSV
-        base_filename = filename.split('/')[-1].split('.')[0]
-        melody_filename = f"{output_dir}/{base_filename}_melody.csv"
-        harmony_filename = f"{output_dir}/{base_filename}_harmony.csv"
-
-        # Convert to DataFrames
-        melody_df = pd.DataFrame(melody_snapshots)
-        harmony_df = pd.DataFrame(harmony_snapshots)
-
-        # Export to CSV
-        melody_df.to_csv(melody_filename, index=False)
-        harmony_df.to_csv(harmony_filename, index=False)
-
-
 def export_maestro_hands_to_csv(filtered_dataset, output_dir):
+    """
+Export left and right hand snapshots from a filtered dataset to CSV files.
+
+This function takes a filtered dataset containing pairs of left and right hand
+snapshots, converts each pair to a CSV file, and saves them to a specified
+output directory. Each pair of snapshots is saved as two separate CSV files
+with filenames indicating the song number and hand (left or right).
+
+Parameters:
+filtered_dataset (list): A list of tuples, where each tuple contains two elements:
+                         - left_hand_snapshots (array-like): Snapshots for the left hand.
+                         - right_hand_snapshots (array-like): Snapshots for the right hand.
+output_dir (str): The directory where the CSV files will be saved.
+
+Returns:
+None
+
+Example:
+>>> filtered_dataset = [([...], [...]), ([...], [...])]
+>>> output_dir = './output_csvs'
+>>> export_maestro_hands_to_csv(filtered_dataset, output_dir)
+Exporting CSVs: 100%|███████████████████████████████████████████████| 2/2 [00:00<00:00, 10.00file/s]
+"""
     # Create the directory if it doesn't exist
     if not os.path.exists(output_dir):
         os.makedirs(output_dir)

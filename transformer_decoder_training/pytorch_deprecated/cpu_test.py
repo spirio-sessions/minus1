@@ -7,15 +7,18 @@ import math
 from tqdm import tqdm  # Fortschrittsbalken
 import time  # Für Zeitmessung
 
+from data_preperation import filter_piano_range
+from data_preperation.dataset_snapshot import process_dataset_multithreaded
+
 # Prüfen, ob eine GPU verfügbar ist (für den Vergleich verwenden wir die CPU)
 device = torch.device("cpu")
 
 # Datenvorbereitung
-dataset_as_snapshots = dataset_snapshot.process_dataset_multithreaded(
+dataset_as_snapshots = process_dataset_multithreaded(
     "../../datasets/temp", 0.1)
 
 # Liste von Tupeln (Dateiname und Numpy-Array von Snapshots mit variierender Länge)
-piano_range_dataset = dataset_snapshot.filter_piano_range(dataset_as_snapshots)
+piano_range_dataset = filter_piano_range.filter_piano_range(dataset_as_snapshots)
 
 # Alle Snapshots extrahieren
 all_snapshots = []

@@ -1,3 +1,3 @@
-from data_preperation import seperate_midi_tracks_into_midi_files
+from data_preperation.dataset_loader import seperate_midi_tracks_into_midi_files
 
 seperate_midi_tracks_into_midi_files.split_all_midi_files("/home/falaxdb/Repos/minus1/datasets/maestro_v3_split/maestro_hands_seperated_in_tracks", "/home/falaxdb/Repos/minus1/datasets/maestro_v3_split/hands_split_into_seperate_midis")

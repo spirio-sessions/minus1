@@ -18,7 +18,7 @@ device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 # Schritt 1: Daten laden und filtern
 dataset_dir = "/home/falaxdb/Repos/minus1/datasets/maestro_v3_split/hands_split_into_seperate_midis"
 data = dataset_snapshot.process_dataset_multithreaded(dataset_dir, 0.1)
-filtered_data = dataset_snapshot_tracks_as_midi_files.filter_piano_range(data)
+filtered_data = dataset_snapshot.filter_piano_range(data)
 split_data = split_sequences(filtered_data, max_len=1000)
 
 # Datenaufteilung in Trainings-, Validierungs- und Testdatensätze

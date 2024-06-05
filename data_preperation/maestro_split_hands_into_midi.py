@@ -4,6 +4,32 @@ from tqdm import tqdm
 
 
 def split_midi_tracks(input_folder, output_folder, use_all_data=True, amount_data=0):
+    """
+    Split MIDI files into separate tracks and save them to an output folder.
+
+    This function reads MIDI files from the specified input folder, splits each
+    file into individual tracks, and saves each track as a new MIDI file in the
+    output folder. The tracks are named based on their index: the first track is
+    named 'rightH', and subsequent tracks are named 'leftH'. The function can also
+    limit the number of files processed if specified.
+
+    Parameters:
+    input_folder (str): The path to the folder containing the input MIDI files.
+    output_folder (str): The path to the folder where the split MIDI tracks will be saved.
+    use_all_data (bool, optional): If True, all files in the input folder will be processed.
+                                   If False, only 'amount_data' files will be processed. Default is True.
+    amount_data (int, optional): The number of files to process if 'use_all_data' is False. Default is 0.
+
+    Returns:
+    None
+
+    Example:
+    >>> input_folder = './midi_files'
+    >>> output_folder = './split_midi_tracks'
+    >>> split_midi_tracks(input_folder, output_folder, use_all_data=False, amount_data=10)
+    Limiting data to 10 files.
+    Processed dataset (10/10)
+    """
     # Ensure the output folder exists
     if not os.path.exists(output_folder):
         os.makedirs(output_folder)
