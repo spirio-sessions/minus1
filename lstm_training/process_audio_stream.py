@@ -1,7 +1,9 @@
 import aubio
 import numpy as np
+import pandas as pd
 import pyaudio
 import torch
+import csv
 
 from lstm_training.extract_pitch import extract_pitch
 
@@ -31,29 +33,64 @@ def process_audio_stream(model, device, sequence_length, num_features):
 
     # Initialize buffer for LSTM input
     buffer = np.zeros((sequence_length, num_features))
-    # hidden = model.init_hidden(1)
+    hidden = (torch.zeros(model.num_layers, 1, model.hidden_size).to(device),
+              torch.zeros(model.num_layers, 1, model.hidden_size).to(device))
+
+    pitch_data = []
+    predicted_data = []
 
     while True:
-        data = stream.read(buffer_size)
-        pitch = extract_pitch(stream, pitch_o, buffer_size)  # Implement this function to extract pitch from audio data
+        try:
+            pitch = extract_pitch(stream, pitch_o, buffer_size)
+            # confidence = pitch_o.get_confidence()
 
-        # Update buffer with new pitch data
-        buffer[:-1] = buffer[1:]
-        buffer[-1] = pitch
+            rounded_pitch = round(pitch)
+            piano_keys = [0] * num_features
+            if 21 <= rounded_pitch <= 108:
+                piano_keys[rounded_pitch - 21] = 1
 
-        # Prepare input for the model
-        input_tensor = torch.tensor(buffer, dtype=torch.float32).unsqueeze(0).to(device)
+            pitch_data.append(piano_keys)
 
-        # Predict the left hand accompaniment
-        model.eval()
-        with torch.no_grad():
-            # output, hidden = model(input_tensor, hidden)
-            output = model(input_tensor)
+            # Update buffer with new pitch data
+            buffer[:-1] = buffer[1:]
+            buffer[-1] = pitch
 
-        left_hand_output = output.cpu().numpy()
+            # Prepare input for the model
+            input_tensor = torch.tensor(buffer, dtype=torch.float32).unsqueeze(0).to(device)
 
-        # Print the prediction
-        # print(f"Predicted left hand output: {left_hand_output}")
+            # Predict the left hand accompaniment
+            model.eval()
+            with torch.no_grad():
+                output, hidden = model(input_tensor, hidden)
+                # output = model(input_tensor)
 
+            left_hand_output = output.cpu().numpy()
+            predicted_data.append(left_hand_output)
 
-# TODO: left_hand_output als linke Hand und pitch als rechte Hand kombinieren und MIDI erzeugen.
+            # Print the prediction
+            print(f"Predicted left hand output: {left_hand_output}")
+
+            hidden = tuple(h.detach() for h in hidden)
+
+        except KeyboardInterrupt:
+            print("*** Ctrl+C pressed, exiting")
+
+            # Save and print pitch_data
+            piano_data_df = pd.DataFrame(pitch_data)
+            piano_data_list = piano_data_df.values
+            with open('pitch_data.csv', mode='w', newline='') as file:
+                writer = csv.writer(file)
+                writer.writerows(piano_data_list)
+            print(f"Data written to pitch_data.csv")
+
+            # Save and print predicted_data
+            predicted_data_df = pd.DataFrame(predicted_data)
+            predicted_data_list = predicted_data_df.values
+            # TODO: OUTPUTS 1,88 instead of 88, which results in an error
+            # Write the list of arrays to a CSV file
+            with open('predicted_data.csv', mode='w', newline='') as file:
+                writer = csv.writer(file)
+                writer.writerows(predicted_data_list)
+
+            print("Data written to predicted_data.csv")
+            break
