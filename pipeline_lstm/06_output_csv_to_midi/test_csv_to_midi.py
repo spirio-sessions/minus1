@@ -12,7 +12,7 @@ predicted_harmony_df = pd.read_csv(
 original_melody_df = pd.read_csv('../05_inference/predicted_leftH/original_melody.csv')
 
 # Apply threshold to predicted harmony data
-predicted_harmony_df = predicted_harmony_df.map(lambda x: 1 if x > 0.25 else 0)
+predicted_harmony_df = predicted_harmony_df.map(lambda x: 1 if x > 0.10 else 0)
 
 # Create a new MIDI file and two tracks
 mid = MidiFile()

@@ -29,3 +29,7 @@ predicted_harmony_df = pd.DataFrame(predicted_harmony)
 new_melody_df = pd.DataFrame(original_melody)
 
 new_melody_df.to_csv(output_path+"original_melody.csv", index=False)
+print(f'{output_path}original_melody.csv was saved successfully!')
+
+predicted_harmony_df.to_csv(output_path+"predicted_harmony.csv", index=False)
+print(f'{output_path}predicted_harmony.csv was saved successfully!')

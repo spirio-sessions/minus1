@@ -20,7 +20,6 @@ def load_lstm_model(path, model_name, device='cpu'):
 
     # Load model state
     if os.path.exists(model_file_path):
-        print(f'Model loaded from {model_file_path}')
         model.load_state_dict(torch.load(model_file_path, map_location=device))
         model.eval()
     else:

@@ -1,5 +1,6 @@
 import os
 from mido import MidiFile, MidiTrack
+from tqdm import tqdm
 
 
 def split_midi_tracks(input_folder, output_folder, use_all_data=True, amount_data=0):
@@ -9,6 +10,7 @@ def split_midi_tracks(input_folder, output_folder, use_all_data=True, amount_dat
 
     data_count = 0
     # Iterate through each MIDI file in the input folder
+    progress_bar = tqdm(total=len(os.listdir(input_folder)))
     for filename in os.listdir(input_folder):
         if filename.endswith(".midi"):
             # Limits the data if needed
@@ -46,6 +48,8 @@ def split_midi_tracks(input_folder, output_folder, use_all_data=True, amount_dat
                 try:
                     # Save the new MIDI file
                     new_midi.save(output_midi_path)
-                    print(f"Saved: {output_midi_path}")
                 except IOError as e:
                     print(f"Error: Could not save {output_midi_path}. {e}")
+
+        progress_bar.update(1)
+        progress_bar.set_description(f"Processed dataset ({progress_bar.n}/{progress_bar.total})")
