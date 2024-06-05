@@ -1,4 +1,6 @@
 import csv
+
+import pandas as pd
 import pyaudio
 import numpy as np
 import aubio
@@ -16,25 +18,13 @@ stream = p.open(format=pyaudio_format,
                 rate=samplerate,
                 input=True,
                 frames_per_buffer=buffer_size)
-"""
-if len(sys.argv) > 1:
-    # record 5 seconds
-    output_filename = sys.argv[1]
-    record_duration = 5  # exit 1
-    outputsink = aubio.sink(sys.argv[1], samplerate)
-    total_frames = 0
-else:
-    # run forever
-    outputsink = None
-    record_duration = None
-"""
 
-record_duration = 5  # seconds
+record_duration = 200  # seconds
 outputsink = None
 total_frames = 0
 
 # setup pitch
-tolerance = 0.8
+tolerance = 0.1
 win_s = 4096  # fft size
 hop_s = buffer_size  # hop size
 pitch_o = aubio.pitch("default", win_s, hop_s, samplerate)
@@ -83,12 +73,17 @@ stream.stop_stream()
 stream.close()
 p.terminate()
 
-# Save the piano keys data to a CSV file
-with open('piano_keys_data.csv', 'w', newline='') as csvfile:
-    csvwriter = csv.writer(csvfile)
-    csvwriter.writerow(['Frame'] + [f'Key_{i}' for i in range(21, 109)])
-    for frame_idx, keys in enumerate(piano_keys_data):
-        csvwriter.writerow([frame_idx] + keys)
-print("*** piano keys data saved to piano_keys_data.csv")
+# Transform piano_keys_data to list
+piano_data_df = pd.DataFrame(piano_keys_data)
+piano_data_list = piano_data_df.values
+# Specify the CSV file name
+csv_file = 'piano_keys_data.csv'
+
+# Write the list of arrays to a CSV file
+with open(csv_file, mode='w', newline='') as file:
+    writer = csv.writer(file)
+    writer.writerows(piano_data_list)
+
+print(f"Data written to {csv_file}")
 
 # TODO: Add Doc-String when functional

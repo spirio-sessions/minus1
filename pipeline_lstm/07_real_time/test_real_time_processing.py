@@ -22,7 +22,6 @@ model, parameters = load_lstm_model('../04_finished_model/models', 'lstm_01', de
 input_size, hidden_size, num_layers, output_size, learning_rate, num_epochs, batch_size = parameters
 
 # Call the function to start processing
-# process_audio_stream(model, device, sequence_length, num_features)
 process_audio_stream(model, device, sequence_length, num_features)
 
 # TODO: Add Doc-String when functional

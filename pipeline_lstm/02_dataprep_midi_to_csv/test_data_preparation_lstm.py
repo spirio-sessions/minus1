@@ -10,7 +10,7 @@ After that it gets filtered from MIDI-scale to piano-scale, by reducing the list
 In the end the dataset will be exported to the dataformat CSV for training.
 """
 
-dataset_as_snapshots = dataset_snapshot.process_dataset('mid-split', INTERVAL)
+dataset_as_snapshots = dataset_snapshot.process_dataset('mid-split', INTERVAL, amount=40)
 
 filtered_dataset = filter_piano_range(dataset_as_snapshots)
 

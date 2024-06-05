@@ -22,12 +22,13 @@ def process_audio_stream(model, device, sequence_length, num_features):
                     frames_per_buffer=buffer_size)
 
     # setup pitch
-    tolerance = 0.8
+    tolerance = 0.1
     win_s = 4096  # fft size
     hop_s = buffer_size  # hop size
     pitch_o = aubio.pitch("default", win_s, hop_s, samplerate)
     pitch_o.set_unit("midi")
     pitch_o.set_tolerance(tolerance)
+
     # Initialize buffer for LSTM input
     buffer = np.zeros((sequence_length, num_features))
     # hidden = model.init_hidden(1)
