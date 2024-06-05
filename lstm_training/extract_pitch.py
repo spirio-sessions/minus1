@@ -1,6 +1,4 @@
 import numpy as np
-import pyaudio
-import aubio
 
 
 def extract_pitch(stream, pitch_o, buffer_size):
@@ -20,6 +18,8 @@ def extract_pitch(stream, pitch_o, buffer_size):
     if 21 <= rounded_pitch <= 108:
         piano_keys[rounded_pitch - 21] = 1
 
-    print("{} / {} -> {}".format(pitch-21, confidence, piano_keys))
+    print("{} / {} -> {}".format(pitch, confidence, piano_keys))
 
     return piano_keys
+
+# TODO: Needs further testing with real frequencies. Shows signs of errors

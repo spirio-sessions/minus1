@@ -5,6 +5,13 @@ from mido import MidiFile, MidiTrack, Message
 
 from data_preperation.globals import INTERVAL
 
+"""
+This script converts the predicted harmony and the original melody into a MIDI-file.
+The value 'threshold' determines at what threshold the one-hot-encoding probability actually plays the key or doesnt play it.
+If the threshold is high, it only plays notes the model is really sure about.
+If the threshold is low, it plays more notes, even tho the model is not really sure, if they fit.
+"""
+threshold = 0.10
 
 # Load the CSV files
 predicted_harmony_df = pd.read_csv(
@@ -12,7 +19,7 @@ predicted_harmony_df = pd.read_csv(
 original_melody_df = pd.read_csv('../05_inference/predicted_leftH/original_melody.csv')
 
 # Apply threshold to predicted harmony data
-predicted_harmony_df = predicted_harmony_df.map(lambda x: 1 if x > 0.10 else 0)
+predicted_harmony_df = predicted_harmony_df.map(lambda x: 1 if x > threshold else 0)
 
 # Create a new MIDI file and two tracks
 mid = MidiFile()

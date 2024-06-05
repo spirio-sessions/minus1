@@ -8,6 +8,14 @@ from lstm_training.MelodyHarmonyDataset import MelodyHarmonyDataset
 from lstm_training.load_data_from_csv import load_data_from_csv
 from lstm_training.save_model import save_model
 
+"""
+This script will train a LSTM-Model (long short-term memory) with the preprocessed CSV-files.
+It uses several hyperparameter to finetune the model.
+Right now it uses a MSE (mean-squared-error) as loss-function and Adam as optimizer.
+It outputs a model.ht and a parameters.txt for further use.
+"""
+
+
 # Load melody and harmony from csv
 melody, harmony = load_data_from_csv('csv')
 

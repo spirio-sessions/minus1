@@ -6,20 +6,6 @@ from sklearn.metrics import mean_squared_error
 
 
 def print_results(predicted_harmony, actual_melody, actual_harmony):
-    # Print different stats
-    print("Shape of Harmony")
-    print('- ' * 20)
-    print(predicted_harmony.shape)
-    print('- ' * 20)
-    print('- ' * 20)
-
-    print("First 5 lines of predicted harmony")
-    print('- ' * 20)
-    for i in range(5):
-        print(predicted_harmony[i])
-    print('- ' * 20)
-    print('- ' * 20)
-
     print("Mean-Square-Error")
     print('- ' * 20)
     mse = mean_squared_error(actual_harmony, predicted_harmony)
@@ -44,11 +30,10 @@ def print_results(predicted_harmony, actual_melody, actual_harmony):
     print("Standard deviation:", np.std(actual_harmony))
     print('- ' * 20)
 
-    for i in range(5):
-        plt.figure()
-        plt.plot(predicted_harmony[i])
-        plt.title(f'Predicted Harmony for Melody Row {i}')
-        plt.show()
+    plt.figure()
+    plt.plot(predicted_harmony[0])
+    plt.title(f'Predicted Harmony for Melody')
+    plt.show()
 
     # Create a heatmap
     plt.figure(figsize=(20, 10))  # Adjust the size as necessary

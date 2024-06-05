@@ -5,6 +5,35 @@ from tqdm import tqdm
 
 
 def load_data_from_csv(directory):
+    """
+    Load melody and harmony data from CSV files in a specified directory.
+
+    This function scans a directory for pairs of CSV files containing melody
+    and harmony data. Melody files are identified by the suffix '_rightH.csv',
+    and harmony files by the corresponding '_leftH.csv'. It reads the data
+    from these files into Pandas DataFrames, converts them to NumPy arrays,
+    and returns the concatenated arrays of melody and harmony data.
+
+    Parameters:
+    directory (str): The path to the directory containing the CSV files.
+
+    Returns:
+    tuple: A tuple containing two NumPy arrays:
+        - The first array contains concatenated melody data.
+        - The second array contains concatenated harmony data.
+
+    Raises:
+    FileNotFoundError: If a corresponding harmony file is not found for a melody file.
+    pd.errors.EmptyDataError: If a CSV file is empty.
+    pd.errors.ParserError: If there is a parsing error while reading a CSV file.
+
+    Example:
+    >>> melody_data, harmony_data = load_data_from_csv('/path/to/directory')
+    >>> print(melody_data.shape)
+    (num_samples, num_features)
+    >>> print(harmony_data.shape)
+    (num_samples, num_features)
+    """
     melody_data = []
     harmony_data = []
 
