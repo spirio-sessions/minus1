@@ -12,7 +12,6 @@ The print includes:
     5. Heatmap for key-probability in snapshot
     6. Heatmap for which key is getting played at what time
 """
-# TODO: Better statistics like accuracy, etc.
 
 predicted_harmony = pd.read_csv('predicted_leftH/predicted_harmony.csv').values
 original_melody = pd.read_csv('predicted_leftH/original_melody.csv').values
