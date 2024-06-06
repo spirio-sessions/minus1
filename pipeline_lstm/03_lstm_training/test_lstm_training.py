@@ -25,7 +25,7 @@ hidden_size = 64
 num_layers = 2
 output_size = 88
 learning_rate = 0.005
-num_epochs = 5
+num_epochs = 50
 batch_size = 32
 
 # Check if cuda is available
