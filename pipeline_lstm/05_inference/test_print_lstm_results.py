@@ -13,9 +13,11 @@ The print includes:
     6. Heatmap for which key is getting played at what time
 """
 
+# Load predicted data from MIDI
 predicted_harmony = pd.read_csv('predicted_leftH/predicted_harmony.csv').values
 original_melody = pd.read_csv('predicted_leftH/original_melody.csv').values
 original_harmony = pd.read_csv('predicted_leftH/original_harmony.csv').values
+
 
 print_results(predicted_harmony, original_melody, original_harmony)
 

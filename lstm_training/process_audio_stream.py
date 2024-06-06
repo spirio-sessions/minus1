@@ -24,7 +24,7 @@ def process_audio_stream(model, device, sequence_length, num_features):
                     frames_per_buffer=buffer_size)
 
     # setup pitch
-    tolerance = 0.1
+    tolerance = 0.1  # 0.1 seems to be a good values for single-tone extraction
     win_s = 4096  # fft size
     hop_s = buffer_size  # hop size
     pitch_o = aubio.pitch("default", win_s, hop_s, samplerate)
@@ -64,7 +64,7 @@ def process_audio_stream(model, device, sequence_length, num_features):
                 output, hidden = model(input_tensor, hidden)
                 # output = model(input_tensor)
 
-            left_hand_output = output.cpu().numpy()
+            left_hand_output = output.cpu().numpy().flatten()
             predicted_data.append(left_hand_output)
 
             # Print the prediction
@@ -94,3 +94,5 @@ def process_audio_stream(model, device, sequence_length, num_features):
 
             print("Data written to predicted_data.csv")
             break
+
+            # TODO: Use confidence score?

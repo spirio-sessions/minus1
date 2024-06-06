@@ -48,7 +48,7 @@ def print_results(predicted_harmony, actual_melody, actual_harmony):
 
     # Create and save a heatmap of Predicted Harmony Data
     plt.figure(figsize=(20, 10))  # Adjust the size as necessary
-    sns.heatmap(predicted_harmony, cmap='coolwarm', center=0, vmin=0, vmax=1)  # Adjust color map and limits based on your data
+    sns.heatmap(predicted_harmony, cmap='coolwarm', center=0.05, vmin=0, vmax=0.1)  # Adjust color map and limits based on your data
     plt.title('Heatmap of Predicted Harmony Data')
     plt.xlabel('Keys on piano')
     plt.ylabel('Probability of pressing (One-Hot-Encoding)')

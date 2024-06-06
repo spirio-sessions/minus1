@@ -5,7 +5,6 @@ from collections import defaultdict
 import numpy as np
 from tqdm import tqdm
 import concurrent.futures
-from itertools import islice
 
 def snapshot_active_notes_from_midi(file_path, interval):
     """
@@ -155,7 +154,7 @@ def process_dataset(dataset_dir, interval, pattern=None, amount=0):
     """
     midi_files = find_midi_files(dataset_dir, pattern)
 
-    # limit ammount of files
+    # limit amount of files
     if amount > 0:
         midi_files = {k: midi_files[k] for k in list(midi_files)[:amount]}
 

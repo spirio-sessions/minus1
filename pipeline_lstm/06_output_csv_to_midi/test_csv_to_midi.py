@@ -11,15 +11,29 @@ The value 'threshold' determines at what threshold the one-hot-encoding probabil
 If the threshold is high, it only plays notes the model is really sure about.
 If the threshold is low, it plays more notes, even tho the model is not really sure, if they fit.
 """
-threshold = 0.10
+threshold = 0.1
 
-# Load the CSV files
+"""
+# Load CSV files of predicted MIDI
 predicted_harmony_df = pd.read_csv(
     '../05_inference/predicted_leftH/predicted_harmony.csv')
 original_melody_df = pd.read_csv('../05_inference/predicted_leftH/original_melody.csv')
+"""
+
+# Load CSV files of realtime pitch
+"""
+predicted_harmony_df = pd.read_csv('../07_real_time/predicted_data.csv')
+original_melody_df = pd.read_csv('../07_real_time/pitch_data.csv')
+# Apply threshold to predicted harmony data
+"""
+
+# Load CSV files of single_file tests
+predicted_harmony_df = pd.read_csv('../420_developer_tests_only/single_file_output/predicted_harmony.csv')
+original_melody_df = pd.read_csv('../420_developer_tests_only/single_file_output/song_1_rightH.csv')
 
 # Apply threshold to predicted harmony data
 predicted_harmony_df = predicted_harmony_df.map(lambda x: 1 if x > threshold else 0)
+
 
 # Create a new MIDI file and two tracks
 mid = MidiFile()

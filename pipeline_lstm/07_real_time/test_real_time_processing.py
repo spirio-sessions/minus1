@@ -16,7 +16,7 @@ sequence_length = 5
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 print(f'Using {device} as device.')
 
-model, parameters = load_lstm_model('../04_finished_model/models', 'lstm_02', device, True)
+model, parameters = load_lstm_model('../04_finished_model/models', 'lstm_03', device, True)
 
 # Unpack parameters
 input_size, hidden_size, num_layers, output_size, learning_rate, num_epochs, batch_size = parameters
