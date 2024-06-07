@@ -1,6 +1,6 @@
 import pandas as pd
 
-from lstm_training.print_results import print_results
+from lstm_training.print_results import print_results, printHeatmap
 
 """
 This script takes the predicted harmony and both originals for statistik and inference.
@@ -19,3 +19,4 @@ original_melody = pd.read_csv('single_file_output/song_1_rightH.csv').values
 original_harmony = pd.read_csv('single_file_output/song_1_leftH.csv').values
 
 print_results(predicted_harmony, original_melody, original_harmony)
+printHeatmap(predicted_harmony, 0.05, 0, 0.1)

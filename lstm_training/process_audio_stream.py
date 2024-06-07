@@ -86,7 +86,6 @@ def process_audio_stream(model, device, sequence_length, num_features):
             # Save and print predicted_data
             predicted_data_df = pd.DataFrame(predicted_data)
             predicted_data_list = predicted_data_df.values
-            # TODO: OUTPUTS 1,88 instead of 88, which results in an error
             # Write the list of arrays to a CSV file
             with open('predicted_data.csv', mode='w', newline='') as file:
                 writer = csv.writer(file)

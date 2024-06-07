@@ -5,7 +5,7 @@ from mido import MidiFile, MidiTrack, Message
 from data_preperation.globals import INTERVAL
 
 # Set a threshold value
-threshold = 0.10
+threshold = 0.1
 
 # Load the CSV file
 csv_file = 'single_file_output/output.csv'

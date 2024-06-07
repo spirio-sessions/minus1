@@ -46,15 +46,6 @@ def print_results(predicted_harmony, actual_melody, actual_harmony):
     plt.savefig(os.path.join('pictures', f'{prefix}predicted_harmony_for_melody.png'))
     plt.show()
 
-    # Create and save a heatmap of Predicted Harmony Data
-    plt.figure(figsize=(20, 10))  # Adjust the size as necessary
-    sns.heatmap(predicted_harmony, cmap='coolwarm', center=0.05, vmin=0, vmax=0.1)  # Adjust color map and limits based on your data
-    plt.title('Heatmap of Predicted Harmony Data')
-    plt.xlabel('Keys on piano')
-    plt.ylabel('Probability of pressing (One-Hot-Encoding)')
-    plt.savefig(os.path.join('pictures', f'{prefix}heatmap_predicted_harmony.png'))
-    plt.show()
-
     # Create and save a second heatmap with a custom colormap
     boundaries = [0, 0.03, 0.05, 1]
     colors = ["#0096FF", "#00008b", "#FF474C", "#FFF74C", "#8b0000"]
@@ -83,3 +74,27 @@ def print_results(predicted_harmony, actual_melody, actual_harmony):
     print(f"Recall: {recall}")
     print(f"F1 Score: {f1}")
     print('- ' * 20)
+
+
+def printHeatmap(predicted_harmony, center=0.5, vmin=0, vmax=1):
+    # Create the 'pictures' directory if it doesn't exist
+    if not os.path.exists('pictures'):
+        os.makedirs('pictures')
+
+    # Determine the next prefix number for saving files
+    existing_files = [f for f in os.listdir('pictures') if f.endswith('.png')]
+    if existing_files:
+        latest_file = max(existing_files)
+        latest_prefix = int(latest_file.split('_')[0])
+        prefix = f"{latest_prefix + 1:02d}_"
+    else:
+        prefix = "00_"
+
+    # Create and save a heatmap of Predicted Harmony Data
+    plt.figure(figsize=(20, 10))  # Adjust the size as necessary
+    sns.heatmap(predicted_harmony, cmap='coolwarm', center=center, vmin=vmin, vmax=vmax)  # Adjust color map and limits based on your data
+    plt.title('Heatmap of Predicted Harmony Data')
+    plt.xlabel('Keys on piano')
+    plt.ylabel('Probability of pressing (One-Hot-Encoding)')
+    plt.savefig(os.path.join('pictures', f'{prefix}heatmap_predicted_harmony.png'))
+    plt.show()
