@@ -76,4 +76,4 @@ for epoch in range(num_epochs):
 
 # Save the trained model
 save_parameter = [input_size, hidden_size, num_layers, output_size, learning_rate, num_epochs, batch_size]
-save_model('04_finished_model/models', save_parameter, model)
+save_model('../04_finished_model/models', save_parameter, model)
