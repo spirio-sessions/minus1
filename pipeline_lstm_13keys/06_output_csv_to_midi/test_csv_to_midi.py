@@ -11,7 +11,7 @@ The value 'threshold' determines at what threshold the one-hot-encoding probabil
 If the threshold is high, it only plays notes the model is really sure about.
 If the threshold is low, it plays more notes, even tho the model is not really sure, if they fit.
 """
-threshold = 0.2
+threshold = 0.25
 
 
 # Load CSV files of predicted MIDI
