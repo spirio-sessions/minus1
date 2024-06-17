@@ -238,6 +238,79 @@ def process_dataset_multithreaded(dataset_dir, interval, pattern=None, amount=0)
     return final_grouped_snapshots
 
 
+def snapshot_active_notes_from_midi_12keys(file_path, interval):
+    """
+    Processes a MIDI file and returns snapshots of active notes at specified intervals.
+
+    Args:
+        file_path (str): The path to the MIDI file.
+        interval (float): The interval (in seconds) at which snapshots are taken.
+
+    Returns:
+        np.ndarray: An array of snapshots, where each snapshot is a list of 12 keys and a chord height.
+    """
+    mid = mido.MidiFile(file_path)
+    snapshots = []
+    active_notes = [0] * 12  # 12 keys
+    current_time = 0
+    snapshot_time = 0
+    previous_event_time = 0
+
+    for msg in mid:
+        current_time += msg.time
+
+        while current_time >= snapshot_time + interval:
+            if current_time == previous_event_time:
+                break
+            snapshots.append(active_notes[:])
+            snapshot_time += interval
+
+        if msg.type == 'note_on' or msg.type == 'note_off':
+            key = msg.note % 12
+            if msg.type == 'note_on' and msg.velocity > 0:
+                active_notes[key] = 1
+            else:
+                active_notes[key] = 0
+
+        previous_event_time = current_time
+
+    # Add the final snapshot if it hasn't been added yet
+    snapshots.append(active_notes[:])
+
+    return np.array(snapshots)
+
+
+def process_dataset_12keys(dataset_dir, interval, pattern=None, amount=0):
+    midi_files = find_midi_files(dataset_dir, pattern)
+
+    # limit amount of files
+    if amount > 0:
+        midi_files = {k: midi_files[k] for k in list(midi_files)[:amount]}
+
+    files_as_snapshots = []
+    filenames = []
+
+    total_files = sum(len(files) for files in midi_files.values())
+    progress_bar = tqdm(total=total_files)
+
+    for base_pattern, group_files in midi_files.items():
+        group_snapshots = []
+        for hand in ['rightH', 'leftH']:
+            midi_file = group_files[hand]
+            snapshots_array = snapshot_active_notes_from_midi_12keys(midi_file, interval)
+            group_snapshots.append(snapshots_array)
+            filenames.append(midi_file)
+            progress_bar.update(1)
+            progress_bar.set_description(f"Processed dataset ({progress_bar.n}/{progress_bar.total})")
+
+        trimmed_group_snapshots = trim_snapshots(group_snapshots)
+        files_as_snapshots.append(trimmed_group_snapshots)
+
+    progress_bar.close()
+
+    return files_as_snapshots
+
+
 def filter_piano_range(grouped_snapshots):
     """
     Filters the snapshots to keep only the notes in the piano range (MIDI notes 21 to 108).

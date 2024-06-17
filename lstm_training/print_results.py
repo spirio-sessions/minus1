@@ -47,7 +47,7 @@ def print_results(predicted_harmony, actual_melody, actual_harmony):
     plt.show()
 
     # Create and save a second heatmap with a custom colormap
-    boundaries = [0, 0.03, 0.05, 1]
+    boundaries = [0, 0.03, 0.1, 1]
     colors = ["#0096FF", "#00008b", "#FF474C", "#FFF74C", "#8b0000"]
     custom_cmap = LinearSegmentedColormap.from_list("custom_cmap", colors, N=256)
     norm = BoundaryNorm(boundaries, custom_cmap.N, extend='both')
@@ -76,7 +76,7 @@ def print_results(predicted_harmony, actual_melody, actual_harmony):
     print('- ' * 20)
 
 
-def printHeatmap(predicted_harmony, center=0.5, vmin=0, vmax=1):
+def printHeatmap(predicted_harmony, center=0.2, vmin=0, vmax=0.4):
     # Create the 'pictures' directory if it doesn't exist
     if not os.path.exists('pictures'):
         os.makedirs('pictures')
