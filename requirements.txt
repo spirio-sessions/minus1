@@ -10,3 +10,4 @@ aubio~=0.4.9
 seaborn~=0.13.2
 PyAudio~=0.2.14
 tensorflow~=2.16.1
+jupyter
