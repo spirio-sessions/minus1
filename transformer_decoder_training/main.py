@@ -8,7 +8,7 @@ from dataset import create_dataloader
 from transformer_decoder_only_model import TransformerDecoderModel
 from data_model_specific_preperation import split_sequences
 
-# Seed für Reproduzierbarkeit setzen
+# Seed für Reproduzierbarkeit
 torch.manual_seed(42)
 np.random.seed(42)
 
@@ -23,7 +23,7 @@ split_data = split_sequences(filtered_data, max_len=1000)
 
 # Datenaufteilung in Trainings-, Validierungs- und Testdatensätze
 train_data, test_data = train_test_split(split_data, test_size=0.2, random_state=42)
-train_data, val_data = train_test_split(split_data, test_size=0.2, random_state=42)
+train_data, val_data = train_test_split(train_data, test_size=0.2, random_state=42)
 
 # DataLoader erstellen
 train_loader = create_dataloader(train_data, batch_size=32, shuffle=True)
@@ -44,7 +44,14 @@ model = TransformerDecoderModel(input_dim, embed_dim, nhead, num_layers, dim_fee
 criterion = nn.BCEWithLogitsLoss()
 optimizer = optim.Adam(model.parameters(), lr=1e-4)
 
-# Schritt 4: Trainings- und Validierungsloop
+# Hilfsfunktion zur Erstellung von Masken
+def create_mask(src, max_len):
+    src_len = src.size(1)
+    mask = torch.zeros((src_len, src_len)).type(torch.bool)
+    mask[:src_len, :src_len] = 1
+    return mask.to(device)
+
+# Schritt 4: Trainings und Validierungsloop
 num_epochs = 20
 best_val_loss = float('inf')
 
@@ -54,7 +61,8 @@ for epoch in range(num_epochs):
     for melody, accompaniment in train_loader:
         melody, accompaniment = melody.to(device), accompaniment.to(device)
         optimizer.zero_grad()
-        output = model(melody, accompaniment)
+        src_mask = create_mask(melody, melody.size(1))
+        output = model(melody, accompaniment, src_mask=src_mask)
         loss = criterion(output, accompaniment)
         loss.backward()
         optimizer.step()
@@ -68,7 +76,8 @@ for epoch in range(num_epochs):
     with torch.no_grad():
         for melody, accompaniment in val_loader:
             melody, accompaniment = melody.to(device), accompaniment.to(device)
-            output = model(melody, accompaniment)
+            src_mask = create_mask(melody, melody.size(1))
+            output = model(melody, accompaniment, src_mask=src_mask)
             loss = criterion(output, accompaniment)
             val_loss += loss.item()
 
@@ -88,7 +97,8 @@ test_loss = 0
 with torch.no_grad():
     for melody, accompaniment in test_loader:
         melody, accompaniment = melody.to(device), accompaniment.to(device)
-        output = model(melody, accompaniment)
+        src_mask = create_mask(melody, melody.size(1))
+        output = model(melody, accompaniment, src_mask=src_mask)
         loss = criterion(output, accompaniment)
         test_loss += loss.item()
 
