@@ -35,8 +35,10 @@ def split_midi_tracks(input_folder, output_folder, use_all_data=True, amount_dat
         os.makedirs(output_folder)
 
     data_count = 0
+    progress_bar_maximum = len(os.listdir(input_folder)) if amount_data == 0 else amount_data
+
     # Iterate through each MIDI file in the input folder
-    progress_bar = tqdm(total=len(os.listdir(input_folder)))
+    progress_bar = tqdm(total=progress_bar_maximum)
     for filename in os.listdir(input_folder):
         if filename.endswith(".midi"):
             # Limits the data if needed
