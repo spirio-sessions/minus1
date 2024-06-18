@@ -9,7 +9,7 @@ melody, harmony = load_data_from_csv('../03_lstm_training/csv')
 
 
 # Parameters
-num_features = 88
+num_features = 12
 sequence_length = 5
 
 # Check if cuda is available
