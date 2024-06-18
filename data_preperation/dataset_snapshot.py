@@ -6,6 +6,7 @@ import numpy as np
 from tqdm import tqdm
 import concurrent.futures
 
+
 def snapshot_active_notes_from_midi(file_path, interval):
     """
     Processes a MIDI file and returns snapshots of active notes at specified intervals.
@@ -310,30 +311,30 @@ def process_dataset_12keys(dataset_dir, interval, pattern=None, amount=0):
 
     return files_as_snapshots
 
-
     # Function to map MIDI note to octave position
-    def map_to_octave(note):
-        return note % 12
+def map_to_octave(note):
+    return note % 12
 
-    # Function to compress a single track
-    def compress_track(track):
-        compressed_track = np.zeros((track.shape[0], 12))
-        for i, snapshot in enumerate(track):
-            for note_index, is_active in enumerate(snapshot):
-                if is_active:
-                    octave_position = map_to_octave(note_index)
-                    compressed_track[i][octave_position] = 1
-        return compressed_track
+# Function to compress a single track
+def compress_track(track):
+    compressed_track = np.zeros((track.shape[0], 12))
+    for i, snapshot in enumerate(track):
+        for note_index, is_active in enumerate(snapshot):
+            if is_active:
+                octave_position = map_to_octave(note_index)
+                compressed_track[i][octave_position] = 1
+    return compressed_track
 
-    def compress_existing_dataset_to_12keys(dataset):
-        compressed_dataset = []
-        for song in dataset:
-            compressed_song = []
-            for track in song:
-                compressed_track = compress_track(track)
-                compressed_song.append(compressed_track)
-            compressed_dataset.append(compressed_song)
-        return compressed_dataset
+
+def compress_existing_dataset_to_12keys(dataset):
+    compressed_dataset = []
+    for song in dataset:
+        compressed_song = []
+        for track in song:
+            compressed_track = compress_track(track)
+            compressed_song.append(compressed_track)
+        compressed_dataset.append(compressed_song)
+    return compressed_dataset
 
 
 def filter_piano_range(grouped_snapshots):
