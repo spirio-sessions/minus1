@@ -4,8 +4,7 @@ from data_preperation.globals import INTERVAL
 
 """
 This script is the second script of the pipeline.
-It uses the split-midi set and transforms it into snapshots in a specific interval.
-After that it gets filtered from MIDI-scale to piano-scale, by reducing the list via [21:109].
+It uses the split-midi set and transforms it into snapshots in a specific interval to a 12keys array.
 In the end the dataset will be exported to the dataformat CSV for training.
 """
 
