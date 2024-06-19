@@ -16,8 +16,9 @@ It outputs a model.ht and a parameters.txt for further use.
 """
 
 
-# Load melody and harmony from csv
-melody, harmony = load_data_from_csv('csv')
+# Load melody and harmony from csv and can be caped
+# melody, harmony = load_data_from_csv('csv')
+melody, harmony = load_data_from_csv('csv', 40)
 
 # Parameters
 INPUT_SIZE = 12

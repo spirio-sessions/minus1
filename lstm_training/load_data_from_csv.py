@@ -4,7 +4,7 @@ import pandas as pd
 from tqdm import tqdm
 
 
-def load_data_from_csv(directory):
+def load_data_from_csv(directory, data_cap=0):
     """
     Load melody and harmony data from CSV files in a specified directory.
 
@@ -38,6 +38,10 @@ def load_data_from_csv(directory):
     harmony_data = []
 
     melody_files = [f for f in os.listdir(directory) if f.endswith('_rightH.csv')]
+
+    # Checks if a cap is wanted and limits the input
+    if data_cap != 0:
+        melody_files = melody_files[:data_cap]
     progress_bar = tqdm(total=len(melody_files))
 
     for melody_file in melody_files:
