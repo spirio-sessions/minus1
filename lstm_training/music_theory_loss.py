@@ -31,17 +31,35 @@ class MusicTheoryLoss(nn.Module):
         self.beta = beta
         self.mse_loss = nn.MSELoss()
 
-    def forward(self, outputs, targets, melodies):
+    def forward(self, outputs, targets, melodies, threshold=0.2):
+
         mse_loss = self.mse_loss(outputs, targets)
 
         melodies = melodies.squeeze(1)  # Changes melodies Tensor(60, 1, 12) to Tensor(60, 12)
+        harmony = outputs.squeeze(1)
+
         harmony_loss = 0
-        for i in range(outputs.shape[0]):  # Batch size
-            for j in range(outputs.shape[1]):  # Sequence length
+        batch_size, seq_length = harmony.shape
+
+        # Try to look at all notes at the same time
+        """
+        for i in range(batch_size):
+            for j in range(seq_length):
+                melody_notes = (melodies[i, j] > 0).nonzero(as_tuple=True)
+                harmony_notes = (harmony[i, j] > threshold).nonzero(as_tuple=True)
+
+                for melody_note in melody_notes:
+                    for harmony_note in harmony_notes:
+                        harmony_loss += interval_quality(melody_note, harmony_note)
+        """
+
+        # Only looking at one note at a time
+        for i in range(batch_size):
+            for j in range(seq_length):
                 melody_note = melodies[i, j].argmax().item()
-                harmony_note = outputs[i, j].argmax().item()
+                harmony_note = harmony[i, j].argmax().item()
                 harmony_loss += interval_quality(melody_note, harmony_note)
 
-        harmony_loss /= outputs.shape[0] * outputs.shape[1]
+        harmony_loss /= batch_size * seq_length
 
         return self.alpha * mse_loss + self.beta * harmony_loss
