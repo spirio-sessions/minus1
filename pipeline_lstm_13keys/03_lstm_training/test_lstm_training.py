@@ -20,13 +20,13 @@ It outputs a model.ht and a parameters.txt for further use.
 melody, harmony = load_data_from_csv('csv')
 
 # Parameters
-input_size = 12
+INPUT_SIZE = 12
 hidden_size = 64
 num_layers = 2
-output_size = 12
-learning_rate = 0.005
-num_epochs = 10
-batch_size = 64
+OUTPUT_SIZE = 12
+learning_rate = 0.01
+num_epochs = 2
+batch_size = 60
 
 # Check if cuda is available
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
@@ -42,9 +42,9 @@ train_loader = DataLoader(train_dataset, batch_size=batch_size, shuffle=True)
 val_loader = DataLoader(val_dataset, batch_size=batch_size, shuffle=False)
 
 # Model, loss function, optimizer
-model = LSTMModel(input_size, hidden_size, num_layers, output_size).to(device)
+model = LSTMModel(INPUT_SIZE, hidden_size, num_layers, OUTPUT_SIZE).to(device)
 # criterion = nn.MSELoss()
-criterion = MusicTheoryLoss(alpha=0.5, beta=1.0)  # Alpha weight of MSE, beta weight of custom loss-function
+criterion = MusicTheoryLoss(alpha=0.5, beta=1.0)  # Alpha equals weight of MSE, beta weight of custom loss-function
 optimizer = torch.optim.Adam(model.parameters(), lr=learning_rate)
 
 # Training loop
@@ -88,5 +88,5 @@ for epoch in range(num_epochs):
     print(f'Epoch [{epoch + 1}/{num_epochs}], Loss: {loss.item():.4f}, Val Loss: {val_loss:.4f}')
 
 # Save the trained model
-save_parameter = [input_size, hidden_size, num_layers, output_size, learning_rate, num_epochs, batch_size]
+save_parameter = [INPUT_SIZE, hidden_size, num_layers, OUTPUT_SIZE, learning_rate, num_epochs, batch_size]
 save_model('../04_finished_model/models', save_parameter, model)

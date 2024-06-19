@@ -34,10 +34,11 @@ class MusicTheoryLoss(nn.Module):
     def forward(self, outputs, targets, melodies):
         mse_loss = self.mse_loss(outputs, targets)
 
+        melodies = melodies.squeeze(1)  # Changes melodies Tensor(60, 1, 12) to Tensor(60, 12)
         harmony_loss = 0
         for i in range(outputs.shape[0]):  # Batch size
             for j in range(outputs.shape[1]):  # Sequence length
-                melody_note = melodies[i, j].argmax().item()  # Assuming one-hot encoded input
+                melody_note = melodies[i, j].argmax().item()
                 harmony_note = outputs[i, j].argmax().item()
                 harmony_loss += interval_quality(melody_note, harmony_note)
 
