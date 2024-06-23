@@ -16,11 +16,13 @@ In the end it returns two CSV-files with the original melody and the predicted h
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
 # Load the model and parameters
-model, parameters = load_lstm_model('models', 'lstm_02', device)
+model, parameters = load_lstm_model('models', 'new_lossF_all_notes_0025', device)
 
 # Predict new melody
-original_melody = pd.read_csv('validation/validation_melody.csv').values
-original_harmony = pd.read_csv('validation/validation_harmony.csv').values
+# original_melody = pd.read_csv('validation/validation_melody.csv').values
+# original_harmony = pd.read_csv('validation/validation_harmony.csv').values
+original_melody = pd.read_csv('validation/song_300_rightH.csv').values
+original_harmony = pd.read_csv('validation/song_300_leftH.csv').values
 predicted_harmony = predict_harmony(model, original_melody)
 
 # Export to CSV

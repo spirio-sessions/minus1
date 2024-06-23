@@ -46,7 +46,7 @@ val_loader = DataLoader(val_dataset, batch_size=batch_size, shuffle=False)
 # Model, loss function, optimizer
 model = LSTMModel(INPUT_SIZE, hidden_size, num_layers, OUTPUT_SIZE).to(device)
 # criterion = nn.MSELoss()
-criterion = MusicTheoryLoss(alpha=0.5, beta=1.0)  # Alpha equals weight of MSE, beta weight of custom loss-function
+criterion = MusicTheoryLoss(alpha=0.5, beta=2.0)  # Alpha equals weight of MSE, beta weight of custom loss-function
 optimizer = torch.optim.Adam(model.parameters(), lr=learning_rate)
 
 # Training loop
