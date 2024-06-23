@@ -1,6 +1,8 @@
 import torch
+import torch.nn as nn
 from torch.utils.data import DataLoader
 from sklearn.model_selection import train_test_split
+from tqdm import tqdm
 
 from lstm_training.LSTMModel import LSTMModel
 from lstm_training.MelodyHarmonyDataset import MelodyHarmonyDataset
@@ -18,16 +20,16 @@ It outputs a model.ht and a parameters.txt for further use.
 
 # Load melody and harmony from csv and can be caped
 # melody, harmony = load_data_from_csv('csv')
-melody, harmony = load_data_from_csv('csv', 40)
+melody, harmony = load_data_from_csv('csv', 100)
 
 # Parameters
 INPUT_SIZE = 12
 hidden_size = 64
 num_layers = 2
 OUTPUT_SIZE = 12
-learning_rate = 0.01
-num_epochs = 2
-batch_size = 60
+learning_rate = 0.001
+num_epochs = 10
+batch_size = 64
 
 # Check if cuda is available
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
@@ -52,7 +54,9 @@ optimizer = torch.optim.Adam(model.parameters(), lr=learning_rate)
 print('Starting training...')
 for epoch in range(num_epochs):
     model.train()  # Set the model to training mode
-    for melodies, harmonies in train_loader:
+    train_loss = 0.0
+
+    for melodies, harmonies in tqdm(train_loader, desc=f"Epoch {epoch + 1}/{num_epochs}", unit="batch"):
         melodies, harmonies = melodies.to(device), harmonies.to(device)
 
         # Forward pass
@@ -69,6 +73,12 @@ for epoch in range(num_epochs):
 
         # Update model parameters
         optimizer.step()
+
+        train_loss += loss.item()
+
+    # Calculate and print average training loss for the epoch
+    avg_train_loss = train_loss / len(train_loader)
+    print(f"Epoch {epoch + 1}/{num_epochs}, Average Training Loss: {avg_train_loss:.4f}")
 
     # Validation step
     model.eval()  # Set the model to evaluation mode
