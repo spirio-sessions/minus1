@@ -96,14 +96,8 @@ Exporting CSVs: 100%|███████████████████�
 
         # Transpose the data 12 times
         for j in range(12):
-            transposed_left_hand_df = left_hand_df.copy()
-            transposed_right_hand_df = right_hand_df.copy()
-
-            # Shift the data
-            for row in range(transposed_left_hand_df.shape[0]):
-                transposed_left_hand_df.iloc[row] = np.roll(transposed_left_hand_df.iloc[row], j)
-            for row in range(transposed_right_hand_df.shape[0]):
-                transposed_right_hand_df.iloc[row] = np.roll(transposed_right_hand_df.iloc[row], j)
+            transposed_left_hand_df = pd.DataFrame(np.roll(left_hand_df.values, j, axis=1))
+            transposed_right_hand_df = pd.DataFrame(np.roll(right_hand_df.values, j, axis=1))
 
             # Create filenames for left and right hand CSVs
             base_filename = f"song_{i+1}_+{j}"
