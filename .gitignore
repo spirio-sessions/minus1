@@ -13,6 +13,7 @@ pipeline_lstm_88keys/05_inference/predicted_leftH
 pipeline_lstm_88keys/06_output_csv_to_midi/output_mid
 pipeline_lstm_13keys/02_dataprep_midi_to_csv/mid-split
 pipeline_lstm_13keys/03_lstm_training/csv
+pipeline_lstm_13keys/03_lstm_training/csv_transposed
 
 # Created by https://www.toptal.com/developers/gitignore/api/python,pycharm,visualstudiocode
 # Edit at https://www.toptal.com/developers/gitignore?templates=python,pycharm,visualstudiocode
