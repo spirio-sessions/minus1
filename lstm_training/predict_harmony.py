@@ -36,7 +36,9 @@ def predict_harmony(model, melody):
     harmonies = []
     with torch.no_grad():
         for i in range(melody.shape[0]):
-            single_melody = torch.tensor(melody[i], dtype=torch.float32).unsqueeze(0).unsqueeze(0).to(device)
-            harmony = model(single_melody)
+            # Initialize hidden state
+            hidden = model.init_hidden(melody.shape[0], device, unbatched=True)
+            single_melody = torch.tensor(melody[i], dtype=torch.float32).unsqueeze(0).to(device)
+            harmony, hidden = model(single_melody, hidden)
             harmonies.append(harmony.squeeze(0).cpu().numpy())
     return np.array(harmonies)

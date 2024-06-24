@@ -8,6 +8,6 @@ It uses the split-midi set and transforms it into snapshots in a specific interv
 In the end the dataset will be exported to the dataformat CSV for training.
 """
 
-dataset_as_snapshots = dataset_snapshot.process_dataset_12keys('mid-split', INTERVAL, amount=300)
+dataset_as_snapshots = dataset_snapshot.process_dataset_12keys('mid-split', INTERVAL)
 
 export_maestro_hands_to_csv(dataset_as_snapshots, "../03_lstm_training/csv")

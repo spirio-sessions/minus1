@@ -61,10 +61,13 @@ class LSTMModel(nn.Module):
         tuple: The updated hidden state and cell state.
         """
         out, hidden = self.lstm(x, hidden)
-        out = self.fc(out[:, -1, :])
+        if len(out.shape) == 2:  # In case it is unbatched
+            out = self.fc(out[-1, :])
+        else:  # batched case
+            out = self.fc(out[:, -1, :])
         return out, hidden
 
-    def init_hidden(self, batch_size, device):
+    def init_hidden(self, batch_size, device, unbatched=False):
         """
         Initializes the hidden state and cell state.
 
@@ -75,6 +78,10 @@ class LSTMModel(nn.Module):
         Returns:
         tuple: The hidden state and cell state.
         """
-        h_0 = torch.zeros(self.num_layers, batch_size, self.hidden_size).to(device)
-        c_0 = torch.zeros(self.num_layers, batch_size, self.hidden_size).to(device)
+        if unbatched:
+            h_0 = torch.zeros(self.num_layers, self.hidden_size).to(device)
+            c_0 = torch.zeros(self.num_layers, self.hidden_size).to(device)
+        else:
+            h_0 = torch.zeros(self.num_layers, batch_size, self.hidden_size).to(device)
+            c_0 = torch.zeros(self.num_layers, batch_size, self.hidden_size).to(device)
         return (h_0, c_0)

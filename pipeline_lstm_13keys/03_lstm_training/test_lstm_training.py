@@ -16,19 +16,18 @@ Right now it uses a MSE (mean-squared-error) as loss-function and Adam as optimi
 It outputs a model.ht and a parameters.txt for further use.
 """
 
-
 # Load melody and harmony from csv and can be caped
 # melody, harmony = load_data_from_csv('csv')
-melody, harmony = load_data_from_csv('csv', 100)
+melody, harmony = load_data_from_csv('csv')
 
 # Parameters
 INPUT_SIZE = 12
 hidden_size = 64
-num_layers = 2
+num_layers = 8  # 2
 OUTPUT_SIZE = 12
 learning_rate = 0.001
 num_epochs = 10
-batch_size = 64
+batch_size = 128
 
 # Check if cuda is available
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
@@ -40,13 +39,14 @@ train_dataset = MelodyHarmonyDataset(melody_train, harmony_train)
 val_dataset = MelodyHarmonyDataset(melody_val, harmony_val)
 
 # DataLoader
-train_loader = DataLoader(train_dataset, batch_size=batch_size, shuffle=True)
-val_loader = DataLoader(val_dataset, batch_size=batch_size, shuffle=False)
+num_workers = 4
+train_loader = DataLoader(train_dataset, batch_size=batch_size, shuffle=True, pin_memory=True)
+val_loader = DataLoader(val_dataset, batch_size=batch_size, shuffle=False, pin_memory=True)
 
 # Model, loss function, optimizer
 model = LSTMModel(INPUT_SIZE, hidden_size, num_layers, OUTPUT_SIZE).to(device)
 # criterion = nn.MSELoss()
-criterion = MusicTheoryLoss(alpha=0.5, beta=2.0)  # Alpha equals weight of MSE, beta weight of custom loss-function
+criterion = MusicTheoryLoss(alpha=1, beta=2.0)  # Alpha equals weight of MSE, beta weight of custom loss-function
 optimizer = torch.optim.Adam(model.parameters(), lr=learning_rate)
 
 # Training loop

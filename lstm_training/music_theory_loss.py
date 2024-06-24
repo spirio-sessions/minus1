@@ -19,7 +19,7 @@ def interval_quality_all_notes(melody_notes, harmony_notes):
 
     # Define penalties based on the intervals
     # Penalty for unison (0 semitones): 1.0
-    penalties = torch.where(intervals == 0, torch.tensor(5.0, device=melody_notes.device),
+    penalties = torch.where(intervals == 0, torch.tensor(2.0, device=melody_notes.device),
                 # Penalty for perfect fifth (7 semitones): 0.0
                 torch.where(intervals == 7, torch.tensor(0.0, device=melody_notes.device),
                 # Penalty for major third (4 semitones) or perfect fourth (5 semitones): 0.1

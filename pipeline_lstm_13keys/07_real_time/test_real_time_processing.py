@@ -7,14 +7,14 @@ from lstm_training.load_lstm_model import load_lstm_model
 # Check if cuda is available
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 print(f'Using {device} as device.')
-model, parameters = load_lstm_model('../04_finished_model/models', 'first_realtime', device)
+model, parameters = load_lstm_model('../04_finished_model/models', 'realtime_70min_alldata', device)
 model.eval()
 
 # Unpack parameters
 input_size, hidden_size, num_layers, output_size, learning_rate, num_epochs, batch_size = parameters
 
 # Threshold for note activation
-threshold = 0.1
+threshold = 0.15
 
 # MIDI constants
 TICKS_PER_BEAT = 480  # Standard MIDI ticks per beat
@@ -52,7 +52,3 @@ for msg in input_port:
         # Send generated MIDI messages to the output port
         for midi_msg in midi_messages:
             output_port.send(midi_msg)
-
-
-
-
