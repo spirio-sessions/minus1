@@ -42,7 +42,7 @@ else:
     print("Using input:", midi_input_name, "and output:", midi_output_name)
 
 
-print("Listening for MIDI input...")
+print('\x1b[8;30;42m', "Listening for MIDI input... Press Strg+C to quit.", '\x1b[0m')
 
 for msg in input_port:
     if msg.type in ['note_on', 'note_off']:
