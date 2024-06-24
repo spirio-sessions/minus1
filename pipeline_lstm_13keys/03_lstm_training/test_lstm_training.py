@@ -58,8 +58,11 @@ for epoch in range(num_epochs):
     for melodies, harmonies in tqdm(train_loader, desc=f"Epoch {epoch + 1}/{num_epochs}", unit="batch"):
         melodies, harmonies = melodies.to(device), harmonies.to(device)
 
+        # Initialize hidden state
+        hidden = model.init_hidden(melodies.size(0), device)
+
         # Forward pass
-        outputs = model(melodies)
+        outputs, hidden = model(melodies, hidden)
 
         # Loss computation
         loss = criterion(outputs, harmonies, melodies)
@@ -87,8 +90,11 @@ for epoch in range(num_epochs):
         for melodies, harmonies in val_loader:
             melodies, harmonies = melodies.to(device), harmonies.to(device)
 
+            # Initialize hidden state
+            hidden = model.init_hidden(melodies.size(0), device)
+
             # Forward pass
-            outputs = model(melodies)
+            outputs, hidden = model(melodies, hidden)
 
             # Loss computation
             loss = criterion(outputs, harmonies, melodies)

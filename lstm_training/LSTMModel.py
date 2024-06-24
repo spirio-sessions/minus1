@@ -46,22 +46,35 @@ class LSTMModel(nn.Module):
         self.hidden_size = hidden_size
         self.num_layers = num_layers
         self.lstm = nn.LSTM(input_size, hidden_size, num_layers, batch_first=True)
-        self.fc = nn.Linear(hidden_size, output_size)  # * 2
+        self.fc = nn.Linear(hidden_size, output_size)
 
-    def forward(self, x):
+    def forward(self, x, hidden):
         """
-      Defines the forward pass of the LSTMModel.
+        Defines the forward pass of the LSTMModel.
 
-      Parameters:
-      x (torch.Tensor): The input tensor of shape (batch_size, sequence_length, input_size).
+        Parameters:
+        x (torch.Tensor): The input tensor of shape (batch_size, sequence_length, input_size).
+        hidden (tuple): The hidden state and cell state.
 
-      Returns:
-      torch.Tensor: The output tensor of shape (batch_size, output_size).
-      """
-        h_0 = torch.zeros(self.num_layers, x.size(0), self.hidden_size).to(x.device)  # * 2
-        c_0 = torch.zeros(self.num_layers, x.size(0), self.hidden_size).to(x.device)  # * 2
-        out, _ = self.lstm(x, (h_0, c_0))
+        Returns:
+        torch.Tensor: The output tensor of shape (batch_size, output_size).
+        tuple: The updated hidden state and cell state.
+        """
+        out, hidden = self.lstm(x, hidden)
         out = self.fc(out[:, -1, :])
-        return out
+        return out, hidden
 
-    # TODO: Hidden-Layer als Verbesserung des LSTM Modells?
+    def init_hidden(self, batch_size, device):
+        """
+        Initializes the hidden state and cell state.
+
+        Parameters:
+        batch_size (int): The batch size.
+        device (torch.device): The device to create the tensors on.
+
+        Returns:
+        tuple: The hidden state and cell state.
+        """
+        h_0 = torch.zeros(self.num_layers, batch_size, self.hidden_size).to(device)
+        c_0 = torch.zeros(self.num_layers, batch_size, self.hidden_size).to(device)
+        return (h_0, c_0)

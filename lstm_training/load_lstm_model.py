@@ -1,13 +1,10 @@
 import os
+import torch
 
 from lstm_training.LSTMModel import LSTMModel
 
-import torch
 
-from lstm_training.LSTMModel_realtime import LSTMModel_Realtime
-
-
-def load_lstm_model(path, model_name, device='cpu', realtime=False):
+def load_lstm_model(path, model_name, device='cpu'):
     """
     Load an LSTM model and its saved parameters from specified files.
 
@@ -47,11 +44,7 @@ def load_lstm_model(path, model_name, device='cpu', realtime=False):
     # Unpack parameters
     input_size, hidden_size, num_layers, output_size, learning_rate, num_epochs, batch_size = save_parameters
 
-    if not realtime:
-        # Initiate model
-        model = LSTMModel(int(input_size), int(hidden_size), int(num_layers), int(output_size)).to(device)
-    else:
-        model = LSTMModel_Realtime(int(input_size), int(hidden_size), int(num_layers), int(output_size)).to(device)
+    model = LSTMModel(int(input_size), int(hidden_size), int(num_layers), int(output_size)).to(device)
 
     # Load model state
     if os.path.exists(model_file_path):
