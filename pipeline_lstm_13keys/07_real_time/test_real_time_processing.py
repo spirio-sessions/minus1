@@ -1,11 +1,6 @@
 import mido
-import numpy as np
 import torch
-from termcolor import colored
-from mido import Message
 
-from lstm_realtime_processing.generate_left_hand import generate_left_hand
-from lstm_realtime_processing.midi_to_array import midi_to_array
 from lstm_realtime_processing.process_midi_message import process_midi_message
 from lstm_training.load_lstm_model import load_lstm_model
 

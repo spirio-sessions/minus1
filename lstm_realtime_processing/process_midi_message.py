@@ -1,5 +1,4 @@
 import numpy as np
-import mido
 from mido import Message
 
 from lstm_realtime_processing.generate_left_hand import generate_left_hand

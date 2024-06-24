@@ -4,7 +4,6 @@ from torch.utils.data import DataLoader
 from sklearn.model_selection import train_test_split
 
 from lstm_training.LSTMModel import LSTMModel
-from lstm_training.Deprecated_LSTMModel_realtime import LSTMModel_Realtime
 from lstm_training.MelodyHarmonyDataset import MelodyHarmonyDataset
 from lstm_training.load_data_from_csv import load_data_from_csv
 from lstm_training.save_model import save_model
@@ -43,7 +42,7 @@ train_loader = DataLoader(train_dataset, batch_size=batch_size, shuffle=True)
 val_loader = DataLoader(val_dataset, batch_size=batch_size, shuffle=False)
 
 # Model, loss function, optimizer
-model = LSTMModel_Realtime(input_size, hidden_size, num_layers, output_size).to(device)
+model = LSTMModel(input_size, hidden_size, num_layers, output_size).to(device)
 criterion = nn.MSELoss()
 optimizer = torch.optim.Adam(model.parameters(), lr=learning_rate)
 

@@ -2,7 +2,6 @@ import aubio
 import numpy as np
 import pyaudio
 import matplotlib.pyplot as plt
-from matplotlib.animation import FuncAnimation
 import torch
 
 
