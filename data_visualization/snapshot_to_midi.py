@@ -85,3 +85,47 @@ def create_midi_from_snapshots(snapshots, track_names, time_per_snapshot, output
     mid.save(os.path.join(output_path, output_name))
 
     print(f'MIDI file saved to {output_path}')
+
+
+def pad_to_88_keys(one_hot_vector, start_key=21, octaves_higher=0, total_keys=88):
+    """
+    Pad a one-hot encoded vector to fit 88 keys of a piano and place it a specified number of octaves higher.
+
+    Parameters:
+    one_hot_vector (np.ndarray): Input one-hot encoded vector.
+    start_key (int): The starting key in the 88-key piano.
+    octaves_higher (int): Number of octaves to shift the starting key higher.
+    total_keys (int): The total number of keys on the piano (default is 88).
+
+    Returns:
+    np.ndarray: Padded one-hot encoded vector with 88 keys.
+    """
+    # Calculate the new starting key based on the number of octaves higher
+    start_key = start_key + (octaves_higher * 12)
+
+    # Initialize the full 88-key vector with zeros
+    padded_vector = np.zeros(total_keys, dtype=int)
+    end_key = start_key + len(one_hot_vector)
+
+    if end_key > total_keys:
+        raise ValueError("The one-hot vector is too long to fit in the 88 keys starting from the given start_key.")
+
+    padded_vector[start_key:end_key] = one_hot_vector
+    return padded_vector
+
+
+def pad_sequence_of_one_hot_vectors(sequence, start_key=21, octaves_higher=0, total_keys=88):
+    """
+    Pad a sequence of one-hot encoded vectors to fit 88 keys of a piano, placing each one a specified number of octaves higher.
+
+    Parameters:
+    sequence (list of np.ndarray): Sequence of one-hot encoded vectors.
+    start_key (int): The starting key in the 88-key piano.
+    octaves_higher (int): Number of octaves to shift the starting key higher.
+    total_keys (int): The total number of keys on the piano (default is 88).
+
+    Returns:
+    np.ndarray: 2D array where each row is a padded one-hot encoded vector with 88 keys.
+    """
+    padded_vectors = [pad_to_88_keys(vector, start_key, octaves_higher, total_keys) for vector in sequence]
+    return np.stack(padded_vectors)
