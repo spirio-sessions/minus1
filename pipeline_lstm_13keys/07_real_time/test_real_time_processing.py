@@ -11,7 +11,7 @@ model, parameters = load_lstm_model('../04_finished_model/models', 'realtime_70m
 model.eval()
 
 # Unpack parameters
-input_size, hidden_size, num_layers, output_size, learning_rate, num_epochs, batch_size = parameters
+input_size, hidden_size, num_layers, output_size, learning_rate, num_epochs, batch_size, dataset, data_cap, alpha_loss, beta_loss = parameters
 
 # Threshold for note activation
 threshold = 0.15

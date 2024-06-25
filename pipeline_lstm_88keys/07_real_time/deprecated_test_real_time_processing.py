@@ -19,7 +19,7 @@ print(f'Using {device} as device.')
 model, parameters = load_lstm_model('../04_finished_model/models', 'lstm_03', device, True)
 
 # Unpack parameters
-input_size, hidden_size, num_layers, output_size, learning_rate, num_epochs, batch_size = parameters
+input_size, hidden_size, num_layers, output_size, learning_rate, num_epochs, batch_size, dataset, data_cap, alpha_loss, beta_loss = parameters
 
 # Call the function to start processing
 process_audio_stream(model, device, sequence_length, num_features)

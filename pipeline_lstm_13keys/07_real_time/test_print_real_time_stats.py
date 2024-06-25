@@ -13,6 +13,8 @@ The print includes:
     6. Heatmap for which key is getting played at what time
 """
 
+# TODO: Right now, pitch_data.csv is deprecated. This script has to be rewritten to print a saved form of a live performance
+
 # Load predicted data from realtime pitch
 predicted_harmony = pd.read_csv('predicted_data.csv').values
 original_melody = pd.read_csv('pitch_data.csv').values
