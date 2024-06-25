@@ -6,7 +6,7 @@
 - Puffer-function to delay and predict future for auto-regressiv
   - >Timewindow (png in privaten Repo als Timewindow.png)
     -> Im LSTM schummeln und window einbauen für Vergangenheit
-    Überlgen ob Convolutional layer, Convolution 1D, dann haben wir ein zeitliches Fenster.
+    Überlegen ob Convolutional layer, Convolution 1D, dann haben wir ein zeitliches Fenster.
     >1. Windown
     >2. cnn vllt
 - Test with transpose and without
