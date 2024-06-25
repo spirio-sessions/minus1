@@ -16,7 +16,7 @@ In the end it returns two CSV-files with the original melody and the predicted h
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
 # Load the model and parameters
-model, parameters = load_lstm_model('models', 'new_lossF_all_notes_0025', device)
+model, parameters = load_lstm_model('models', 'first_realtime', device)
 
 # Predict new melody
 # original_melody = pd.read_csv('validation/validation_melody.csv').values

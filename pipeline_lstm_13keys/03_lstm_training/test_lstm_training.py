@@ -16,19 +16,24 @@ Right now it uses a MSE (mean-squared-error) as loss-function and Adam as optimi
 It outputs a model.ht and a parameters.txt for further use.
 """
 
-
-# Load melody and harmony from csv and can be caped
-# melody, harmony = load_data_from_csv('csv')
-melody, harmony = load_data_from_csv('csv', 100)
-
 # Parameters
 INPUT_SIZE = 12
 hidden_size = 64
-num_layers = 2
+num_layers = 8  # 2
 OUTPUT_SIZE = 12
 learning_rate = 0.001
 num_epochs = 10
-batch_size = 64
+batch_size = 128
+databank = 'csv'
+data_cap = 0
+alpha_loss = 1.0
+beta_loss = 2.0
+
+
+
+# Load melody and harmony from csv and can be caped
+# melody, harmony = load_data_from_csv('csv')
+melody, harmony = load_data_from_csv(databank, data_cap)
 
 # Check if cuda is available
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
@@ -40,13 +45,14 @@ train_dataset = MelodyHarmonyDataset(melody_train, harmony_train)
 val_dataset = MelodyHarmonyDataset(melody_val, harmony_val)
 
 # DataLoader
-train_loader = DataLoader(train_dataset, batch_size=batch_size, shuffle=True)
-val_loader = DataLoader(val_dataset, batch_size=batch_size, shuffle=False)
+num_workers = 4
+train_loader = DataLoader(train_dataset, batch_size=batch_size, shuffle=True, pin_memory=True)
+val_loader = DataLoader(val_dataset, batch_size=batch_size, shuffle=False, pin_memory=True)
 
 # Model, loss function, optimizer
 model = LSTMModel(INPUT_SIZE, hidden_size, num_layers, OUTPUT_SIZE).to(device)
 # criterion = nn.MSELoss()
-criterion = MusicTheoryLoss(alpha=0.5, beta=2.0)  # Alpha equals weight of MSE, beta weight of custom loss-function
+criterion = MusicTheoryLoss(alpha_loss, beta_loss)  # Alpha equals weight of MSE, beta weight of custom loss-function
 optimizer = torch.optim.Adam(model.parameters(), lr=learning_rate)
 
 # Training loop
@@ -104,5 +110,5 @@ for epoch in range(num_epochs):
     print(f'Epoch [{epoch + 1}/{num_epochs}], Loss: {loss.item():.4f}, Val Loss: {val_loss:.4f}')
 
 # Save the trained model
-save_parameter = [INPUT_SIZE, hidden_size, num_layers, OUTPUT_SIZE, learning_rate, num_epochs, batch_size]
+save_parameter = [INPUT_SIZE, hidden_size, num_layers, OUTPUT_SIZE, learning_rate, num_epochs, batch_size, databank, data_cap, alpha_loss, beta_loss]
 save_model('../04_finished_model/models', save_parameter, model)
