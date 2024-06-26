@@ -12,7 +12,7 @@ from lstm_training.music_theory_loss import MusicTheoryLoss
 """
 This script will train a LSTM-Model (long short-term memory) with the preprocessed CSV-files.
 It uses several hyperparameter to finetune the model.
-Right now it uses a MSE (mean-squared-error) as loss-function and Adam as optimizer.
+Right now it uses a MSE (mean-squared-error) and a custom music-theory as loss-function and Adam as optimizer.
 It outputs a model.ht and a parameters.txt for further use.
 """
 
@@ -110,5 +110,6 @@ for epoch in range(num_epochs):
     print(f'Epoch [{epoch + 1}/{num_epochs}], Loss: {loss.item():.4f}, Val Loss: {val_loss:.4f}')
 
 # Save the trained model
-save_parameter = [INPUT_SIZE, hidden_size, num_layers, OUTPUT_SIZE, learning_rate, num_epochs, batch_size, databank, data_cap, alpha_loss, beta_loss]
+save_parameter = [INPUT_SIZE, hidden_size, num_layers, OUTPUT_SIZE, learning_rate,
+                  num_epochs, batch_size, databank, data_cap, alpha_loss, beta_loss]
 save_model('../04_finished_model/models', save_parameter, model)

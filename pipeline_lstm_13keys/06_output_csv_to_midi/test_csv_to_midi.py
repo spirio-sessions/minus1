@@ -10,6 +10,7 @@ This script converts the predicted harmony and the original melody into a MIDI-f
 The value 'threshold' determines at what threshold the one-hot-encoding probability actually plays the key or doesnt play it.
 If the threshold is high, it only plays notes the model is really sure about.
 If the threshold is low, it plays more notes, even tho the model is not really sure, if they fit.
+This version uses the 12-key data model.
 """
 threshold = 0.25
 

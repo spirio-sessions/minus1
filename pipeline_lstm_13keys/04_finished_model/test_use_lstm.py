@@ -8,21 +8,25 @@ from lstm_training.predict_harmony import predict_harmony
 
 """
 This script loads a model from the models directory and predicts a harmony from a given melody.
-In the end it returns two CSV-files with the original melody and the predicted harmony for further use.
+In the end it returns three CSV-files: 
+    Both of the original melody/harmony set and the predicted harmony for further use.
 """
 
+model_name = 'first_realtime'
+validation_melody_name = 'validation/song_300_rightH.csv'
+validation_harmony_name = 'validation/song_300_leftH.csv'
 
 # Check if cuda is available
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
 # Load the model and parameters
-model, parameters = load_lstm_model('models', 'first_realtime', device)
+model, parameters = load_lstm_model('models', model_name, device)
 
 # Predict new melody
 # original_melody = pd.read_csv('validation/validation_melody.csv').values
 # original_harmony = pd.read_csv('validation/validation_harmony.csv').values
-original_melody = pd.read_csv('validation/song_300_rightH.csv').values
-original_harmony = pd.read_csv('validation/song_300_leftH.csv').values
+original_melody = pd.read_csv(validation_melody_name).values
+original_harmony = pd.read_csv(validation_harmony_name).values
 predicted_harmony = predict_harmony(model, original_melody)
 
 # Export to CSV
