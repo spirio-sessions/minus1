@@ -63,7 +63,7 @@ def create_midi_from_snapshots(snapshots, track_names, time_per_snapshot, output
         print(f"Processing track {track_index}: {track_names[track_index]} with snapshot shape {snapshot.shape}")
 
         for time_step, keys in enumerate(snapshot):
-            print(f"  Time step {time_step}, keys type: {type(keys)}, keys shape: {np.shape(keys)}")
+            # print(f"  Time step {time_step}, keys type: {type(keys)}, keys shape: {np.shape(keys)}")
             if not isinstance(keys, (list, tuple, np.ndarray)):
                 print(f"Unexpected type for keys at time_step {time_step}, track_index {track_index}: {type(keys)}")
             for key in range(88):

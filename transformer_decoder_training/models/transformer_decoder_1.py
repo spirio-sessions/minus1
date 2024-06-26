@@ -97,7 +97,7 @@ class Transformer(nn.Module):
 
         self.sigmoid = nn.Sigmoid()
 
-    def forward(self, input_seq, pad_token=None):
+    def forward(self, input_seq, pad_token):
         # Mask for padding tokens
         # input_key_mask = input_seq == 0
         # input key mask should be (batch_size, seq_Length)
