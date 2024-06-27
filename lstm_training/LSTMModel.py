@@ -62,9 +62,9 @@ class LSTMModel(nn.Module):
         """
         out, hidden = self.lstm(x, hidden)
         if len(out.shape) == 2:  # In case it is unbatched
-            out = self.fc(out[-1, :])
+            out = self.fc(out[-1, :])  # Fully connected Layer
         else:  # batched case
-            out = self.fc(out[:, -1, :])
+            out = self.fc(out[:, -1, :])  # Fully connected Layer
         return out, hidden
 
     def init_hidden(self, batch_size, device, unbatched=False):
