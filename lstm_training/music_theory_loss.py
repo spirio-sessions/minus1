@@ -46,23 +46,23 @@ class MusicTheoryLoss(nn.Module):
         self.mse_loss = nn.MSELoss()
 
     def forward(self, outputs, targets, melodies, threshold=0.2):
+        """
+        :param outputs: predictions made by model
+        :param targets: ground truth values corresponding to the "outputs"
+        :param melodies: input melodies, which are necessary for computing the harmony penalties
+        :param threshold: threshhold at what point a note gets played or not
+        :return: a double-value that represents the amount of loss calculated
+        """
         mse_loss = self.mse_loss(outputs, targets)
 
         # Ensure tensors are squeezed correctly
         melodies = melodies.squeeze(1)  # Changes melodies Tensor(60, 1, 12) to Tensor(60, 12)
-
         harmony = outputs.squeeze(1)    # Ensure harmony Tensor is of shape (batch_size, seq_length)
-
-        # Looking at one note at a time
-        """
-        melody_notes = melodies.argmax(dim=1)  # Shape: (batch_size, seq_length)
-        harmony_notes = harmony.argmax(dim=1)  # Shape: (batch_size, seq_length)
-        """
 
         # Looking at all notes at the same time
         # Extracting played notes
-        melody_notes = (melodies > 0).nonzero(as_tuple=True)  # Indices of played melody notes
-        harmony_notes = (harmony > threshold).nonzero(as_tuple=True)  # Indices of played harmony notes
+        # melody_notes = (melodies > 0).nonzero(as_tuple=True)  # Indices of played melody notes
+        # harmony_notes = (harmony > threshold).nonzero(as_tuple=True)  # Indices of played harmony notes
 
         # Calculate harmony loss using interval quality
         penalties = interval_quality_all_notes(melodies, harmony)

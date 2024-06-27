@@ -1,6 +1,7 @@
 import mido
 import torch
 
+from lstm_realtime_processing.autoregressive_process import autoregressive_process
 from lstm_realtime_processing.process_midi_message import process_midi_message
 from lstm_training.load_lstm_model import load_lstm_model
 
@@ -21,10 +22,12 @@ model, parameters = load_lstm_model('../04_finished_model/models', 'realtime_70m
 model.eval()
 
 # Unpack parameters
-input_size, hidden_size, num_layers, output_size, learning_rate, num_epochs, batch_size = parameters
+input_size = int(parameters[0])
+hidden_size, num_layers, output_size, learning_rate, num_epochs, batch_size = parameters[1:]
 
-# Threshold for note activation
+# Threshold for note activation & temperature for randomness of autoregressive behaviour
 threshold = 0.15
+temperature = 1.0
 
 # MIDI constants
 TICKS_PER_BEAT = 480  # Standard MIDI ticks per beat
@@ -54,10 +57,20 @@ else:
 
 print('\x1b[8;30;42m', "Listening for MIDI input... Press Strg+C to quit.", '\x1b[0m')
 
+seed_sequence = [0] * 12  # Initial seed sequence
+
 for msg in input_port:
     if msg.type in ['note_on', 'note_off']:
         midi_messages, previous_harmony_keys, hidden = process_midi_message(msg, model, hidden, device,
                                                                             previous_harmony_keys, threshold)
+        """
+        # Attempt to make it auto-regressiv
+        next_note, hidden = autoregressive_process(model, seed_sequence[-input_size:], hidden, device, temperature)
+        seed_sequence.append(next_note)
+        seed_sequence = seed_sequence[-input_size:]
+        midi_note = mido.Message('note_on', note=next_note)
+        output_port.send(midi_note)
+        """
 
         # Send generated MIDI messages to the output port
         for midi_msg in midi_messages:
