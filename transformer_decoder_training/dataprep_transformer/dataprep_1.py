@@ -30,19 +30,6 @@ def filter_short_chunks(chunks_1, chunks_2, min_length):
     return filtered_chunks_1, filtered_chunks_2
 
 
-# Custom Dataset class
-class PianoDataset(Dataset):
-    def __init__(self, data):
-        self.data = data
-
-    def __len__(self):
-        return len(self.data)
-
-    def __getitem__(self, idx):
-        x, y = self.data[idx]
-        return torch.tensor(x, dtype=torch.long), torch.tensor(y, dtype=torch.long)
-
-
 # Prepare the dataset with paired sequences and SOS/EOS tokens for each chunk
 def prepare_dataset(dataset_as_snapshots, chunk_size, min_length, sos_token):
     data = []
