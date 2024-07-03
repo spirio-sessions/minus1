@@ -35,6 +35,11 @@ def inference(model, context_sequence, true_continuing_sequence, threshold, pad_
 
             # Get the ground truth right hand:
             ground_truth = true_continuing_sequence[0][i].to(device)
+            ground_truth = torch.unsqueeze(ground_truth, 0)
+            print("iteration:", i)
+            print("Next token shape", next_token.shape)
+            print("ground truth shape", ground_truth.shape)
+
             assert ground_truth.shape == next_token.shape  # Ensure same dimensions
 
             # Get right hand truth
@@ -53,4 +58,4 @@ def inference(model, context_sequence, true_continuing_sequence, threshold, pad_
             # Append the new token to the sequence
             input_seq = torch.cat((input_seq, next_token.unsqueeze(1)), dim=1)
 
-    return generated_tokens
+    return generated_tokens, generated_harmony
