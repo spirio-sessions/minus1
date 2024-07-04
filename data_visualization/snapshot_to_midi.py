@@ -129,3 +129,36 @@ def pad_sequence_of_one_hot_vectors(sequence, start_key=21, octaves_higher=0, to
     """
     padded_vectors = [pad_to_88_keys(vector, start_key, octaves_higher, total_keys) for vector in sequence]
     return np.stack(padded_vectors)
+
+
+def pad_beginning_of_sequence(sequence, amount_of_padding_snapshots):
+    if len(sequence.shape) != 2:
+        raise ValueError(f"The input sequence must be a 2D array. Provided array was of shape: {sequence.shape}")
+
+    padding_sequence = np.full((amount_of_padding_snapshots, sequence.shape[1]), 0)
+
+    return np.concatenate((padding_sequence, sequence), axis=0)
+
+
+def split_snapshots_in_sequence(sequence):
+    if len(sequence.shape) != 2:
+        raise ValueError(f"The input sequence must be a 2D array. Provided array was of shape: {sequence.shape}")
+
+    # print("Sequence shape:", sequence.shape)
+    vec_length = sequence.shape[1]  # Should be size(1) for the correct dimension
+    midpoint = vec_length // 2
+
+    harmony = sequence[:, :midpoint]
+    melody = sequence[:, midpoint:]
+
+    return melody,harmony
+
+
+def split_and_pad_sequence(sequence, amount_of_padding_snapshots):
+    # Todo: improve by padding first, then splitting
+    melody, harmony = split_snapshots_in_sequence(sequence)
+
+    melody = pad_beginning_of_sequence(melody, amount_of_padding_snapshots)
+    harmony = pad_beginning_of_sequence(harmony, amount_of_padding_snapshots)
+
+    return melody, harmony

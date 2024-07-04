@@ -8,10 +8,16 @@ def inference(model, context_sequence, true_continuing_sequence, threshold, pad_
     # Clone sequence so we don't change the original input
     input_seq = context_sequence.clone()
 
+    print("Tokens to generate:", true_continuing_sequence.shape[1])
+
     with torch.no_grad():
-        for i in range(len(true_continuing_sequence)):
+        for i in range(true_continuing_sequence.shape[1]):
+
+            print("iteration:", i)
+
             input_seq = input_seq.to(device)
 
+            #print("input sequence shape:", input_seq.shape)
             # Model prediction for new token
             data_pred = model(input_seq, pad_token)
 
@@ -20,10 +26,11 @@ def inference(model, context_sequence, true_continuing_sequence, threshold, pad_
 
             # Get last token from output (should be the one new token)
             next_token = data_pred[:, -1, :]
-            print("Next token shape:", next_token.shape)
+            #print("Next token shape:", next_token.shape)
 
             # Change probability values to binary with threshold
             next_token = (next_token >= threshold).float()
+            print("Next token before splitting:", next_token)
 
             # Add token to list
             generated_tokens.append(next_token)
@@ -36,9 +43,8 @@ def inference(model, context_sequence, true_continuing_sequence, threshold, pad_
             # Get the ground truth right hand:
             ground_truth = true_continuing_sequence[0][i].to(device)
             ground_truth = torch.unsqueeze(ground_truth, 0)
-            print("iteration:", i)
-            print("Next token shape", next_token.shape)
-            print("ground truth shape", ground_truth.shape)
+            #print("Next token shape", next_token.shape)
+            #print("ground truth shape", ground_truth.shape)
 
             assert ground_truth.shape == next_token.shape  # Ensure same dimensions
 
@@ -48,14 +54,18 @@ def inference(model, context_sequence, true_continuing_sequence, threshold, pad_
             # Split the original vector into two halves
             first_half = next_token[:, :midpoint]
             generated_harmony.append(first_half)
+            print("first half:", first_half)
 
             # Replace the second half with the ground truth vector
             second_half = right_hand_truth
 
             # Concatenate the first half of the original vector with the ground truth vector
             next_token = torch.cat((first_half, second_half), dim=1)
+            print("Token with ground truth:", next_token)
 
             # Append the new token to the sequence
             input_seq = torch.cat((input_seq, next_token.unsqueeze(1)), dim=1)
+            print("last input seq snapshot after adding next token:", input_seq[0][-1])
+            print("input seq shape:", input_seq.shape)
 
-    return generated_tokens, generated_harmony
+    return generated_tokens, generated_harmony, input_seq
