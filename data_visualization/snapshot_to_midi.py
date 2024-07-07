@@ -29,62 +29,83 @@ def create_midi_from_snapshots(snapshots, track_names, time_per_snapshot, output
     Returns:
     --------
     None
-
-    Example:
-    --------
-    >>> snapshots = [np.array([[0, 1, 0, ..., 0], [1, 0, 0, ..., 0]]), np.array([[0, 0, 1, ..., 0], [0, 1, 0, ..., 0]])]
-    >>> track_names = ['melody', 'harmony']
-    >>> time_per_snapshot = 0.1
-    >>> output_path = '/path/to/output/'
-    >>> output_name = 'output_name.mid'
-    >>> create_midi_from_snapshots(snapshots, track_names, time_per_snapshot, output_path, output_name)
-    MIDI file saved to /path/to/output/
     """
+
+    # Check if mido library is available
+    try:
+        import mido
+    except ImportError as e:
+        raise ImportError(
+            "The mido library is required to run this function. Please install it using 'pip install mido'.") from e
+
+    # Validate input parameters
+    if not isinstance(snapshots, list) or not all(isinstance(snap, np.ndarray) for snap in snapshots):
+        raise ValueError("snapshots must be a list of numpy.ndarray.")
+    if not isinstance(track_names, list) or not all(isinstance(name, str) for name in track_names):
+        raise ValueError("track_names must be a list of strings.")
+    if not isinstance(time_per_snapshot, (int, float)) or time_per_snapshot <= 0:
+        raise ValueError("time_per_snapshot must be a positive number.")
+    if not isinstance(output_path, str) or not os.path.isdir(output_path):
+        raise ValueError("output_path must be a valid directory path.")
+    if not isinstance(output_name, str) or not output_name.endswith('.mid'):
+        raise ValueError("output_name must be a string ending with '.mid'.")
+
+    # Check if the number of snapshots matches the number of track names
+    if len(snapshots) != len(track_names):
+        raise ValueError("The length of snapshots and track_names must be the same.")
+
     # Create a new MIDI file
-    mid = MidiFile()
+    midi_file = mido.MidiFile()
 
-    # Create and add tracks to the MIDI file
-    tracks = []
-    for track_name in track_names:
-        track = MidiTrack()
-        mid.tracks.append(track)
-        tracks.append(track)
+    # Process each track
+    for i, (snapshot, track_name) in enumerate(zip(snapshots, track_names)):
+        if not (isinstance(snapshot, np.ndarray) and snapshot.ndim == 2 and snapshot.shape[1] == 88):
+            raise ValueError(f"Each snapshot must be a 2D numpy array with 88 columns (keys). Error in snapshot {i}.")
 
-    # Constants
-    TICKS_PER_BEAT = mid.ticks_per_beat
-    TEMPO = 500000  # microseconds per beat, equivalent to 120 BPM
-    TICKS_PER_SNAPSHOT = int(TICKS_PER_BEAT * (time_per_snapshot / (60 / 120)))  # for 120 BPM
+        track = mido.MidiTrack()
+        track.name = track_name
+        midi_file.tracks.append(track)
 
-    # Process each track independently
-    for track_index, snapshot in enumerate(snapshots):
-        track = tracks[track_index]
-        previous_keys = [0] * 88
+        # Initialize previous snapshot to handle note off events
+        prev_snapshot = np.zeros(88, dtype=int)
 
-        print(f"Processing track {track_index}: {track_names[track_index]} with snapshot shape {snapshot.shape}")
+        for time_step in snapshot:
+            time_step = np.asarray(time_step)
+            if time_step.shape[0] != 88:
+                raise ValueError(f"Each row in snapshot {i} must have 88 columns. Found {time_step.shape[0]} columns.")
 
-        for time_step, keys in enumerate(snapshot):
-            # print(f"  Time step {time_step}, keys type: {type(keys)}, keys shape: {np.shape(keys)}")
-            if not isinstance(keys, (list, tuple, np.ndarray)):
-                print(f"Unexpected type for keys at time_step {time_step}, track_index {track_index}: {type(keys)}")
+            # Calculate the elapsed time for each snapshot
+            time_in_ticks = mido.second2tick(time_per_snapshot, ticks_per_beat=midi_file.ticks_per_beat,
+                                             tempo=mido.bpm2tempo(120))
+
+            # Note on events
             for key in range(88):
-                if keys[key] == 1 and previous_keys[key] == 0:
-                    # Note on
-                    track.append(Message('note_on', note=key + 21, velocity=64, time=0))
-                elif keys[key] == 0 and previous_keys[key] == 1:
-                    # Note off
-                    track.append(Message('note_off', note=key + 21, velocity=64, time=0))
-            previous_keys = keys
+                if time_step[key] == 1 and prev_snapshot[key] == 0:
+                    note_on = mido.Message('note_on', note=key + 21, velocity=64, time=0)
+                    track.append(note_on)
+                elif time_step[key] == 0 and prev_snapshot[key] == 1:
+                    note_off = mido.Message('note_off', note=key + 21, velocity=64, time=0)
+                    track.append(note_off)
 
-            # Add time delay (advance time)
-            track.append(Message('note_on', note=0, velocity=0, time=TICKS_PER_SNAPSHOT))
+            # Update previous snapshot
+            prev_snapshot = time_step.copy()
+
+            # Advance time for the next snapshot
+            track.append(mido.MetaMessage('set_tempo', tempo=mido.bpm2tempo(120), time=int(time_in_ticks)))
+
+        # Add a note off event for any remaining active notes at the end of the track
+        for key in range(88):
+            if prev_snapshot[key] == 1:
+                note_off = mido.Message('note_off', note=key + 21, velocity=64, time=0)
+                track.append(note_off)
 
     # Save the MIDI file
-    if not os.path.exists(output_path):
-        os.makedirs(output_path)
-
-    mid.save(os.path.join(output_path, output_name))
-
-    print(f'MIDI file saved to {output_path}')
+    output_file_path = os.path.join(output_path, output_name)
+    try:
+        midi_file.save(output_file_path)
+        print(f"MIDI file saved to {output_file_path}")
+    except Exception as e:
+        raise IOError(f"Could not save MIDI file to {output_file_path}.") from e
 
 
 def pad_to_88_keys(one_hot_vector, start_key=21, octaves_higher=0, total_keys=88):
