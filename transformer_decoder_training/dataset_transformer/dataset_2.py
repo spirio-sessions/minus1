@@ -20,6 +20,11 @@ class AdvancedPianoDataset(Dataset):
             song = np.array(song)
             # Concatenate right and left hand (left hand first, index wise), so we combine right and left in one snapshot
             song = np.concatenate((song[1], song[0]), axis=1)
+
+            if song.shape[1] != start_token.shape[1]:
+                raise ValueError(f"Number of keys in snapshot must match sos token. song shape: {song.shape}, "
+                                 f"SOS token shape: {start_token.shape}")
+
             self.data.append(song)
 
         self.seq_length = seq_length
