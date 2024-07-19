@@ -1,4 +1,5 @@
 import torch
+from torch import nn
 from torch.utils.data import DataLoader
 from sklearn.model_selection import train_test_split
 from tqdm import tqdm
@@ -17,17 +18,16 @@ It outputs a model.ht and a parameters.txt for further use.
 """
 
 # Parameters
-INPUT_SIZE = 12
+INPUT_SIZE = 24
 hidden_size = 64
 num_layers = 8  # 2
 OUTPUT_SIZE = 12
 learning_rate = 0.001
-num_epochs = 10
+num_epochs = 2
 batch_size = 128
 databank = 'csv'
-data_cap = 0
-alpha_loss = 1.0
-beta_loss = 2.0
+data_cap = 200
+
 
 
 
@@ -51,8 +51,8 @@ val_loader = DataLoader(val_dataset, batch_size=batch_size, shuffle=False, pin_m
 
 # Model, loss function, optimizer
 model = LSTMModel(INPUT_SIZE, hidden_size, num_layers, OUTPUT_SIZE).to(device)
-# criterion = nn.MSELoss()
-criterion = MusicTheoryLoss(alpha_loss, beta_loss)  # Alpha equals weight of MSE, beta weight of custom loss-function
+criterion = nn.MSELoss()
+# criterion = nn.CrossEntropyLoss()
 optimizer = torch.optim.Adam(model.parameters(), lr=learning_rate)
 
 # Training loop
@@ -61,17 +61,20 @@ for epoch in range(num_epochs):
     model.train()  # Set the model to training mode
     train_loss = 0.0
 
-    for melodies, harmonies in tqdm(train_loader, desc=f"Epoch {epoch + 1}/{num_epochs}", unit="batch"):
-        melodies, harmonies = melodies.to(device), harmonies.to(device)
+    for data in tqdm(train_loader, desc=f"Epoch {epoch + 1}/{num_epochs}", unit="batch"):
+        data = data.to(device)
+
+        # melodies = data[:, :12]  # First half of the data
+        harmonies = data[:, 12:]  # Second half of the data
 
         # Initialize hidden state
-        hidden = model.init_hidden(melodies.size(0), device)
+        hidden = model.init_hidden(data.size(0), device)
 
         # Forward pass
-        outputs, hidden = model(melodies, hidden)
+        outputs, hidden = model(data.unsqueeze(1), hidden)  # Ensuring for always batched (batch_size, 1, feature_size)
 
         # Loss computation
-        loss = criterion(outputs, harmonies, melodies)
+        loss = criterion(outputs, harmonies)
 
         # Zero the parameter gradients
         optimizer.zero_grad()
@@ -91,19 +94,22 @@ for epoch in range(num_epochs):
     # Validation step
     model.eval()  # Set the model to evaluation mode
     val_loss = 0
-    loss = 0
+    # loss = 0
     with torch.no_grad():  # Disable gradient computation for validation
-        for melodies, harmonies in val_loader:
-            melodies, harmonies = melodies.to(device), harmonies.to(device)
+        for data in val_loader:
+            data = data.to(device)
+
+            # melodies = data[:, :12]  # First half of the data
+            harmonies = data[:, 12:]  # Second half of the data
 
             # Initialize hidden state
-            hidden = model.init_hidden(melodies.size(0), device)
+            hidden = model.init_hidden(data.size(0), device)
 
             # Forward pass
-            outputs, hidden = model(melodies, hidden)
+            outputs, hidden = model(data.unsqueeze(1), hidden)  # Ensuring for always batched (batch_size, 1, feature_size)
 
             # Loss computation
-            loss = criterion(outputs, harmonies, melodies)
+            loss = criterion(outputs, harmonies)
             val_loss += loss.item()
 
     val_loss /= len(val_loader)
@@ -111,5 +117,5 @@ for epoch in range(num_epochs):
 
 # Save the trained model
 save_parameter = [INPUT_SIZE, hidden_size, num_layers, OUTPUT_SIZE, learning_rate,
-                  num_epochs, batch_size, databank, data_cap, alpha_loss, beta_loss]
+                  num_epochs, batch_size, databank, data_cap]
 save_model('../04_finished_model/models', save_parameter, model)

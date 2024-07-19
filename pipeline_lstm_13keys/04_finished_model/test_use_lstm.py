@@ -12,7 +12,7 @@ In the end it returns three CSV-files:
     Both of the original melody/harmony set and the predicted harmony for further use.
 """
 
-model_name = 'first_realtime'
+model_name = 'lstm_04'
 validation_melody_name = 'validation/song_300_rightH.csv'
 validation_harmony_name = 'validation/song_300_leftH.csv'
 

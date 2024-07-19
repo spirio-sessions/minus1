@@ -57,3 +57,36 @@ I-Tüpfelchen dann die Live Demo
 
 
 LSTM History states erstmal anfahren lassen. Probieren, dass der Klavierspieler erstmal die linke Hand mitspielt, und dann aufhört.
+
+-------
+
+
+
+- [ ] Im Training  ganz normale binary cross entropy für beide Teile.
+
+- [ ] In der Inferenz dann der SoftMax auf der Hand, die ich haben will. Oder per Threshholding.
+
+- [ ] die andere Hand wird wieder reinkopiert, die braucht keinen Softmax. Pro Dimension eine Sigmoid anstatt Softmax
+
+- [ ] Los function. Wie ist die Ableitung von where class. Müssen eine Ableitungsfunktion schaffen. .A Aber eigentlich sehr schnell. Nochmal in die Dokumentation
+
+- [ ] Wenn die loss function harmonies und melodies nimmt, kann es nicht mehr autoregressiv sein.
+
+- [ ] input_size und output muss schon 24 sein. Er soll beide voraussagen
+- [ ] Inverenz muss dann die seq_lenght manuell sein (sollte im Code passen)
+
+- [ ] Normal      T, T+1, T+2, T+3, T+4
+- [ ] Dataloader  T+1, T+2, T+3, T+4 (oder auch mehr als 1 Frame)
+- [ ] auto torch dataloader,
+- [ ] Beide hände, autoregressive, einmal beide hände rein, andere raus, einmal eine hand rein und beide Hände raus.
+Wenn der Dataloader einmal stimmt.
+
+- [ ] Nur aus rechter Hand die linke generieren ist ein gutes Experiement, wird aber nicht gut funktionieren.
+
+- [ ] Tensorboard Torch Loss schauen, ob es gut trainiert. Erste Diagnostic.
+
+https://pytorch.org/tutorials/recipes/recipes/tensorboard_with_pytorch.html
+
+- [ ] Sequence Length 512 snapshots anstatt alles.
+- [ ] Aber noch weniger ist besser 32, 64 und mit overlapping
+- [ ] Im Tensor Board dann nachchecken.

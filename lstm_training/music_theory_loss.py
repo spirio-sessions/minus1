@@ -1,6 +1,7 @@
 import torch
 import torch.nn as nn
 
+# Usage: criterion = MusicTheoryLoss(alpha_loss, beta_loss) # Alpha equals weight of MSE, beta weight of custom loss-function
 # Define a function to compute interval quality
 def interval_quality(melody_notes, harmony_notes):
     intervals = torch.abs(melody_notes - harmony_notes) % 12

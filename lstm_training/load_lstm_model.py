@@ -4,6 +4,13 @@ import torch
 from lstm_training.LSTMModel import LSTMModel
 
 
+def parse_line(line):
+    try:
+        return float(line.strip())
+    except ValueError:
+        return line.strip().strip('"')
+
+
 def load_lstm_model(path, model_name, device='cpu'):
     """
     Load an LSTM model and its saved parameters from specified files.
@@ -39,10 +46,11 @@ def load_lstm_model(path, model_name, device='cpu'):
     parameter_file_path = f'{path}/{model_name}.txt'
 
     with open(parameter_file_path, 'r') as f:
-        save_parameters = [float(line.strip()) for line in f]
+        save_parameters = [parse_line(line) for line in f]
+
 
     # Unpack parameters
-    input_size, hidden_size, num_layers, output_size, learning_rate, num_epochs, batch_size = save_parameters
+    input_size, hidden_size, num_layers, output_size, learning_rate, num_epochs, batch_size, databank, amount_data = save_parameters
 
     model = LSTMModel(int(input_size), int(hidden_size), int(num_layers), int(output_size)).to(device)
 
