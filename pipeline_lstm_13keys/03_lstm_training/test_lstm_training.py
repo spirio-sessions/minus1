@@ -8,7 +8,6 @@ from lstm_training.LSTMModel import LSTMModel
 from lstm_training.MelodyHarmonyDataset import MelodyHarmonyDataset
 from lstm_training.load_data_from_csv import load_data_from_csv
 from lstm_training.save_model import save_model
-from lstm_training.music_theory_loss import MusicTheoryLoss
 
 """
 This script will train a LSTM-Model (long short-term memory) with the preprocessed CSV-files.
@@ -21,9 +20,9 @@ It outputs a model.ht and a parameters.txt for further use.
 INPUT_SIZE = 24
 hidden_size = 64
 num_layers = 8  # 2
-OUTPUT_SIZE = 12
+OUTPUT_SIZE = 24
 learning_rate = 0.001
-num_epochs = 2
+num_epochs = 10
 batch_size = 128
 databank = 'csv'
 data_cap = 200
@@ -64,8 +63,8 @@ for epoch in range(num_epochs):
     for data in tqdm(train_loader, desc=f"Epoch {epoch + 1}/{num_epochs}", unit="batch"):
         data = data.to(device)
 
-        # melodies = data[:, :12]  # First half of the data
-        harmonies = data[:, 12:]  # Second half of the data
+        # melodies = data[:, :OUTPUT_SIZE]  # First half of the data
+        harmonies = data[:, OUTPUT_SIZE:]  # Second half of the data
 
         # Initialize hidden state
         hidden = model.init_hidden(data.size(0), device)
@@ -99,8 +98,8 @@ for epoch in range(num_epochs):
         for data in val_loader:
             data = data.to(device)
 
-            # melodies = data[:, :12]  # First half of the data
-            harmonies = data[:, 12:]  # Second half of the data
+            # melodies = data[:, :OUTPUT_SIZE]  # First half of the data
+            harmonies = data[:, OUTPUT_SIZE:]  # Second half of the data
 
             # Initialize hidden state
             hidden = model.init_hidden(data.size(0), device)
