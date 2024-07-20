@@ -20,7 +20,7 @@ It outputs a model.ht and a parameters.txt for further use.
 INPUT_SIZE = 24
 hidden_size = 64
 num_layers = 8  # 2
-OUTPUT_SIZE = 24
+OUTPUT_SIZE = 12
 learning_rate = 0.001
 num_epochs = 10
 batch_size = 128
@@ -63,8 +63,8 @@ for epoch in range(num_epochs):
     for data in tqdm(train_loader, desc=f"Epoch {epoch + 1}/{num_epochs}", unit="batch"):
         data = data.to(device)
 
-        # melodies = data[:, :OUTPUT_SIZE]  # First half of the data
-        harmonies = data[:, OUTPUT_SIZE:]  # Second half of the data
+        melodies = data[:, :12]  # First half of the data
+        harmonies = data[:, 12:]  # Second half of the data
 
         # Initialize hidden state
         hidden = model.init_hidden(data.size(0), device)

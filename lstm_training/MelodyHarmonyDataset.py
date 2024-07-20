@@ -14,7 +14,6 @@ class MelodyHarmonyDataset(Dataset):
         """
         self.data = [torch.cat((torch.tensor(m, dtype=torch.float32), torch.tensor(h, dtype=torch.float32)), dim=0) for m, h in zip(melody, harmony)]
 
-
     def __len__(self):
         """
         Returns the number of samples in the dataset.
