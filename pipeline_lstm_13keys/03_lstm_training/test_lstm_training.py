@@ -20,10 +20,11 @@ It outputs a model.ht and a parameters.txt for further use.
 INPUT_SIZE = 24
 hidden_size = 64
 num_layers = 8  # 2
-OUTPUT_SIZE = 12
+OUTPUT_SIZE = 24
 learning_rate = 0.001
 num_epochs = 10
 batch_size = 128
+seq_length = 32
 databank = 'csv'
 data_cap = 200
 
@@ -40,18 +41,16 @@ print(f'Using {device} as device.')
 
 # Preparing data
 melody_train, melody_val, harmony_train, harmony_val = train_test_split(melody, harmony, test_size=0.2, random_state=42)
-train_dataset = MelodyHarmonyDataset(melody_train, harmony_train)
-val_dataset = MelodyHarmonyDataset(melody_val, harmony_val)
+prep_dataset = MelodyHarmonyDataset(melody_train, harmony_train, seq_length)
 
 # DataLoader
-num_workers = 4
-train_loader = DataLoader(train_dataset, batch_size=batch_size, shuffle=True, pin_memory=True)
-val_loader = DataLoader(val_dataset, batch_size=batch_size, shuffle=False, pin_memory=True)
+train_loader = DataLoader(prep_dataset, batch_size=batch_size, shuffle=True, pin_memory=True)
+val_loader = DataLoader(prep_dataset, batch_size=batch_size, shuffle=False, pin_memory=True)
 
 # Model, loss function, optimizer
 model = LSTMModel(INPUT_SIZE, hidden_size, num_layers, OUTPUT_SIZE).to(device)
-criterion = nn.MSELoss()
-# criterion = nn.CrossEntropyLoss()
+# criterion = nn.MSELoss()
+criterion = nn.CrossEntropyLoss()
 optimizer = torch.optim.Adam(model.parameters(), lr=learning_rate)
 
 # Training loop
@@ -60,20 +59,24 @@ for epoch in range(num_epochs):
     model.train()  # Set the model to training mode
     train_loss = 0.0
 
-    for data in tqdm(train_loader, desc=f"Epoch {epoch + 1}/{num_epochs}", unit="batch"):
-        data = data.to(device)
+    for inputs, targets in tqdm(train_loader, desc=f"Epoch {epoch + 1}/{num_epochs}", unit="batch"):
+        inputs = inputs.to(device)
+        targets = targets.to(device)
 
-        melodies = data[:, :12]  # First half of the data
-        harmonies = data[:, 12:]  # Second half of the data
+        # rightHand = data[:, :12]  # First half of the data
+        # leftHand = data[:, 12:].long()  # Second half of the data, converted for cross-entropy
 
         # Initialize hidden state
-        hidden = model.init_hidden(data.size(0), device)
+        hidden = model.init_hidden(inputs.size(0), device)
 
         # Forward pass
-        outputs, hidden = model(data.unsqueeze(1), hidden)  # Ensuring for always batched (batch_size, 1, feature_size)
+        outputs, hidden = model(inputs, hidden)  # Ensuring for always batched (batch_size, 1, feature_size)
 
         # Loss computation
-        loss = criterion(outputs, harmonies)
+        # CrossEntropyLoss expects (N, C) and (N), where C = number of classes
+        outputs = outputs.view(-1, OUTPUT_SIZE)  # (batch_size * seq_length, OUTPUT_SIZE)
+        targets = targets.view(-1)  # (batch_size * seq_length)
+        loss = criterion(outputs, targets)
 
         # Zero the parameter gradients
         optimizer.zero_grad()
@@ -95,20 +98,20 @@ for epoch in range(num_epochs):
     val_loss = 0
     # loss = 0
     with torch.no_grad():  # Disable gradient computation for validation
-        for data in val_loader:
-            data = data.to(device)
-
-            # melodies = data[:, :OUTPUT_SIZE]  # First half of the data
-            harmonies = data[:, OUTPUT_SIZE:]  # Second half of the data
+        for inputs, targets in val_loader:
+            inputs = inputs.to(device)
+            targets = targets.to(device)
 
             # Initialize hidden state
-            hidden = model.init_hidden(data.size(0), device)
+            hidden = model.init_hidden(inputs.size(0), device)
 
             # Forward pass
-            outputs, hidden = model(data.unsqueeze(1), hidden)  # Ensuring for always batched (batch_size, 1, feature_size)
+            outputs, hidden = model(inputs, hidden)  # (batch_size, seq_length, feature_size)
 
             # Loss computation
-            loss = criterion(outputs, harmonies)
+            outputs = outputs.view(-1, OUTPUT_SIZE)  # (batch_size * seq_length, OUTPUT_SIZE)
+            targets = targets.view(-1)  # (batch_size * seq_length)
+            loss = criterion(outputs, targets)
             val_loss += loss.item()
 
     val_loss /= len(val_loader)
@@ -116,5 +119,5 @@ for epoch in range(num_epochs):
 
 # Save the trained model
 save_parameter = [INPUT_SIZE, hidden_size, num_layers, OUTPUT_SIZE, learning_rate,
-                  num_epochs, batch_size, databank, data_cap]
+                  num_epochs, batch_size, seq_length, databank, data_cap]
 save_model('../04_finished_model/models', save_parameter, model)
