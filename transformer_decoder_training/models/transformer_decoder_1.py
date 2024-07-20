@@ -125,4 +125,4 @@ class Transformer(nn.Module):
 
         # Output predictions
         output = self.fc_out(embs)
-        return self.sigmoid(output)  # Apply sigmoid to get probabilities
+        return self.sigmoid(output)  # Apply sigmoid to get probabilities (should apply to each feature sperately)
