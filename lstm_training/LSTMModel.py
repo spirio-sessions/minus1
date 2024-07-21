@@ -49,22 +49,9 @@ class LSTMModel(nn.Module):
         self.fc = nn.Linear(hidden_size, output_size)
 
     def forward(self, x, hidden):
-        """
-        Defines the forward pass of the LSTMModel.
 
-        Parameters:
-        x (torch.Tensor): The input tensor of shape (batch_size, sequence_length, input_size).
-        hidden (tuple): The hidden state and cell state.
-
-        Returns:
-        torch.Tensor: The output tensor of shape (batch_size, output_size).
-        tuple: The updated hidden state and cell state.
-        """
         out, hidden = self.lstm(x, hidden)
-        if len(out.shape) == 2:  # In case it is unbatched
-            out = self.fc(out[-1, :])  # Fully connected Layer
-        else:  # batched case
-            out = self.fc(out[:, -1, :])  # Fully connected Layer
+        out = self.fc(out[:, -1, :])  # Fully connected layer on the last time step's hidden state
         return out, hidden
 
     def init_hidden(self, batch_size, device, unbatched=False):
@@ -78,10 +65,7 @@ class LSTMModel(nn.Module):
         Returns:
         tuple: The hidden state and cell state.
         """
-        if unbatched:
-            h_0 = torch.zeros(self.num_layers, self.hidden_size).to(device)
-            c_0 = torch.zeros(self.num_layers, self.hidden_size).to(device)
-        else:
-            h_0 = torch.zeros(self.num_layers, batch_size, self.hidden_size).to(device)
-            c_0 = torch.zeros(self.num_layers, batch_size, self.hidden_size).to(device)
+
+        h_0 = torch.zeros(self.num_layers, batch_size, self.hidden_size).to(device)
+        c_0 = torch.zeros(self.num_layers, batch_size, self.hidden_size).to(device)
         return (h_0, c_0)
