@@ -7,9 +7,9 @@ import numpy as np
 
 
 def prepare_dataset_as_dataloaders(dataset_dir: str, snapshot_intervall: int, batch_size: int, seq_length: int,
-                                   stride: int, test_size: int, sos_token: np.ndarray):
+                                   stride: int, test_size: int, sos_token: np.ndarray, amount=-1):
     # load data
-    dataset_as_snapshots = dataset_snapshot.process_dataset_multithreaded(dataset_dir, snapshot_intervall)
+    dataset_as_snapshots = dataset_snapshot.process_dataset_multithreaded(dataset_dir, snapshot_intervall, amount=amount)
     # filter snapshots to 88 piano notes
     dataset_as_snapshots = dataset_snapshot.filter_piano_range(dataset_as_snapshots)
     # reduce to 12 keys
