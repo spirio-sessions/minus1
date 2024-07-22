@@ -1,12 +1,15 @@
-# inference with sigmoid and temperature sampling
+# inference with sigmoid in inference and temperature sampling
 
 import torch
+
 
 def sample_with_temperature(logits, temperature):
     probabilities = torch.sigmoid(logits / temperature)  # Apply temperature to logits
     return torch.bernoulli(probabilities)  # Sample from the probabilities
 
-def inference_with_temperature_sampling(model, context_sequence, true_continuing_sequence, temperature, pad_token, device):
+
+def inference_with_temperature_sampling(model, context_sequence, true_continuing_sequence, temperature, pad_token,
+                                        device):
     generated_tokens = []
     generated_harmony = []
 
@@ -65,13 +68,17 @@ def inference_with_temperature_sampling(model, context_sequence, true_continuing
 
     return generated_tokens, generated_harmony, input_seq
 
+
 import torch
+
 
 def sample_with_temperature_and_max_notes(logits, temperature):
     probabilities = torch.sigmoid(logits / temperature)  # Apply temperature to logits
     return probabilities
 
-def inference_with_temperature_and_max_notes_sampling(model, context_sequence, true_continuing_sequence, threshold, temperature, pad_token, device, max_notes_per_time_step):
+
+def inference_with_temperature_and_max_notes_sampling(model, context_sequence, true_continuing_sequence, threshold,
+                                                      temperature, pad_token, device, max_notes_per_time_step):
     generated_tokens = []
     generated_harmony = []
 
