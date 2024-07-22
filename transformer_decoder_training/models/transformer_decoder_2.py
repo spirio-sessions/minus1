@@ -95,8 +95,6 @@ class Transformer(nn.Module):
         # Output layer
         self.fc_out = nn.Linear(hidden_size, num_emb)
 
-        self.sigmoid = nn.Sigmoid()
-
     def forward(self, input_seq, pad_token):
         # Mask for padding tokens
         # input_key_mask = input_seq == 0
