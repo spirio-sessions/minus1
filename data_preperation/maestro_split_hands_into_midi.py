@@ -7,6 +7,8 @@ def split_midi_tracks(input_folder, output_folder, use_all_data=True, amount_dat
     """
     Split MIDI files into separate tracks and save them to an output folder.
 
+    Filename needs to end in ".midi"
+
     This function reads MIDI files from the specified input folder, splits each
     file into individual tracks, and saves each track as a new MIDI file in the
     output folder. The tracks are named based on their index: the first track is
