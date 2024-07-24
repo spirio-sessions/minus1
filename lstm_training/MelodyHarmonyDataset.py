@@ -1,39 +1,37 @@
+import numpy as np
 import torch
 from torch.utils.data import Dataset
 
 
 class MelodyHarmonyDataset(Dataset):
-
-    def __init__(self, melody, harmony):
-        """
-        Initializes the MelodyHarmonyDataset with melody and harmony data.
-
-        Parameters:
-        melody (array-like): The melody data, where each element is a sequence of features.
-        harmony (array-like): The harmony data, where each element is a corresponding sequence of features.
-        """
-        self.data = [torch.cat((torch.tensor(m, dtype=torch.float32), torch.tensor(h, dtype=torch.float32)), dim=0) for m, h in zip(melody, harmony)]
-
+    def __init__(self, melody: np.ndarray, harmony: np.ndarray, seq_length: int, stride: int):
+        assert len(melody) == len(harmony), "Melody and harmony must be the same length"
+        self.melody = melody
+        self.harmony = harmony
+        self.seq_length = seq_length
+        self.stride = stride
 
     def __len__(self):
-        """
-        Returns the number of samples in the dataset.
-
-        Returns:
-        int: The number of samples in the dataset.
-        """
-        return len(self.data)
+        # Calculate the number of sequences we can extract from the data
+        return len(self.melody) - self.seq_length
 
     def __getitem__(self, idx):
-        """
-        Retrieves the sample (melody and harmony pair) at the specified index.
+        # Felix Code:
+        # transformer_decoder_training -> dataset_transformer -> dataset_2.py
+        # for song in data:
+        # song = np.concatenate((song[1], song[0]), axis=1)
+        # self.data.append(song)
+        # Extract input and target sequences
+        input_start = idx
+        input_end = input_start + self.seq_length
+        target_start = input_start + 1
+        target_end = target_start + self.seq_length
 
-        Parameters:
-        idx (int): The index of the sample to retrieve.
+        input_segment = np.concatenate((self.melody[input_start:input_end], self.harmony[input_start:input_end]), axis=1)
+        target_segment = self.harmony[target_start:target_end]
 
-        Returns:
-        tuple: A tuple containing:
-            - melody (torch.Tensor): The melody data at the specified index, with an added sequence_length dimension.
-            - harmony (torch.Tensor): The harmony data at the specified index.
-        """
-        return self.data[idx]
+        return torch.tensor(input_segment, dtype=torch.float32), torch.tensor(target_segment, dtype=torch.long)
+
+
+
+

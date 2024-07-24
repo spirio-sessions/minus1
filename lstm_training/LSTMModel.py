@@ -51,7 +51,8 @@ class LSTMModel(nn.Module):
     def forward(self, x, hidden):
 
         out, hidden = self.lstm(x, hidden)
-        out = self.fc(out[:, -1, :])  # Fully connected layer on the last time step's hidden state
+        # out = self.fc(out[:, -1, :])  # Fully connected layer on the last time step's hidden state
+        out = self.fc(out)
         return out, hidden
 
     def init_hidden(self, batch_size, device, unbatched=False):
