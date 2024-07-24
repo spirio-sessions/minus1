@@ -324,3 +324,6 @@ pyrightconfig.json
 
 # End of https://www.toptal.com/developers/gitignore/api/python,pycharm,visualstudiocode
 /.idea/other.xml
+
+# ignore saved Transformer models + midi files
+/transformer_decoder_training/saved_files/
