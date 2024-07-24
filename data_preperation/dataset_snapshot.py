@@ -109,6 +109,9 @@ def trim_snapshots(group_snapshots):
     max_end = 0
 
     for snapshots in group_snapshots:
+        if len(snapshots) == 0:
+            raise ValueError("Snapshot array was empty")
+
         non_empty_indices = np.where(snapshots.any(axis=1))[0]
         if non_empty_indices.size > 0:
             first_non_empty = non_empty_indices[0]
