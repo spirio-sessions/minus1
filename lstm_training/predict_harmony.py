@@ -1,8 +1,6 @@
 import numpy as np
 import torch
 
-from lstm_training.LSTMModel import LSTMModel
-
 
 def predict_harmony(model, melody, initial_harmony=None, max_len=50):
 
@@ -24,6 +22,7 @@ def predict_harmony(model, melody, initial_harmony=None, max_len=50):
 
     hidden = model.init_hidden(melody_tensor.size(0), device)
 
+    # Von Felix: transformer -> inference -> inference_3 ANSCHAUEN.
     with torch.no_grad():
         for t in range(max_len):
             # Select the input sequence up to the current time step

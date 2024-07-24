@@ -24,7 +24,8 @@ OUTPUT_SIZE = 24
 learning_rate = 0.001
 num_epochs = 10
 batch_size = 128
-seq_length = 32
+seq_length = 64
+stride = 16
 databank = 'csv'
 data_cap = 200
 
@@ -41,12 +42,14 @@ print(f'Using {device} as device.')
 
 # Preparing data
 melody_train, melody_val, harmony_train, harmony_val = train_test_split(melody, harmony, test_size=0.2, random_state=42)
-prep_dataset = MelodyHarmonyDataset(melody_train, harmony_train, seq_length)
+prep_dataset = MelodyHarmonyDataset(melody_train, harmony_train, seq_length, stride)
+# for each dataset use one own prep_dataset for dataloader
 
 # DataLoader
 train_loader = DataLoader(prep_dataset, batch_size=batch_size, shuffle=True, pin_memory=True)
 val_loader = DataLoader(prep_dataset, batch_size=batch_size, shuffle=False, pin_memory=True)
-
+        # maybe use drop_last=True, damit nimmt er die letzten "batch_size" Sequencen und wirft sie weg, da sie prop. kürzer sind.
+        # batch_size -> sequencen -> snapshots.
 # Model, loss function, optimizer
 model = LSTMModel(INPUT_SIZE, hidden_size, num_layers, OUTPUT_SIZE).to(device)
 # criterion = nn.MSELoss()
@@ -61,7 +64,7 @@ for epoch in range(num_epochs):
 
     for inputs, targets in tqdm(train_loader, desc=f"Epoch {epoch + 1}/{num_epochs}", unit="batch"):
         inputs = inputs.to(device)
-        targets = targets.to(device)
+        targets = targets.to(device)  # Aus dem DataLoader, geht bei Encoder-Docoder nicht, geht das hier?
 
         # rightHand = data[:, :12]  # First half of the data
         # leftHand = data[:, 12:].long()  # Second half of the data, converted for cross-entropy
