@@ -1,5 +1,4 @@
 import os
-import numpy as np
 import pandas as pd
 from tqdm import tqdm
 
@@ -12,15 +11,17 @@ def load_data_from_csv(directory, data_cap=0):
     and harmony data. Melody files are identified by the suffix '_rightH.csv',
     and harmony files by the corresponding '_leftH.csv'. It reads the data
     from these files into Pandas DataFrames, converts them to NumPy arrays,
-    and returns the concatenated arrays of melody and harmony data.
+    and returns a list of songs. Each song is represented as a list containing
+    two NumPy arrays: one for the melody (right hand) and one for the harmony (left hand).
 
     Parameters:
     directory (str): The path to the directory containing the CSV files.
+    data_cap (int): Optional cap to limit the number of files processed.
 
     Returns:
-    tuple: A tuple containing two NumPy arrays:
-        - The first array contains concatenated melody data.
-        - The second array contains concatenated harmony data.
+    list: A list where each element is a list containing two NumPy arrays:
+        - The first array contains the melody data.
+        - The second array contains the harmony data.
 
     Raises:
     FileNotFoundError: If a corresponding harmony file is not found for a melody file.
@@ -28,14 +29,12 @@ def load_data_from_csv(directory, data_cap=0):
     pd.errors.ParserError: If there is a parsing error while reading a CSV file.
 
     Example:
-    >>> melody_data, harmony_data = load_data_from_csv('/path/to/directory')
-    >>> print(melody_data.shape)
-    (num_samples, num_features)
-    >>> print(harmony_data.shape)
-    (num_samples, num_features)
+    >>> songs = load_data_from_csv('/path/to/directory')
+    >>> print(len(songs))
+    >>> print(songs[0][0].shape)  # Shape of the first song's melody data
+    >>> print(songs[0][1].shape)  # Shape of the first song's harmony data
     """
-    melody_data = []
-    harmony_data = []
+    data = []
 
     melody_files = [f for f in os.listdir(directory) if f.endswith('_rightH.csv')]
 
@@ -51,10 +50,10 @@ def load_data_from_csv(directory, data_cap=0):
         melody_df = pd.read_csv(os.path.join(directory, melody_file))
         harmony_df = pd.read_csv(os.path.join(directory, harmony_file))
 
-        melody_data.append(melody_df.values)
-        harmony_data.append(harmony_df.values)
+        song = [melody_df.values, harmony_df.values]
+        data.append(song)
 
         progress_bar.update(1)
-        progress_bar.set_description(f"Loading dataset ({progress_bar.n}/{progress_bar.total}")
+        progress_bar.set_description(f"Loading dataset ({progress_bar.n}/{progress_bar.total})")
 
-    return np.concatenate(melody_data), np.concatenate(harmony_data)
+    return data

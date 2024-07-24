@@ -95,8 +95,8 @@ https://pytorch.org/tutorials/recipes/recipes/tensorboard_with_pytorch.html
 
 - - - - - 
 
-- [ ] 2 nparrays in eine Überliste zusammenfassen für songs (Felix Code)
-- [ ] Von Felix das init des torch datasets übertragen mit overlapping, etc.
+- [x] 2 nparrays in eine Überliste zusammenfassen für songs (Felix Code)
+- [x] Von Felix das init des torch datasets übertragen mit overlapping, etc.
 - [ ] LSTM anpassen, nochmal überlegen was batch_size, sequence_length, snapshots
 - [ ] Valloader vs. Testloader
 - [ ] predict_melody anpassen

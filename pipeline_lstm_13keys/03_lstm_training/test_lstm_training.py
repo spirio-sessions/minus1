@@ -1,12 +1,10 @@
 import torch
 from torch import nn
-from torch.utils.data import DataLoader
-from sklearn.model_selection import train_test_split
 from tqdm import tqdm
 
 from lstm_training.LSTMModel import LSTMModel
-from lstm_training.MelodyHarmonyDataset import MelodyHarmonyDataset
 from lstm_training.load_data_from_csv import load_data_from_csv
+from lstm_training.prepare_dataset_dataloaders import prepare_dataset_dataloaders
 from lstm_training.save_model import save_model
 
 """
@@ -19,37 +17,29 @@ It outputs a model.ht and a parameters.txt for further use.
 # Parameters
 INPUT_SIZE = 24
 hidden_size = 64
-num_layers = 8  # 2
+num_layers = 4
 OUTPUT_SIZE = 24
-learning_rate = 0.001
-num_epochs = 10
-batch_size = 128
-seq_length = 64
-stride = 16
+learning_rate = 0.0005
+num_epochs = 20
+batch_size = 64
+seq_length = 256
+stride = 64
 databank = 'csv'
-data_cap = 200
+data_cap = 512
 
 
 
 
 # Load melody and harmony from csv and can be caped
 # melody, harmony = load_data_from_csv('csv')
-melody, harmony = load_data_from_csv(databank, data_cap)
+data = load_data_from_csv(databank, data_cap)
 
 # Check if cuda is available
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 print(f'Using {device} as device.')
 
-# Preparing data
-melody_train, melody_val, harmony_train, harmony_val = train_test_split(melody, harmony, test_size=0.2, random_state=42)
-prep_dataset = MelodyHarmonyDataset(melody_train, harmony_train, seq_length, stride)
-# for each dataset use one own prep_dataset for dataloader
+train_loader, val_loader = prepare_dataset_dataloaders(data, seq_length, stride, batch_size)
 
-# DataLoader
-train_loader = DataLoader(prep_dataset, batch_size=batch_size, shuffle=True, pin_memory=True)
-val_loader = DataLoader(prep_dataset, batch_size=batch_size, shuffle=False, pin_memory=True)
-        # maybe use drop_last=True, damit nimmt er die letzten "batch_size" Sequencen und wirft sie weg, da sie prop. kürzer sind.
-        # batch_size -> sequencen -> snapshots.
 # Model, loss function, optimizer
 model = LSTMModel(INPUT_SIZE, hidden_size, num_layers, OUTPUT_SIZE).to(device)
 # criterion = nn.MSELoss()
@@ -62,23 +52,23 @@ for epoch in range(num_epochs):
     model.train()  # Set the model to training mode
     train_loss = 0.0
 
-    for inputs, targets in tqdm(train_loader, desc=f"Epoch {epoch + 1}/{num_epochs}", unit="batch"):
-        inputs = inputs.to(device)
-        targets = targets.to(device)  # Aus dem DataLoader, geht bei Encoder-Docoder nicht, geht das hier?
-
-        # rightHand = data[:, :12]  # First half of the data
-        # leftHand = data[:, 12:].long()  # Second half of the data, converted for cross-entropy
+    for batch in tqdm(train_loader, desc=f"Epoch {epoch + 1}/{num_epochs}", unit="batch"):
+        # batch => (128, 32, 24) -> (batch_size, seq_length, keyboard_size)
+        batch = batch.to(device)
+        inputs, targets = torch.split(batch, seq_length//2, dim=1)  # splits the sequence into two
 
         # Initialize hidden state
         hidden = model.init_hidden(inputs.size(0), device)
 
         # Forward pass
-        outputs, hidden = model(inputs, hidden)  # Ensuring for always batched (batch_size, 1, feature_size)
+        outputs, hidden = model(inputs, hidden)
+
+        # Reshape outputs and targets for CrossEntropyLoss
+        outputs = outputs.reshape(-1, OUTPUT_SIZE)  # (batch_size * seq_length, OUTPUT_SIZE)
+        targets = targets.reshape(-1, targets.size(2))  # (batch_size * seq_length)
+        targets = targets.argmax(dim=1)  # flattens it to (batch_size * sql_length, _)
 
         # Loss computation
-        # CrossEntropyLoss expects (N, C) and (N), where C = number of classes
-        outputs = outputs.view(-1, OUTPUT_SIZE)  # (batch_size * seq_length, OUTPUT_SIZE)
-        targets = targets.view(-1)  # (batch_size * seq_length)
         loss = criterion(outputs, targets)
 
         # Zero the parameter gradients
@@ -101,20 +91,25 @@ for epoch in range(num_epochs):
     val_loss = 0
     # loss = 0
     with torch.no_grad():  # Disable gradient computation for validation
-        for inputs, targets in val_loader:
-            inputs = inputs.to(device)
-            targets = targets.to(device)
+        for batch in val_loader:
+            # batch => (128, 32, 24) -> (batch_size, seq_length, keyboard_size)
+            batch = batch.to(device)
+            inputs, targets = torch.split(batch, seq_length//2, dim=1)  # splits the sequence into two
 
             # Initialize hidden state
             hidden = model.init_hidden(inputs.size(0), device)
 
             # Forward pass
-            outputs, hidden = model(inputs, hidden)  # (batch_size, seq_length, feature_size)
+            outputs, hidden = model(inputs, hidden)
+
+            # Reshape outputs and targets for CrossEntropyLoss
+            outputs = outputs.reshape(-1, OUTPUT_SIZE)  # (batch_size * seq_length, OUTPUT_SIZE)
+            targets = targets.reshape(-1, targets.size(2))  # (batch_size * seq_length)
+            targets = targets.argmax(dim=1)  # flattens it to (batch_size * sql_length, _)
 
             # Loss computation
-            outputs = outputs.view(-1, OUTPUT_SIZE)  # (batch_size * seq_length, OUTPUT_SIZE)
-            targets = targets.view(-1)  # (batch_size * seq_length)
             loss = criterion(outputs, targets)
+
             val_loss += loss.item()
 
     val_loss /= len(val_loader)
@@ -122,5 +117,5 @@ for epoch in range(num_epochs):
 
 # Save the trained model
 save_parameter = [INPUT_SIZE, hidden_size, num_layers, OUTPUT_SIZE, learning_rate,
-                  num_epochs, batch_size, seq_length, databank, data_cap]
+                  num_epochs, batch_size, seq_length, stride, databank, data_cap]
 save_model('../04_finished_model/models', save_parameter, model)

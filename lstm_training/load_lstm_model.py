@@ -50,7 +50,7 @@ def load_lstm_model(path, model_name, device='cpu'):
 
 
     # Unpack parameters
-    input_size, hidden_size, num_layers, output_size, learning_rate, num_epochs, batch_size, databank, amount_data = save_parameters
+    input_size, hidden_size, num_layers, output_size, learning_rate, num_epochs, batch_size, seq_length, stride, databank, amount_data = save_parameters
 
     model = LSTMModel(int(input_size), int(hidden_size), int(num_layers), int(output_size)).to(device)
 

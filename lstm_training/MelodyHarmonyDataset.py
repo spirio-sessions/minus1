@@ -4,34 +4,40 @@ from torch.utils.data import Dataset
 
 
 class MelodyHarmonyDataset(Dataset):
-    def __init__(self, melody: np.ndarray, harmony: np.ndarray, seq_length: int, stride: int):
-        assert len(melody) == len(harmony), "Melody and harmony must be the same length"
-        self.melody = melody
-        self.harmony = harmony
+    def __init__(self, data: list, seq_length: int, stride: int):
+        """
+        :param data: A list of Songs. Each song is a list. A song has 2 numpy arrays: First the right hand then the left.
+        :param seq_length: Length of sequence chunks.
+        :param stride: How far the start of the second sequence should be from the first.
+        """
+
+        self.data = []
+        for song in data:
+            assert len(song[0]) == len(song[1]), "Melody and harmony must be the same length"
+
+            song = np.array(song)
+            # Concatenate right and left hand (left hand first), so we combine right and left in one snapshot
+            song = np.concatenate((song[1], song[0]), axis=1)
+
+            self.data.append(song)
+
         self.seq_length = seq_length
         self.stride = stride
+        self.sequences = self._create_sequences()
+
+    def _create_sequences(self):
+        sequences = []
+        for song in self.data:
+            for i in range(0, len(song) - self.seq_length, self.stride):
+                seq = song[i:i + self.seq_length]
+                if len(seq) == self.seq_length:  # Ensure sequence is of required length
+                    sequences.append(seq)
+        return sequences
 
     def __len__(self):
-        # Calculate the number of sequences we can extract from the data
-        return len(self.melody) - self.seq_length
+        return len(self.sequences)
 
     def __getitem__(self, idx):
-        # Felix Code:
-        # transformer_decoder_training -> dataset_transformer -> dataset_2.py
-        # for song in data:
-        # song = np.concatenate((song[1], song[0]), axis=1)
-        # self.data.append(song)
-        # Extract input and target sequences
-        input_start = idx
-        input_end = input_start + self.seq_length
-        target_start = input_start + 1
-        target_end = target_start + self.seq_length
-
-        input_segment = np.concatenate((self.melody[input_start:input_end], self.harmony[input_start:input_end]), axis=1)
-        target_segment = self.harmony[target_start:target_end]
-
-        return torch.tensor(input_segment, dtype=torch.float32), torch.tensor(target_segment, dtype=torch.long)
-
-
-
-
+        seq = self.sequences[idx]
+        seq_tensor = torch.tensor(seq, dtype=torch.float32)
+        return seq_tensor
