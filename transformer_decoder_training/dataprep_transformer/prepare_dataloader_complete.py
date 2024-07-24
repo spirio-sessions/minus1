@@ -9,7 +9,8 @@ import numpy as np
 def prepare_dataset_as_dataloaders(dataset_dir: str, snapshot_intervall: int, batch_size: int, seq_length: int,
                                    stride: int, test_size: int, sos_token: np.ndarray, amount=-1):
     # load data
-    dataset_as_snapshots = dataset_snapshot.process_dataset_multithreaded(dataset_dir, snapshot_intervall, amount=amount)
+    dataset_as_snapshots = dataset_snapshot.process_dataset_multithreaded(dataset_dir, snapshot_intervall,
+                                                                          amount=amount)
     # filter snapshots to 88 piano notes
     dataset_as_snapshots = dataset_snapshot.filter_piano_range(dataset_as_snapshots)
     # reduce to 12 keys
@@ -31,3 +32,26 @@ def prepare_dataset_as_dataloaders(dataset_dir: str, snapshot_intervall: int, ba
     test_loader = DataLoader(test_dataset, batch_size=batch_size, shuffle=False, drop_last=True)
 
     return train_loader, val_loader, test_loader
+
+
+def prepare_dataset_as_single_loader(dataset_dir: str, snapshot_intervall: int, batch_size: int, seq_length: int,
+                                     stride: int, sos_token: np.ndarray, amount=-1, shuffle=True):
+    # load data
+    dataset_as_snapshots = dataset_snapshot.process_dataset_multithreaded(dataset_dir, snapshot_intervall,
+                                                                          amount=amount)
+    # filter snapshots to 88 piano notes
+    dataset_as_snapshots = dataset_snapshot.filter_piano_range(dataset_as_snapshots)
+    # reduce to 12 keys
+    dataset_as_snapshots = dataset_snapshot.compress_existing_dataset_to_12keys(dataset_as_snapshots)
+
+    # split songs into train, test and val
+    train_data = dataset_as_snapshots
+
+    # Create datasets
+    train_dataset = AdvancedPianoDataset(train_data, seq_length, stride, sos_token)
+
+    # Create loaders
+    # Create DataLoaders for each subset with drop_last=True
+    train_loader = DataLoader(train_dataset, batch_size=batch_size, shuffle=shuffle, drop_last=True)
+
+    return train_loader
