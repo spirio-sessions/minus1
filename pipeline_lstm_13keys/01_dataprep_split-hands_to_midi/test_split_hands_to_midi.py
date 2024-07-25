@@ -6,8 +6,10 @@ It takes all MIDI from a specific directory and outputs a split version of it fo
 The amount of tracks can be limited by passing a False flag and the amount of MIDIs after that
 """
 
-input_folder = '../../datasets/maestro_v3_split/maestro_hands_seperated_in_tracks'
-output_folder = '../02_dataprep_midi_to_csv/mid-split'
+# input_folder = '../../datasets/maestro_v3_split/maestro_hands_seperated_in_tracks'
+input_folder = '../../datasets/own_midis'
+# output_folder = '../02_dataprep_midi_to_csv/mid-split'
+output_folder = '../02_dataprep_midi_to_csv/'
 
 
 # split_midi_tracks(input_folder, output_folder)  # Uses all MIDI-tracks

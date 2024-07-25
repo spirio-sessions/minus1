@@ -41,10 +41,6 @@ def predict_sequence(model, context_sequence, true_continuing_sequence, device):
             # Model prediction for new token
             data_pred, (hidden, cell) = model(input_seq, (hidden, cell))
 
-            # print("input sequence shape:", input_seq.shape)
-            if data_pred.shape[1] > input_seq.shape[1]:
-                print("Model might have generated more than one token")
-
             # Get last token from output (should be the one new token)
             next_token = data_pred[:, -1, :]
             # print("Token before? sigmoid: ", next_token)
@@ -98,6 +94,7 @@ def predict_outcome(model, ground_truth, seq_length: int, device):
     print(sequence.shape)
     context_length = seq_length // 2
     context_seq, continuing_seq, original_seq = prepare_sequence(sequence, context_length)
+    # first 128, second 128, all 256
 
     generated_tokens, generated_harmony, last_input_seq = predict_sequence(model, context_seq, continuing_seq, device)
 
@@ -105,7 +102,7 @@ def predict_outcome(model, ground_truth, seq_length: int, device):
     # inference_output_to_midi_one_octave(original_seq, context_seq, last_input_seq,
     # 0.05, midi_save_dir, "threshold_only.mid")
 
-    inference_output_to_midi_one_octave(original_seq, context_seq, last_input_seq, 0.05,
+    inference_output_to_midi_one_octave(original_seq, context_seq, last_input_seq, 0.025,
                                         'G:\Schule\Studium\8. Semester\Bachelor-Minus1\minus1\pipeline_lstm_13keys\\04_finished_model', "first_test_midi.mid")
 
     return generated_tokens, generated_harmony, last_input_seq
