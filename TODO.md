@@ -101,4 +101,7 @@ https://pytorch.org/tutorials/recipes/recipes/tensorboard_with_pytorch.html
 - [x] Valloader vs. Testloader
 - [ ] predict_melody anpassen
 
-- [ ] What the hell is the cell state in the init.hidden?!
+- [ ] What the hell is the cell state in the init.hidden?
+- [ ] Use own sequence to midi, model maybe doing different things
+- [ ] Wenn ganzes Stück generieren, dann sequencelength nach 512 wieder letzten abschneiden und neuen generieren für Speicherplatz
+- 

@@ -22,8 +22,8 @@ OUTPUT_SIZE = 24
 learning_rate = 0.0005
 num_epochs = 20
 batch_size = 64
-seq_length = 256
-stride = 64
+seq_length = 2048
+stride = 256
 databank = 'csv'
 data_cap = 512
 

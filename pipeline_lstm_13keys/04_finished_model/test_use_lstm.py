@@ -15,9 +15,9 @@ In the end it returns three CSV-files:
     Both of the original melody/harmony set and the predicted harmony for further use.
 """
 
-model_name = 'lstm_06'
-validation_melody_name = 'validation/song_300_rightH.csv'
-validation_harmony_name = 'validation/song_300_leftH.csv'
+model_name = 'lstm_07'
+validation_melody_name = 'validation/own_greensleeves_rightH.csv'
+validation_harmony_name = 'validation/own_greensleeves_leftH.csv'
 
 # Check if cuda is available
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
