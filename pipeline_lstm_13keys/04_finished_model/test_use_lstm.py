@@ -1,10 +1,13 @@
 import os
 
+import numpy as np
 import pandas as pd
 import torch
+from torch.utils.data import DataLoader
 
+from lstm_training.MelodyHarmonyDataset import MelodyHarmonyDataset
 from lstm_training.load_lstm_model import load_lstm_model
-from lstm_training.predict_harmony import predict_harmony
+from lstm_training.predict_outcome import predict_outcome
 
 """
 This script loads a model from the models directory and predicts a harmony from a given melody.
@@ -12,7 +15,7 @@ In the end it returns three CSV-files:
     Both of the original melody/harmony set and the predicted harmony for further use.
 """
 
-model_name = 'lstm_04'
+model_name = 'lstm_06'
 validation_melody_name = 'validation/song_300_rightH.csv'
 validation_harmony_name = 'validation/song_300_leftH.csv'
 
@@ -21,13 +24,20 @@ device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
 # Load the model and parameters
 model, parameters = load_lstm_model('models', model_name, device)
+seq_length = int(parameters[7])
+stride = int(parameters[8])
 
-# Predict new melody
-# original_melody = pd.read_csv('validation/validation_melody.csv').values
-# original_harmony = pd.read_csv('validation/validation_harmony.csv').values
+# Load data
 original_melody = pd.read_csv(validation_melody_name).values
 original_harmony = pd.read_csv(validation_harmony_name).values
-predicted_harmony = predict_harmony(model, original_melody)
+true_dataset = np.concatenate((original_harmony, original_melody), axis=1)
+dataset = [true_dataset]  # Convert to list with one entry
+
+# Convert data to dataloader
+dataset = MelodyHarmonyDataset(dataset, seq_length, stride)
+dataset = DataLoader(dataset, batch_size=1, shuffle=False, drop_last=True)
+
+generated_tokens, predicted_harmony, input_seq = predict_outcome(model, dataset, seq_length, device)
 
 # Export to CSV
 output_path = '../05_inference/predicted_leftH/'

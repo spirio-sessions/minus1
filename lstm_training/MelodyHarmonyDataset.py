@@ -16,8 +16,9 @@ class MelodyHarmonyDataset(Dataset):
             assert len(song[0]) == len(song[1]), "Melody and harmony must be the same length"
 
             song = np.array(song)
-            # Concatenate right and left hand (left hand first), so we combine right and left in one snapshot
-            song = np.concatenate((song[1], song[0]), axis=1)
+            if song.shape[1] != 24:
+                # Concatenate right and left hand (left hand first), so we combine right and left in one snapshot
+                song = np.concatenate((song[1], song[0]), axis=1)
 
             self.data.append(song)
 

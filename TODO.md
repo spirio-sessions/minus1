@@ -73,7 +73,7 @@ LSTM History states erstmal anfahren lassen. Probieren, dass der Klavierspieler 
 - [x] Wenn die loss function harmonies und melodies nimmt, kann es nicht mehr autoregressiv sein.
 
 - [x] input_size und output muss schon 24 sein. Er soll beide voraussagen
-- [ ] Inverenz muss dann die seq_lenght manuell sein (sollte im Code passen)
+- [ ] Inferenz muss dann die seq_lenght manuell sein (sollte im Code passen)
 
 - [x] Normal      T, T+1, T+2, T+3, T+4
 - [x] Dataloader  T+1, T+2, T+3, T+4 (oder auch mehr als 1 Frame)
@@ -97,6 +97,8 @@ https://pytorch.org/tutorials/recipes/recipes/tensorboard_with_pytorch.html
 
 - [x] 2 nparrays in eine Überliste zusammenfassen für songs (Felix Code)
 - [x] Von Felix das init des torch datasets übertragen mit overlapping, etc.
-- [ ] LSTM anpassen, nochmal überlegen was batch_size, sequence_length, snapshots
-- [ ] Valloader vs. Testloader
+- [x] LSTM anpassen, nochmal überlegen was batch_size, sequence_length, snapshots
+- [x] Valloader vs. Testloader
 - [ ] predict_melody anpassen
+
+- [ ] What the hell is the cell state in the init.hidden?!

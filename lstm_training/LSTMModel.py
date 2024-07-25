@@ -69,4 +69,4 @@ class LSTMModel(nn.Module):
 
         h_0 = torch.zeros(self.num_layers, batch_size, self.hidden_size).to(device)
         c_0 = torch.zeros(self.num_layers, batch_size, self.hidden_size).to(device)
-        return (h_0, c_0)
+        return h_0, c_0
