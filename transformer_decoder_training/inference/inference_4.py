@@ -10,7 +10,7 @@ def sample_with_temperature(logits, temperature):
 
 def inference_with_temperature_sampling(model, context_sequence, true_continuing_sequence, temperature, pad_token,
                                         device):
-    generated_tokens = []
+    generated_tokens_probabilities = []
     generated_harmony = []
 
     # Clone sequence so we don't change the original input
@@ -32,12 +32,12 @@ def inference_with_temperature_sampling(model, context_sequence, true_continuing
             # Get last token from output (should be the one new token)
             next_token = data_pred[:, -1, :]
 
+            # Add token to list
+            generated_tokens_probabilities.append(next_token)
+
             # Apply temperature sampling to the logits
             next_token = sample_with_temperature(next_token, temperature)
             print("Token after temperature sampling: ", next_token)
-
-            # Add token to list
-            generated_tokens.append(next_token)
 
             # Replace generated right hand with right hand ground truth
             # Determine the midpoint of the vector
@@ -66,7 +66,7 @@ def inference_with_temperature_sampling(model, context_sequence, true_continuing
             # Append the new token to the sequence
             input_seq = torch.cat((input_seq, next_token.unsqueeze(1)), dim=1)
 
-    return generated_tokens, generated_harmony, input_seq
+    return generated_tokens_probabilities, generated_harmony, input_seq
 
 
 import torch
@@ -79,7 +79,7 @@ def sample_with_temperature_and_max_notes(logits, temperature):
 
 def inference_with_temperature_and_max_notes_sampling(model, context_sequence, true_continuing_sequence, threshold,
                                                       temperature, pad_token, device, max_notes_per_time_step):
-    generated_tokens = []
+    generated_tokens_probabilities = []
     generated_harmony = []
 
     # Clone sequence so we don't change the original input
@@ -101,6 +101,9 @@ def inference_with_temperature_and_max_notes_sampling(model, context_sequence, t
             # Get last token from output (should be the one new token)
             next_token = data_pred[:, -1, :]
 
+            # Add token to list
+            generated_tokens_probabilities.append(binary_next_token)
+
             # Apply temperature sampling to the logits
             next_token_probs = sample_with_temperature(next_token, temperature)
             print("Token probabilities after temperature sampling: ", next_token_probs)
@@ -115,8 +118,6 @@ def inference_with_temperature_and_max_notes_sampling(model, context_sequence, t
 
             print("Binary token after applying threshold and max notes constraint: ", binary_next_token)
 
-            # Add token to list
-            generated_tokens.append(binary_next_token)
 
             # Replace generated right hand with right hand ground truth
             # Determine the midpoint of the vector
@@ -145,4 +146,4 @@ def inference_with_temperature_and_max_notes_sampling(model, context_sequence, t
             # Append the new token to the sequence
             input_seq = torch.cat((input_seq, next_token.unsqueeze(1)), dim=1)
 
-    return generated_tokens, generated_harmony, input_seq
+    return generated_tokens_probabilities, generated_harmony, input_seq
