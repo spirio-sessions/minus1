@@ -151,6 +151,7 @@ def inference_with_temperature_and_max_notes_sampling(model, context_sequence, t
 def inference_with_max_input_sequence(model, context_sequence: torch.Tensor, true_continuing_sequence: torch.Tensor,
                                       threshold: float, pad_token: torch.Tensor, max_input_sequence_length: int,
                                       device):
+    # TODO: deprecate using last input sequence as output in general
     generated_tokens_probabilities = []
     generated_harmony = []
 
