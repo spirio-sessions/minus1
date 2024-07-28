@@ -12,37 +12,25 @@ If the threshold is high, it only plays notes the model is really sure about.
 If the threshold is low, it plays more notes, even tho the model is not really sure, if they fit.
 This version uses the 12-key data model.
 """
-threshold = 0.15
-
 
 # Load CSV files of predicted MIDI
-predicted_harmony_df = pd.read_csv(
-    '../05_inference/predicted_leftH/predicted_harmony.csv')
 original_melody_df = pd.read_csv('../05_inference/predicted_leftH/original_melody.csv')
+original_harmony_df = pd.read_csv('../05_inference/predicted_leftH/original_harmony.csv')
 
+predicted_data_df = pd.read_csv('../05_inference/predicted_leftH/predicted_data.csv')
+predicted_harmony_df = pd.read_csv('../05_inference/predicted_leftH/predicted_harmony.csv')
 
-"""
-# Load CSV files of realtime pitch
-predicted_harmony_df = pd.read_csv('../07_real_time/predicted_data.csv')
-original_melody_df = pd.read_csv('../07_real_time/pitch_data.csv')
 # Apply threshold to predicted harmony data
-"""
-# TODO: Auslagern in function, damit ich das nicht immer umstellen muss...
-"""
-# Load CSV files of single_file tests
-predicted_harmony_df = pd.read_csv('../420_developer_tests_only/single_file_output/predicted_harmony.csv')
-original_melody_df = pd.read_csv('../420_developer_tests_only/single_file_output/song_1_rightH.csv')
-"""
-# Apply threshold to predicted harmony data
+threshold = 0.15
 predicted_harmony_df = predicted_harmony_df.map(lambda x: 1 if x > threshold else 0)
+predicted_data = predicted_harmony_df.map(lambda x: 1 if x > threshold else 0)
 
+tracks = [original_melody_df, original_harmony_df, predicted_data_df, predicted_harmony_df]
+track_names = ["Original Melody", "Original Harmony", "Generated Data", "Predicted Harmony"]
+octaves_higher = [48, 36, 36, 36]
 
 # Create a new MIDI file and two tracks
 mid = MidiFile()
-melody_track = MidiTrack()
-harmony_track = MidiTrack()
-mid.tracks.append(melody_track)
-mid.tracks.append(harmony_track)
 
 # Constants
 TIME_PER_SNAPSHOT = INTERVAL  # seconds
@@ -50,39 +38,23 @@ TICKS_PER_BEAT = mid.ticks_per_beat
 TEMPO = 500000  # microseconds per beat, equivalent to 120 BPM
 TICKS_PER_SNAPSHOT = int(TICKS_PER_BEAT * (TIME_PER_SNAPSHOT / (60 / 120)))  # for 120 BPM
 
-# Initial states of the keys
-previous_melody_keys = [0] * 24
-previous_harmony_keys = [0] * 24
+for i, (data, track_name, octave_higher) in enumerate(zip(tracks, track_names, octaves_higher)):
+    track = MidiTrack()
+    track.name = track_name
+    mid.tracks.append(track)
 
-# Iterate over each row (snapshot) in the dataframes
-for index in range(len(original_melody_df)):
-    melody_keys = original_melody_df.iloc[index].tolist()
-    harmony_keys = predicted_harmony_df.iloc[index].tolist()
-
-    # +48 for 4 octaves higher, +36 for 3 octaves higher
-    for key in range(12):
-        # Handle melody track
-        if melody_keys[key] == 1 and previous_melody_keys[key] == 0:
-            # Note on
-            melody_track.append(Message('note_on', note=key + 21 + 48, velocity=64, time=0))
-        elif melody_keys[key] == 0 and previous_melody_keys[key] == 1:
-            # Note off
-            melody_track.append(Message('note_off', note=key + 21 + 48, velocity=64, time=0))
-
-        # Handle harmony track
-        if harmony_keys[key] == 1 and previous_harmony_keys[key] == 0:
-            # Note on
-            harmony_track.append(Message('note_on', note=key + 21 + 36, velocity=64, time=0))
-        elif harmony_keys[key] == 0 and previous_harmony_keys[key] == 1:
-            # Note off
-            harmony_track.append(Message('note_off', note=key + 21 + 36, velocity=64, time=0))
-
-    previous_melody_keys = melody_keys
-    previous_harmony_keys = harmony_keys
-
-    # Add time delay (advance time) for each track
-    melody_track.append(Message('note_on', note=0, velocity=0, time=TICKS_PER_SNAPSHOT))
-    harmony_track.append(Message('note_on', note=0, velocity=0, time=TICKS_PER_SNAPSHOT))
+    previous_keys = [0] * 24
+    for index in range(len(data)):
+        track_keys = data.iloc[index].tolist()
+        for key in range(data.shape[1]):
+            if track_keys[key] == 1 and previous_keys[key] == 0:
+                # Note on
+                track.append(Message('note_on', note=key + 21 + octave_higher, velocity=64, time=0))
+            elif track_keys[key] == 0 and previous_keys[key] == 1:
+                # Note off
+                track.append(Message('note_off', note=key + 21 + octave_higher, velocity=64, time=0))
+        previous_keys = track_keys.copy()
+        track_keys.append(Message('note_on', note=0, velocity=0, time=TICKS_PER_SNAPSHOT))
 
 # Save the MIDI file
 output_path = 'output_mid/'
