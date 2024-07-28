@@ -2,6 +2,12 @@ import torch
 import matplotlib.pyplot as plt
 import seaborn as sns
 import numpy as np
+from matplotlib.ticker import MaxNLocator
+
+
+from plotly.subplots import make_subplots
+from pygments.lexers import go
+
 
 def plot_losses(train_losses: list, val_losses: list, file_path: str):
     """
@@ -24,34 +30,33 @@ def plot_losses(train_losses: list, val_losses: list, file_path: str):
     plt.show()
 
 
-def plot_list_of_tensors_heatmaps(tensors: list, title='Probabilities Heatmaps'):
+def visualize_heatmaps_plotly(tensor_list, n_cols=4):
     """
-    Function to plot the probabilities of a list of 2D tensors as heatmaps.
+    Visualizes a list of tensors as a grid of heatmaps using Plotly.
 
     Parameters:
-    - tensors (list of torch.Tensor): List of 2D tensors with values between 0 and 1.
-    - title (str): Title for the entire plot.
+        tensor_list (list of torch.Tensor): List of tensors to visualize.
+        n_cols (int): Number of columns in the grid. Adjust based on the number of tensors.
     """
-    num_tensors = len(tensors)
+    # Determine the number of rows needed
+    n_rows = (len(tensor_list) + n_cols - 1) // n_cols
 
-    # Create a figure with subplots for each tensor
-    fig, axes = plt.subplots(1, num_tensors, figsize=(12 * num_tensors, 6))
-    if num_tensors == 1:
-        axes = [axes]  # Ensure axes is iterable when there is only one subplot
+    # Prepare subplots
+    fig = make_subplots(rows=n_rows, cols=n_cols, subplot_titles=[f'Tensor {i + 1}' for i in range(len(tensor_list))])
 
-    for i, tensor in enumerate(tensors):
-        probabilities = tensor.numpy()
+    for i, tensor in enumerate(tensor_list):
+        # Convert tensor to numpy array
+        np_array = tensor.numpy()
 
-        sns.heatmap(probabilities, annot=True, fmt=".2f", cmap="viridis", cbar=True,
-                    xticklabels=range(probabilities.shape[1]), yticklabels=range(probabilities.shape[0]),
-                    linewidths=.5, linecolor='gray', annot_kws={"size": 12}, ax=axes[i])
+        # Determine row and column in the subplot grid
+        row = i // n_cols + 1
+        col = i % n_cols + 1
 
-        axes[i].set_xlabel('Vector Index')
-        axes[i].set_ylabel('Sequence Index')
-        axes[i].set_title(f'Tensor {i + 1}')
-        axes[i].tick_params(axis='x', rotation=0)  # Ensure the x-tick labels are horizontal
-        axes[i].tick_params(axis='y', rotation=0)  # Ensure the y-tick labels are horizontal
+        # Add heatmap to the subplot
+        heatmap = go.Heatmap(z=np_array, colorscale='Viridis', zmin=0, zmax=1)
+        fig.add_trace(heatmap, row=row, col=col)
 
-    fig.suptitle(title)
-    plt.tight_layout()
-    plt.show()
+    # Update layout
+    fig.update_layout(height=300 * n_rows, width=300 * n_cols, title_text="Heatmaps of Tensors", showlegend=False)
+    fig.show()
+
