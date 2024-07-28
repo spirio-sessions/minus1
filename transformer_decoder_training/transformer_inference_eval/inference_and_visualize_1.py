@@ -70,16 +70,16 @@ def inference_output_to_midi_one_octave(original_complete_seq: Tensor, context_s
                                                 save_dir, filename)
 
 
-def apply_threshold_and_combine_with_context(generated_tokens: list, context_tokens: torch.Tensor, threshold):
+def combine_output_with_context(generated_tokens: list, context_tokens: torch.Tensor):
 # TODO: Original complete sequence ist nach dem context nicht mehr korrekt alligned mit generated sequence
 
-    binary_tensors = []
+    # binary_tensors = []
     # apply threshold to generated tokens
-    for token in generated_tokens:
-        binary_tensors.append((token >= threshold).float())
+    #for token in generated_tokens:
+    #    binary_tensors.append((token >= threshold).float())
 
     # build one tensor from tokens
-    binary_tensors = torch.cat(binary_tensors, dim=0)
+    binary_tensors = torch.cat(generated_tokens, dim=0)
     print("Binary Tensors after concatinating: ", binary_tensors.shape)
     binary_tensors = torch.unsqueeze(binary_tensors, dim=0)
     print("Binary Tensors after unsqueezing: ", binary_tensors.shape)

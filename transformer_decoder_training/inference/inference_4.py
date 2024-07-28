@@ -101,9 +101,6 @@ def inference_with_temperature_and_max_notes_sampling(model, context_sequence, t
             # Get last token from output (should be the one new token)
             next_token = data_pred[:, -1, :]
 
-            # Add token to list
-            generated_tokens_probabilities.append(binary_next_token)
-
             # Apply temperature sampling to the logits
             next_token_probs = sample_with_temperature(next_token, temperature)
             print("Token probabilities after temperature sampling: ", next_token_probs)
@@ -117,6 +114,9 @@ def inference_with_temperature_and_max_notes_sampling(model, context_sequence, t
                     binary_next_token[0, idx] = 1.0
 
             print("Binary token after applying threshold and max notes constraint: ", binary_next_token)
+
+            # Add token to list
+            generated_tokens_probabilities.append(binary_next_token)
 
             # Replace generated right hand with right hand ground truth
             # Determine the midpoint of the vector
