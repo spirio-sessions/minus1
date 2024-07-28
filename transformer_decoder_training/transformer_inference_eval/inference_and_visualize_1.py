@@ -41,8 +41,8 @@ def inference_output_to_midi_one_octave(original_complete_seq: Tensor, context_s
                    "Original complete sequence harmony",
                    "Context sequence melody",
                    "Context sequence harmony",
-                   "Last input seqeunce melody",
-                   "Last input seqeunce harmony", ]
+                   "Context + generated sequence melody",
+                   "Context + generated sequence harmony", ]
 
     ori_complete_seq_mel, ori_complete_seq_har = snapshot_to_midi.split_snapshots_in_sequence(
         original_complete_seq.cpu().numpy())
@@ -68,3 +68,24 @@ def inference_output_to_midi_one_octave(original_complete_seq: Tensor, context_s
     # create midi file
     snapshot_to_midi.create_midi_from_snapshots(tracks, track_names, time_per_snapshot,
                                                 save_dir, filename)
+
+
+def combine_output_with_context(generated_tokens: list, context_tokens: torch.Tensor):
+# TODO: Original complete sequence ist nach dem context nicht mehr korrekt alligned mit generated sequence
+
+    # binary_tensors = []
+    # apply threshold to generated tokens
+    #for token in generated_tokens:
+    #    binary_tensors.append((token >= threshold).float())
+
+    # build one tensor from tokens
+    binary_tensors = torch.cat(generated_tokens, dim=0)
+    print("Binary Tensors after concatinating: ", binary_tensors.shape)
+    binary_tensors = torch.unsqueeze(binary_tensors, dim=0)
+    print("Binary Tensors after unsqueezing: ", binary_tensors.shape)
+
+
+    # append generated tokens after the contect tokens
+    context_with_generated = torch.cat((context_tokens.cpu(), binary_tensors.cpu()), dim=1)
+    print("Context sequence + Generated tokens: ", context_with_generated.shape)
+    return context_with_generated

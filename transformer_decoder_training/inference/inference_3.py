@@ -3,7 +3,7 @@
 import torch
 
 def inference(model, context_sequence, true_continuing_sequence, threshold, pad_token, device):
-    generated_tokens = []
+    generated_tokens_probabilities = []
     generated_harmony = []
 
     # Clone sequence so we don't change the original input
@@ -33,12 +33,12 @@ def inference(model, context_sequence, true_continuing_sequence, threshold, pad_
             next_token = torch.sigmoid(next_token)
             print("Token after sigmoid: ", next_token)
 
+            # Add token to list
+            generated_tokens_probabilities.append(next_token)
+
             # Change probability values to binary with threshold
             next_token = (next_token >= threshold).float()
             #print("Next token before splitting:", next_token)
-
-            # Add token to list
-            generated_tokens.append(next_token)
 
             # Replace generated right hand with right hand ground truth
             # Determine the midpoint of the vector
@@ -73,4 +73,4 @@ def inference(model, context_sequence, true_continuing_sequence, threshold, pad_
             #print("last input seq snapshot after adding next token:", input_seq[0][-1])
             #print("input seq shape:", input_seq.shape)
 
-    return generated_tokens, generated_harmony, input_seq
+    return generated_tokens_probabilities, generated_harmony, input_seq

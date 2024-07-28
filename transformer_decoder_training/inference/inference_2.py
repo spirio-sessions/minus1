@@ -1,3 +1,4 @@
+# Inference assumes the Model gives a sigmoid output
 import torch
 
 
