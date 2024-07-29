@@ -76,8 +76,11 @@ class Transformer(nn.Module):
     "Decoder-Only" Style Transformer with self-attention. Linear output transformation
     """
 
-    def __init__(self, num_emb, hidden_size=128, num_layers=3, num_heads=4):
+    def __init__(self, num_emb, hidden_size=128, num_layers=3, num_heads=4, num_output_dim=None):
         super(Transformer, self).__init__()
+
+        if num_output_dim is None:
+            num_output_dim = num_emb
 
         # Token embeddings
         # self.embedding = nn.Embedding(num_emb, hidden_size)
@@ -93,7 +96,7 @@ class Transformer(nn.Module):
         ])
 
         # Output layer
-        self.fc_out = nn.Linear(hidden_size, num_emb)
+        self.fc_out = nn.Linear(hidden_size, num_output_dim)
 
     def forward(self, input_seq, pad_token):
         # Mask for padding tokens
