@@ -2,12 +2,14 @@ import numpy as np
 import torch
 from torch import Tensor
 
+
 ### ===============
 ### every inference should have a max input seq
 ### ===============
 
-def inference(model, context_seq: Tensor, true_seq: Tensor, threshold: float, pad_token: Tensor, max_seq_len: int, device):
-    generated_probs = []
+def inference(model, context_seq: Tensor, true_seq: Tensor, threshold: float, pad_token: Tensor, max_seq_len: int,
+              device):
+    generated_logits = []
     binary_seq_with_truth = []
 
     # Clone and move context sequence to device
@@ -20,8 +22,10 @@ def inference(model, context_seq: Tensor, true_seq: Tensor, threshold: float, pa
         for i in range(num_tokens):
             # Model prediction for the next token
             pred = model(input_seq, pad_token)
-            next_token_prob = torch.sigmoid(pred[:, -1, :])
-            generated_probs.append(next_token_prob)
+            next_token = pred[:, -1, :]
+            generated_logits.append(next_token)
+            next_token_prob = torch.sigmoid(next_token)
+            
 
             # Apply threshold to obtain binary token
             next_token_bin = (next_token_prob >= threshold).float()
@@ -37,8 +41,8 @@ def inference(model, context_seq: Tensor, true_seq: Tensor, threshold: float, pa
             input_seq = torch.cat((input_seq, next_token_bin.unsqueeze(1)), dim=1)
             binary_seq_with_truth.append(next_token_bin)
 
-            # Trim the sequence to the max length
+            # Trim the sequence to the max length and keep first token (hopefully sos)
             if input_seq.shape[1] > max_seq_len:
                 input_seq = torch.cat((input_seq[:, :1, :], input_seq[:, 2:, :]), dim=1)
 
-    return binary_seq_with_truth, generated_probs
+    return binary_seq_with_truth, generated_logits

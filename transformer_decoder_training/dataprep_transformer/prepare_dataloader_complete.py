@@ -8,6 +8,19 @@ import numpy as np
 
 def prepare_dataset_as_dataloaders(dataset_dir: str, snapshot_intervall: int, batch_size: int, seq_length: int,
                                    stride: int, test_size: int, sos_token: np.ndarray, amount=-1):
+    """
+
+    :param dataset_dir:
+    :param snapshot_intervall:
+    :param batch_size:
+    :param seq_length:
+    :param stride:
+    :param test_size:
+    :param sos_token:
+    :param amount:
+    :return: Train, Val, and Test loaders, The Returned Snapshots from the Dataloaders have left hand first,
+        then right hand index wise
+    """
     # load data
     dataset_as_snapshots = dataset_snapshot.process_dataset_multithreaded(dataset_dir, snapshot_intervall,
                                                                           amount=amount)
