@@ -47,6 +47,16 @@ class AdvancedPianoDataset(Dataset):
         return len(self.sequences)
 
     def __getitem__(self, idx):
+        """
+            Get a sequence by index.
+
+            Parameters:
+            idx (int): The index of the sequence to retrieve.
+
+            Returns:
+            torch.Tensor: The sequence as a tensor of type float32. The first Half of the Tensor is the left Hand, the
+            second the right Hand
+        """
         seq = self.sequences[idx]
         seq_tensor = torch.tensor(seq, dtype=torch.float32)
         return seq_tensor
