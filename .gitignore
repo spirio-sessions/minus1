@@ -326,4 +326,4 @@ pyrightconfig.json
 /.idea/other.xml
 
 # ignore saved Transformer models + midi files
-/transformer_decoder_training/saved_files/
+# /transformer_decoder_training/saved_files/
