@@ -30,6 +30,17 @@ def plot_losses(train_losses: list, val_losses: list, file_path: str):
     plt.show()
 
 
+def show_tensors_min_max_values(tensors: list):
+    for tensor in tensors:
+        tensor_probs = torch.sigmoid(tensor)
+        min_value = tensor.min().item()
+        max_value = tensor.max().item()
+        sigmoid_min_value = tensor_probs.min().item()
+        sigmoid_max_value = tensor_probs.max().item()
+
+        print(f"Min value: {min_value:<10} Max value: {max_value:<10} Sigmoid Min: {sigmoid_min_value:<10} Sigmoid Max: {sigmoid_max_value:<10}")
+
+
 def visualize_heatmaps_plotly(tensor_list, n_cols=4):
     """
     Visualizes a list of tensors as a grid of heatmaps using Plotly.

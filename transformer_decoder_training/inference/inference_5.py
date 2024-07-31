@@ -77,7 +77,7 @@ def inference_melody_only(model, context_seq: Tensor, true_seq: Tensor, threshol
             mid_idx = ground_truth.size(1) // 2
             ground_truth = ground_truth[:, mid_idx:]
 
-            print(f"Next Token shape: {next_token_bin.shape}, Ground truth shape: {ground_truth.shape}")
+            # print(f"Next Token shape: {next_token_bin.shape}, Ground truth shape: {ground_truth.shape}")
             assert ground_truth.shape == next_token_bin.shape
 
             next_token_bin = torch.cat((next_token_bin, ground_truth), dim=-1)
