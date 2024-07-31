@@ -64,5 +64,3 @@ predicted_data_df.to_csv(output_path+"predicted_data.csv", index=False)
 print(f'{output_path}predicted_data.csv was saved successfully!')
 predicted_harmony_df.to_csv(output_path+"predicted_harmony.csv", index=False)
 print(f'{output_path}predicted_harmony.csv was saved successfully!')
-
-
