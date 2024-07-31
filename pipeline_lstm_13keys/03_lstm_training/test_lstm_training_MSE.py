@@ -17,13 +17,13 @@ It outputs a model.ht and a parameters.txt for further use.
 # Parameters
 INPUT_SIZE = 24
 hidden_size = 64
-num_layers = 3
+num_layers = 4
 OUTPUT_SIZE = 24
-learning_rate = 0.0005
+learning_rate = 0.00025
 num_epochs = 20
 batch_size = 64
-seq_length = 1024
-stride = 256
+seq_length = 2048
+stride = 512
 databank = 'csv'
 data_cap = 0
 
@@ -42,8 +42,8 @@ train_loader, val_loader = prepare_dataset_dataloaders(data, seq_length, stride,
 
 # Model, loss function, optimizer
 model = LSTMModel(INPUT_SIZE, hidden_size, num_layers, OUTPUT_SIZE).to(device)
-criterion = nn.MSELoss()
-# criterion = nn.CrossEntropyLoss()
+# criterion = nn.MSELoss()
+criterion = nn.SmoothL1Loss()
 optimizer = torch.optim.Adam(model.parameters(), lr=learning_rate)
 
 # Training loop

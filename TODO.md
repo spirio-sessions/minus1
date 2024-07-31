@@ -66,18 +66,18 @@ LSTM History states erstmal anfahren lassen. Probieren, dass der Klavierspieler 
 
 - [ ] In der Inferenz dann der SoftMax auf der Hand, die ich haben will. Oder per Threshholding.
 
-- [ ] die andere Hand wird wieder reinkopiert, die braucht keinen Softmax. Pro Dimension eine Sigmoid anstatt Softmax
+- [x] die andere Hand wird wieder reinkopiert, die braucht keinen Softmax. Pro Dimension eine Sigmoid anstatt Softmax
 
 - [x] Los function. Wie ist die Ableitung von where class. Müssen eine Ableitungsfunktion schaffen. .A Aber eigentlich sehr schnell. Nochmal in die Dokumentation
 
 - [x] Wenn die loss function harmonies und melodies nimmt, kann es nicht mehr autoregressiv sein.
 
 - [x] input_size und output muss schon 24 sein. Er soll beide voraussagen
-- [ ] Inferenz muss dann die seq_lenght manuell sein (sollte im Code passen)
+- [x] Inferenz muss dann die seq_length manuell sein (sollte im Code passen)
 
 - [x] Normal      T, T+1, T+2, T+3, T+4
 - [x] Dataloader  T+1, T+2, T+3, T+4 (oder auch mehr als 1 Frame)
-- [ ] auto torch dataloader,
+- [x] auto torch dataloader,
 - [x] Beide hände, autoregressive, einmal beide hände rein, andere raus, einmal eine hand rein und beide Hände raus.
 Wenn der Dataloader einmal stimmt.
 
@@ -99,9 +99,13 @@ https://pytorch.org/tutorials/recipes/recipes/tensorboard_with_pytorch.html
 - [x] Von Felix das init des torch datasets übertragen mit overlapping, etc.
 - [x] LSTM anpassen, nochmal überlegen was batch_size, sequence_length, snapshots
 - [x] Valloader vs. Testloader
-- [ ] predict_melody anpassen
+- [x] predict_melody anpassen
 
 - [ ] What the hell is the cell state in the init.hidden?
-- [ ] Use own sequence to midi, model maybe doing different things
-- [ ] Wenn ganzes Stück generieren, dann sequencelength nach 512 wieder letzten abschneiden und neuen generieren für Speicherplatz
-- 
+- [x] Use own sequence to midi, model maybe doing different things
+- [x] Wenn ganzes Stück generieren, dann sequencelength nach 512 wieder letzten abschneiden und neuen generieren für Speicherplatz
+
+
+- - - - -
+- [ ] BinaryCrossEntropy?
+- [ ] Sigmoid in Training?
