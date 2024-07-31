@@ -4,6 +4,8 @@ import pandas as pd
 from mido import MidiFile, MidiTrack, Message
 
 from data_preperation.globals import INTERVAL
+from lstm_training.normalize_column import normalize_column
+from lstm_training.normalize_each_column_itself import normalize_each_column_itself
 
 """
 This script converts the predicted harmony and the original melody into a MIDI-file.
@@ -20,9 +22,14 @@ original_harmony_df = pd.read_csv('../05_inference/predicted_leftH/original_harm
 predicted_data_df = pd.read_csv('../05_inference/predicted_leftH/predicted_data.csv')
 predicted_harmony_df = pd.read_csv('../05_inference/predicted_leftH/predicted_harmony.csv')
 
+
 # Apply threshold to predicted harmony data
-threshold = 0.15
-predicted_harmony = predicted_harmony_df.map(lambda x: 1 if x > threshold else 0)
+
+predicted_harmony_df_normalized_each_column = predicted_harmony_df.apply(normalize_each_column_itself)
+predicted_harmony_df_normalized = predicted_harmony_df.apply(lambda col: normalize_column(col))
+
+threshold = 0.45
+predicted_harmony = predicted_harmony_df_normalized.map(lambda x: 1 if x > threshold else 0)
 predicted_data = predicted_data_df.map(lambda x: 1 if x > threshold else 0)
 
 tracks = [original_melody_df, original_harmony_df, predicted_data, predicted_harmony]

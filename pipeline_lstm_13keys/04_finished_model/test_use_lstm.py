@@ -15,7 +15,7 @@ In the end it returns three CSV-files:
     Both of the original melody/harmony set and the predicted harmony for further use.
 """
 
-model_name = 'lstm_07'
+model_name = 'MSE_model10_csv_only'
 validation_melody_name = 'validation/song_300_rightH.csv'
 validation_harmony_name = 'validation/song_300_leftH.csv'
 
@@ -47,10 +47,9 @@ output_path = '../05_inference/predicted_leftH/'
 if not os.path.exists(output_path):
     os.makedirs(output_path)
 
-
 predicted_data_df = pd.DataFrame(predicted_data)
-predicted_harmony_df_without_cut = predicted_data_df.iloc[:, :12]
-predicted_harmony_df = predicted_harmony_df_without_cut.iloc[:1024] = 0
+predicted_harmony_df = predicted_data_df.iloc[:, :12].copy()
+predicted_harmony_df.iloc[:768, :] = 0
 
 original_melody_df = pd.DataFrame(original_melody)
 original_harmony_df = pd.DataFrame(original_harmony)

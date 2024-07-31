@@ -17,15 +17,15 @@ It outputs a model.ht and a parameters.txt for further use.
 # Parameters
 INPUT_SIZE = 24
 hidden_size = 64
-num_layers = 4
+num_layers = 3
 OUTPUT_SIZE = 24
 learning_rate = 0.0005
 num_epochs = 20
 batch_size = 64
-seq_length = 2048
+seq_length = 1024
 stride = 256
-databank = 'csv'
-data_cap = 512
+databank = 'csv_transposed'
+data_cap = 0
 
 
 
@@ -76,6 +76,9 @@ for epoch in range(num_epochs):
 
         # Backward pass (compute gradients)
         loss.backward()
+
+        # Gradient clipping
+        torch.nn.utils.clip_grad_norm_(model.parameters(), max_norm=1.0)
 
         # Update model parameters
         optimizer.step()
