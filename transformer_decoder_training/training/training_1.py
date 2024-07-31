@@ -75,7 +75,8 @@ def train_loop_harmony_only(model, opt, loss_fn, dataloader, pad_token, device):
 
         # Split for harmony only
         snapshot_half = expected_sequence.shape[2] // 2
-        expected_sequence = expected_sequence[:, :, snapshot_half:]
+        # we want to train the harmony, so we expect harmony
+        expected_sequence = expected_sequence[:, :, :snapshot_half]
 
         # Generate predictions
         pred = model(input_sequences, pad_token)
@@ -107,7 +108,7 @@ def validation_loop_harmony_only(model, loss_fn, dataloader, pad_token, device):
 
             # Split for harmony only
             snapshot_half = expected_sequence.shape[2] // 2
-            expected_sequence = expected_sequence[:, :, snapshot_half:]
+            expected_sequence = expected_sequence[:, :, :snapshot_half]
 
             # Generate predictions
             pred = model(input_sequences, pad_token)
