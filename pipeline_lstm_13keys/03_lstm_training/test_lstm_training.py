@@ -17,15 +17,15 @@ It outputs a model.ht and a parameters.txt for further use.
 # Parameters
 INPUT_SIZE = 24
 hidden_size = 64
-num_layers = 3
+num_layers = 4
 OUTPUT_SIZE = 24
 learning_rate = 0.0005
 num_epochs = 20
 batch_size = 64
-seq_length = 1024
+seq_length = 2048
 stride = 256
-databank = 'csv_transposed'
-data_cap = 0
+databank = 'csv'
+data_cap = 512
 
 
 
