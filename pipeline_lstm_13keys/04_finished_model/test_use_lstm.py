@@ -49,7 +49,8 @@ if not os.path.exists(output_path):
 
 
 predicted_data_df = pd.DataFrame(predicted_data)
-predicted_harmony_df = predicted_data_df.iloc[:, 12:]
+predicted_harmony_df_without_cut = predicted_data_df.iloc[:, :12]
+predicted_harmony_df = predicted_harmony_df_without_cut.iloc[:1024] = 0
 
 original_melody_df = pd.DataFrame(original_melody)
 original_harmony_df = pd.DataFrame(original_harmony)

@@ -22,10 +22,10 @@ predicted_harmony_df = pd.read_csv('../05_inference/predicted_leftH/predicted_ha
 
 # Apply threshold to predicted harmony data
 threshold = 0.15
-predicted_harmony_df = predicted_harmony_df.map(lambda x: 1 if x > threshold else 0)
-predicted_data = predicted_harmony_df.map(lambda x: 1 if x > threshold else 0)
+predicted_harmony = predicted_harmony_df.map(lambda x: 1 if x > threshold else 0)
+predicted_data = predicted_data_df.map(lambda x: 1 if x > threshold else 0)
 
-tracks = [original_melody_df, original_harmony_df, predicted_data_df, predicted_harmony_df]
+tracks = [original_melody_df, original_harmony_df, predicted_data, predicted_harmony]
 track_names = ["Original Melody", "Original Harmony", "Generated Data", "Predicted Harmony"]
 octaves_higher = [48, 36, 36, 36]
 
@@ -38,12 +38,12 @@ TICKS_PER_BEAT = mid.ticks_per_beat
 TEMPO = 500000  # microseconds per beat, equivalent to 120 BPM
 TICKS_PER_SNAPSHOT = int(TICKS_PER_BEAT * (TIME_PER_SNAPSHOT / (60 / 120)))  # for 120 BPM
 
-for i, (data, track_name, octave_higher) in enumerate(zip(tracks, track_names, octaves_higher)):
+for data, track_name, octave_higher in zip(tracks, track_names, octaves_higher):
     track = MidiTrack()
     track.name = track_name
     mid.tracks.append(track)
 
-    previous_keys = [0] * 24
+    previous_keys = [0] * data.shape[1]
     for index in range(len(data)):
         track_keys = data.iloc[index].tolist()
         for key in range(data.shape[1]):
@@ -54,7 +54,12 @@ for i, (data, track_name, octave_higher) in enumerate(zip(tracks, track_names, o
                 # Note off
                 track.append(Message('note_off', note=key + 21 + octave_higher, velocity=64, time=0))
         previous_keys = track_keys.copy()
-        track_keys.append(Message('note_on', note=0, velocity=0, time=TICKS_PER_SNAPSHOT))
+        track.append(Message('note_on', note=0, velocity=0, time=TICKS_PER_SNAPSHOT))
+
+    # Ensure all notes are turned off at the end of the track
+    for key in range(data.shape[1]):
+        if previous_keys[key] == 1:
+            track.append(Message('note_off', note=key + 21 + octave_higher, velocity=64, time=0))
 
 # Save the MIDI file
 output_path = 'output_mid/'

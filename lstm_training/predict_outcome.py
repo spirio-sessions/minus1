@@ -94,7 +94,7 @@ def predict_outcome(model, ground_truth, seq_length: int, device):
     context_seq, continuing_seq, original_seq = prepare_sequence(sequence, context_length, device)
     # first seq_length // 2, second seq_length // 2, whole seq_length
 
-    generated_tokens, generated_harmony, last_input_seq = predict_sequence(model, context_seq, continuing_seq, device)
+    generated_harmony, last_input_seq = predict_sequence(model, context_seq, continuing_seq, device)
 
     # Later using original_seq & context_seq & last_input_seq for inference
     # inference_output_to_midi_one_octave(original_seq, context_seq, last_input_seq,
@@ -103,7 +103,7 @@ def predict_outcome(model, ground_truth, seq_length: int, device):
     inference_output_to_midi_one_octave(original_seq, context_seq, last_input_seq, 0.025,
                                         'G:\Schule\Studium\8. Semester\Bachelor-Minus1\minus1\pipeline_lstm_13keys\\04_finished_model', "first_test_midi.mid")
 
-    return generated_tokens, generated_harmony, last_input_seq
+    return generated_harmony, last_input_seq
 
 
 def predict_entire_song(model, dataloader, context_length: int, device):
@@ -115,6 +115,8 @@ def predict_entire_song(model, dataloader, context_length: int, device):
 
     total_generated_harmony = [context_seq.squeeze(0)]
     hidden, cell = model.init_hidden(batch_size=1, device=device)
+
+    max_seq_length = context_length * 2
 
     for i in tqdm(range(continuing_seq.shape[1]), desc="Processing steps", unit="step"):
         data_pred, (hidden, cell) = model(context_seq, (hidden, cell))
@@ -133,8 +135,12 @@ def predict_entire_song(model, dataloader, context_length: int, device):
         total_generated_harmony.append(next_token)
         context_seq = torch.cat((context_seq, next_token.unsqueeze(1)), dim=1)
 
-        if context_seq.shape[1] > context_length * 2:
-            context_seq = context_seq[:, 1:]
+        if context_seq.shape[1] > max_seq_length:
+            context_seq = context_seq[:, -max_seq_length:]
+
+        # Detach hidden and cell states to avoid retaining computation history
+        hidden = hidden.detach()
+        cell = cell.detach()
 
     generated_harmony = torch.cat(total_generated_harmony, dim=0).cpu().detach().numpy()
 
