@@ -4,7 +4,7 @@ import torch
 from lstm_training.LSTMModel import LSTMModel
 
 
-def save_model(save_path, save_parameters, model, num=0):
+def save_model(save_path, save_parameters, model, plot, num=0):
     """
     Save a trained LSTM model and its parameters to specified files.
 
@@ -39,6 +39,7 @@ def save_model(save_path, save_parameters, model, num=0):
     # Determine the model and parameter file paths
     model_file_path = f'{base_file_path}.pt'
     parameter_file_path = f'{base_file_path}.txt'
+    plot_file_path = f'{base_file_path}.png'
 
     if not os.path.exists(model_file_path):
         # Save the model
@@ -50,5 +51,16 @@ def save_model(save_path, save_parameters, model, num=0):
             for param in save_parameters:
                 f.write(f'{param}\n')
         print(f'Parameters saved to {parameter_file_path}')
+
+        # Save the plot
+        plot.savefig(plot_file_path)
+        print(f'Plot saved to {plot_file_path}')
     else:
-        save_model(save_path, save_parameters, model, num + 1)
+        save_model(save_path, save_parameters, model, plot, num + 1)
+
+
+# Save plot
+save_dir = '../04_finished_model/models/experiments'
+os.makedirs(save_dir, exist_ok=True)  # Create the directory if it doesn't exist
+
+plot_path = os.path.join(save_dir, 'training_validation_loss.png')

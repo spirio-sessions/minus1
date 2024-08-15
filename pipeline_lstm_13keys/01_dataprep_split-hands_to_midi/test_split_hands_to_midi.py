@@ -13,4 +13,4 @@ output_folder = '../02_dataprep_midi_to_csv/'
 
 
 # split_midi_tracks(input_folder, output_folder)  # Uses all MIDI-tracks
-split_midi_tracks(input_folder, output_folder, False, 200)  # Limited to 40 MIDI-tracks
+split_midi_tracks(input_folder, output_folder, False, 200)

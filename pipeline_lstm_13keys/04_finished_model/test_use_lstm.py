@@ -15,15 +15,19 @@ In the end it returns three CSV-files:
     Both of the original melody/harmony set and the predicted harmony for further use.
 """
 
-model_name = 'lstm_08'
-validation_melody_name = 'validation/song_300_rightH.csv'
-validation_harmony_name = 'validation/song_300_leftH.csv'
+model_name = 'lstm_010'
+
+# validation_melody_name = 'validation/song_300_rightH.csv'
+# validation_harmony_name = 'validation/song_300_leftH.csv'
+
+validation_melody_name = 'validation/own_maria_rightH.csv'
+validation_harmony_name = 'validation/own_maria_leftH.csv'
 
 # Check if cuda is available
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
 # Load the model and parameters
-model, parameters = load_lstm_model('models', model_name, device)
+model, parameters = load_lstm_model('models/experiments', model_name, device)
 seq_length = int(parameters[7])
 context_length = seq_length // 2
 
@@ -49,7 +53,7 @@ if not os.path.exists(output_path):
 
 predicted_data_df = pd.DataFrame(predicted_data)
 predicted_harmony_df = predicted_data_df.iloc[:, :12].copy()
-predicted_harmony_df.iloc[:768, :] = 0
+predicted_harmony_df.iloc[:context_length, :] = 0
 
 original_melody_df = pd.DataFrame(original_melody)
 original_harmony_df = pd.DataFrame(original_harmony)

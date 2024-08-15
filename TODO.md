@@ -108,4 +108,30 @@ https://pytorch.org/tutorials/recipes/recipes/tensorboard_with_pytorch.html
 
 - - - - -
 - [ ] BinaryCrossEntropy?
-- [ ] Sigmoid in Training?
+- [ ] Sigmoid in Training? oder pro Snapshot!
+
+- - - - - 
+Es werden immer nur 1 bis 3 Noten durchgängig gehalten -> Siehe: [[Sequence Prediction V6]]
+
+Was könnte man probieren?
+
+- Verlustfunktion Anpassen
+  - Andere ausprobieren:
+    - MSE Loss
+    - MAE Loss -> getriggert durch nn.L1-loss
+    - Huber Loss -> nn.SmoothL1-loss
+  - Versuchen die Übergänge zwischen den Noten richtig vorherzusagen
+  - Ein und Ausschalten der Noten richtig vorhersagen
+  - Evtl es stärker bestrafen, wenn eine Note deutlich länger als im target gehalten wird
+  - Weniger belohnen für taste Halten und mehr Bestrafen, falls gespielt wird aber nicht soll
+- Längerer Kontext? -> glaube bringt nichts
+- Irgendwie Zeitinformation in die Daten integrieren
+- Logik in der Inferenz, die automatisch noten loslässt?
+- Irgendwie anderes Sampling oder so -> wie bei Temperature bei LLMs
+  - Anstatt wahrscheinlichkeiten pro taste Ranking aus allen Tasten machen -> 1 bis 3 beste Tasten spielen und umso länger sie gehalten werden -> Wert/ranking künstlich reduzieren
+- Mehr als nur einen Token vorhersagen -> könnte evtl auch bei zeitlichen informationen helfen? Ist aber nicht im "spirit" von decoder only transformern glaube ich
+- Versuchen stärker von melody auf harmony hervorzusagen, als von melody und harmony auf melody und harmony vorherzusagen -> evtl liegt fokus im training zu sehr auf der vorhergegangenen harmony
+- Wo überall sigmoid funktion verwenden? -> inferenz, Training, etc
+
+- Model lernt nicht, dass beide Hände zusammen gespielt werden sollten. (auch wenn Daten shit).
+- Falls aber Snapshots zu genau sind, spielt er es nicht zusammen, zu gro geht viel anderes Zeug verloren.

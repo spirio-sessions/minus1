@@ -1,4 +1,8 @@
+import os
+from datetime import datetime
+
 import torch
+from matplotlib import pyplot as plt
 from torch import nn
 from tqdm import tqdm
 
@@ -16,16 +20,16 @@ It outputs a model.ht and a parameters.txt for further use.
 
 # Parameters
 INPUT_SIZE = 24
-hidden_size = 64
+hidden_size = 128
 num_layers = 4
 OUTPUT_SIZE = 24
-learning_rate = 0.0005
-num_epochs = 20
-batch_size = 64
-seq_length = 2048
-stride = 256
+learning_rate = 0.001
+num_epochs = 5
+batch_size = 32
+seq_length = 8  # Mal sehr weniger nehmen. War 2048
+stride = 2  # War 256
 databank = 'csv'
-data_cap = 512
+data_cap = 0
 
 
 
@@ -43,14 +47,18 @@ train_loader, val_loader = prepare_dataset_dataloaders(data, seq_length, stride,
 # Model, loss function, optimizer
 model = LSTMModel(INPUT_SIZE, hidden_size, num_layers, OUTPUT_SIZE).to(device)
 # criterion = nn.MSELoss()
-criterion = nn.CrossEntropyLoss()
+criterion = nn.BCEWithLogitsLoss()
 optimizer = torch.optim.Adam(model.parameters(), lr=learning_rate)
+
+train_losses = []
+val_losses = []
 
 # Training loop
 print('Starting training...')
 for epoch in range(num_epochs):
     model.train()  # Set the model to training mode
     train_loss = 0.0
+    start_time = datetime.now()
 
     for batch in tqdm(train_loader, desc=f"Epoch {epoch + 1}/{num_epochs}", unit="batch"):
         # batch => (128, 32, 24) -> (batch_size, seq_length, keyboard_size)
@@ -65,8 +73,9 @@ for epoch in range(num_epochs):
 
         # Reshape outputs and targets for CrossEntropyLoss
         outputs = outputs.reshape(-1, OUTPUT_SIZE)  # (batch_size * seq_length, OUTPUT_SIZE)
-        targets = targets.reshape(-1, targets.size(2))  # (batch_size * seq_length)
-        targets = targets.argmax(dim=1)  # flattens it to (batch_size * sql_length, _)
+        targets = targets.reshape(-1, OUTPUT_SIZE)  # (batch_size * seq_length, OUTPUT_SIZE)
+        # targets = targets.argmax(dim=1)  # flattens it to (batch_size * sql_length, _)
+        # Normale Cross-entrophy ohne Argmax probieren, da er nur in BinaryCrossEntropy richtig ist.
 
         # Loss computation
         loss = criterion(outputs, targets)
@@ -87,7 +96,7 @@ for epoch in range(num_epochs):
 
     # Calculate and print average training loss for the epoch
     avg_train_loss = train_loss / len(train_loader)
-    print(f"Epoch {epoch + 1}/{num_epochs}, Average Training Loss: {avg_train_loss:.4f}")
+    train_losses.append(avg_train_loss)
 
     # Validation step
     model.eval()  # Set the model to evaluation mode
@@ -107,8 +116,8 @@ for epoch in range(num_epochs):
 
             # Reshape outputs and targets for CrossEntropyLoss
             outputs = outputs.reshape(-1, OUTPUT_SIZE)  # (batch_size * seq_length, OUTPUT_SIZE)
-            targets = targets.reshape(-1, targets.size(2))  # (batch_size * seq_length)
-            targets = targets.argmax(dim=1)  # flattens it to (batch_size * sql_length, _)
+            targets = targets.reshape(-1, OUTPUT_SIZE)  # (batch_size * seq_length, OUTPUT_SIZE)
+            # targets = targets.argmax(dim=1)  # flattens it to (batch_size * sql_length, _)
 
             # Loss computation
             loss = criterion(outputs, targets)
@@ -116,9 +125,31 @@ for epoch in range(num_epochs):
             val_loss += loss.item()
 
     val_loss /= len(val_loader)
-    print(f'Epoch [{epoch + 1}/{num_epochs}], Loss: {loss.item():.4f}, Val Loss: {val_loss:.4f}')
+    val_losses.append(val_loss)
+
+    # Print the losses for the epoch
+    elapsed_time = datetime.now() - start_time
+    print(f"\n{'='*50}")
+    print(f"Epoch [{epoch + 1}/{num_epochs}]")
+    print(f"Time: {elapsed_time}")
+    print(f"Average Training Loss: {avg_train_loss:.4f}")
+    print(f"Validation Loss: {val_loss:.4f}")
+    print(f"{'='*50}\n")
 
 # Save the trained model
 save_parameter = [INPUT_SIZE, hidden_size, num_layers, OUTPUT_SIZE, learning_rate,
                   num_epochs, batch_size, seq_length, stride, databank, data_cap]
-save_model('../04_finished_model/models', save_parameter, model)
+
+
+# Plot the training and validation losses
+plt.figure(figsize=(10, 6))
+plt.plot(range(1, num_epochs + 1), train_losses, label='Training Loss')
+plt.plot(range(1, num_epochs + 1), val_losses, label='Validation Loss')
+plt.xlabel('Epoch')
+plt.ylabel('Loss')
+plt.title('Training and Validation Loss over Epochs')
+plt.legend()
+plt.show()
+
+
+save_model('../04_finished_model/models/experiments', save_parameter, model, plt)
