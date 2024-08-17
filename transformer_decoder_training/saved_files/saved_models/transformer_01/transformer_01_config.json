@@ -1,0 +1,80 @@
+{
+    "model_project_name": "transformer_01",
+    "model_params": {
+        "model_topology": null,
+        "num_emb": 24,
+        "hidden_size": 256,
+        "num_layers": 8,
+        "num_heads": 8,
+        "output_dim": null
+    },
+    "training_params": {
+        "learning_rate": 0.001,
+        "num_epochs": 21,
+        "optimizer": "Adam",
+        "loss_fn": "CrossEntropyLoss"
+    },
+    "training_data_params": {
+        "sos_token": [
+            [
+                1,
+                1,
+                1,
+                1,
+                1,
+                1,
+                1,
+                1,
+                1,
+                1,
+                1,
+                1,
+                1,
+                1,
+                1,
+                1,
+                1,
+                1,
+                1,
+                1,
+                1,
+                1,
+                1,
+                1
+            ]
+        ],
+        "pad_token": [
+            [
+                2,
+                2,
+                2,
+                2,
+                2,
+                2,
+                2,
+                2,
+                2,
+                2,
+                2,
+                2,
+                2,
+                2,
+                2,
+                2,
+                2,
+                2,
+                2,
+                2,
+                2,
+                2,
+                2,
+                2
+            ]
+        ],
+        "snapshot_interval": 0.1,
+        "batch_size": 64,
+        "sequence_length": 64,
+        "stride": 16,
+        "test_size": 0.2
+    }
+}
