@@ -118,7 +118,7 @@ def predict_entire_song(model, dataloader, context_length: int, device):
 
     max_seq_length = context_length * 2
 
-    for i in tqdm(range(continuing_seq.shape[1]), desc="Processing steps", unit="step"):
+    for i in tqdm(range(continuing_seq.shape[1]), desc="Processing steps", unit="step", leave=False):
         data_pred, (hidden, cell) = model(context_seq, (hidden, cell))
         next_token = data_pred[:, -1, :]
         next_token = torch.sigmoid(next_token)

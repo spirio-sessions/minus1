@@ -1,0 +1,15 @@
+{
+    "INPUT_SIZE": "24",
+    "hidden_size": "256",
+    "num_layers": "4",
+    "OUTPUT_SIZE": "24",
+    "learning_rate": "0.001",
+    "num_epochs": "5",
+    "batch_size": "256",
+    "seq_length": "8",
+    "stride": "1",
+    "databank": "csv",
+    "data_cap": "0",
+    "train_loss": "0.16214808217626372",
+    "val_loss": "0.16681320728074758"
+}

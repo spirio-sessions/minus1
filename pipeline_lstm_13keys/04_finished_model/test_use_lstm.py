@@ -15,13 +15,13 @@ In the end it returns three CSV-files:
     Both of the original melody/harmony set and the predicted harmony for further use.
 """
 
-model_name = 'lstm_010'
+model_name = 'lstm_015'
 
-# validation_melody_name = 'validation/song_300_rightH.csv'
-# validation_harmony_name = 'validation/song_300_leftH.csv'
+validation_melody_name = 'validation/song_300_rightH.csv'
+validation_harmony_name = 'validation/song_300_leftH.csv'
 
-validation_melody_name = 'validation/own_maria_rightH.csv'
-validation_harmony_name = 'validation/own_maria_leftH.csv'
+# validation_melody_name = 'validation/own_maria_rightH.csv'
+# validation_harmony_name = 'validation/own_maria_leftH.csv'
 
 # Check if cuda is available
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
@@ -29,7 +29,7 @@ device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 # Load the model and parameters
 model, parameters = load_lstm_model('models/experiments', model_name, device)
 seq_length = int(parameters[7])
-context_length = seq_length // 2
+context_length = seq_length * 32
 
 # Load data
 original_melody = pd.read_csv(validation_melody_name).values

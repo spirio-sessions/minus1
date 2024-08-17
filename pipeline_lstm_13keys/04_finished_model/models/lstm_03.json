@@ -1,0 +1,9 @@
+{
+    "INPUT_SIZE": "12",
+    "hidden_size": "64",
+    "num_layers": "2",
+    "OUTPUT_SIZE": "12",
+    "learning_rate": "0.005",
+    "num_epochs": "10",
+    "batch_size": "128"
+}
