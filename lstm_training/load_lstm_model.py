@@ -1,3 +1,4 @@
+import json
 import os
 import torch
 
@@ -13,45 +14,48 @@ def parse_line(line):
 
 def load_lstm_model(path, model_name, device='cpu'):
     """
-    Load an LSTM model and its saved parameters from specified files.
+   Load an LSTM model and its saved parameters from specified files.
 
-    This function reads the model parameters from a text file and loads the
-    corresponding trained LSTM model from a .pt file. The model is then moved
-    to the specified device (CPU or GPU) and set to evaluation mode.
+   This function reads the model parameters from a JSON file and loads the
+   corresponding trained LSTM model from a .pt file. The model is then moved
+   to the specified device (CPU or GPU) and set to evaluation mode.
 
-    Parameters:
-    path (str): The directory path where the model and parameter files are stored.
-    model_name (str): The base name of the model and parameter files (without extension).
-    device (str): The device to which the model should be moved ('cpu' or 'cuda').
-                  Default is 'cpu'.
+   Parameters:
+   path (str): The directory path where the model and parameter files are stored.
+   model_name (str): The base name of the model and parameter files (without extension).
+   device (str): The device to which the model should be moved ('cpu' or 'cuda').
+                 Default is 'cpu'.
 
-    Returns:
-    tuple: A tuple containing:
-        - model (LSTMModel): The loaded LSTM model.
-        - save_parameters (list): A list of model parameters loaded from the text file:
-            [input_size, hidden_size, num_layers, output_size, learning_rate, num_epochs, batch_size]
+   Returns:
+   tuple: A tuple containing:
+       - model (LSTMModel): The loaded LSTM model.
+       - save_parameters (dict): A dictionary of model parameters loaded from the JSON file.
 
-    Raises:
-    FileNotFoundError: If the model or parameter file does not exist.
-    ValueError: If the parameter file does not contain the expected number of parameters.
+   Raises:
+   FileNotFoundError: If the model or parameter file does not exist.
 
-    Example:
-    >>> model, parameters = load_lstm_model('/path/to/models', 'my_lstm_model', device='cuda')
-    >>> print(model)
-    LSTMModel(...)
-    >>> print(parameters)
-    [64, 128, 2, 10, 0.001, 20, 32]
-    """
+   Example:
+   >>> model, parameters = load_lstm_model('/path/to/models', 'my_lstm_model', device='cuda')
+   >>> print(model)
+   LSTMModel(...)
+   >>> print(parameters)
+   {'INPUT_SIZE': 64, 'hidden_size': 128, ...}
+   """
     model_file_path = f'{path}/{model_name}.pt'
-    parameter_file_path = f'{path}/{model_name}.txt'
+    parameter_file_path = f'{path}/{model_name}.json'
 
-    with open(parameter_file_path, 'r') as f:
-        save_parameters = [parse_line(line) for line in f]
+    if os.path.exists(parameter_file_path):
+        with open(parameter_file_path, 'r') as f:
+            save_parameters = json.load(f)
+    else:
+        raise FileNotFoundError(f"No parameter file found at {parameter_file_path}")
 
 
-    # Unpack parameters
-    input_size, hidden_size, num_layers, output_size, learning_rate, num_epochs, batch_size, seq_length, stride, \
-        train_loss, val_loss, databank, amount_data = save_parameters
+    # Unpack parameters from the dictionary
+    input_size = save_parameters.get("INPUT_SIZE")
+    hidden_size = save_parameters.get("hidden_size")
+    num_layers = save_parameters.get("num_layers")
+    output_size = save_parameters.get("OUTPUT_SIZE")
 
     model = LSTMModel(int(input_size), int(hidden_size), int(num_layers), int(output_size)).to(device)
 
@@ -60,8 +64,7 @@ def load_lstm_model(path, model_name, device='cpu'):
         model.load_state_dict(torch.load(model_file_path, map_location=device))
         model.eval()
     else:
-        print(f'No saved model found at {model_file_path}')
-        exit(1)
+        raise FileNotFoundError(f'No saved model found at {model_file_path}')
 
     print(f'Model loaded from {model_file_path}')
     print(f'Parameters loaded from {parameter_file_path}')

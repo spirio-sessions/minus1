@@ -1,0 +1,11 @@
+{
+    "INPUT_SIZE": "24",
+    "hidden_size": "64",
+    "num_layers": "8",
+    "OUTPUT_SIZE": "12",
+    "learning_rate": "0.001",
+    "num_epochs": "10",
+    "batch_size": "128",
+    "seq_length": "csv",
+    "stride": "200"
+}

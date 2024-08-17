@@ -20,15 +20,15 @@ It outputs a model.ht and a parameters.txt for further use.
 
 # Parameters
 INPUT_SIZE = 24
-hidden_size = 128
+hidden_size = 512
 num_layers = 4
 OUTPUT_SIZE = 24
-learning_rate = 0.001
-num_epochs = 5
-batch_size = 32
-seq_length = 8  # Mal sehr weniger nehmen. War 2048
-stride = 2  # War 256
-databank = 'csv'
+learning_rate = 0.0001
+num_epochs = 10
+batch_size = 256
+seq_length = 8
+stride = 2
+databank = 'csv_transposed'
 data_cap = 0
 
 
@@ -136,20 +136,23 @@ for epoch in range(num_epochs):
     print(f"Validation Loss: {val_loss:.4f}")
     print(f"{'='*50}\n")
 
+# Save the parameter for json
+save_parameters = {
+    "INPUT_SIZE": INPUT_SIZE,
+    "hidden_size": hidden_size,
+    "num_layers": num_layers,
+    "OUTPUT_SIZE": OUTPUT_SIZE,
+    "learning_rate": learning_rate,
+    "num_epochs": num_epochs,
+    "batch_size": batch_size,
+    "seq_length": seq_length,
+    "stride": stride,
+    "databank": databank,
+    "data_cap": data_cap,
+    "train_loss": avg_train_loss,
+    "val_loss": val_loss,
+    "train_losses_list": train_losses,
+    "val_losses_list": val_losses
+}
 # Save the trained model
-save_parameter = [INPUT_SIZE, hidden_size, num_layers, OUTPUT_SIZE, learning_rate,
-                  num_epochs, batch_size, seq_length, stride, databank, data_cap]
-
-
-# Plot the training and validation losses
-plt.figure(figsize=(10, 6))
-plt.plot(range(1, num_epochs + 1), train_losses, label='Training Loss')
-plt.plot(range(1, num_epochs + 1), val_losses, label='Validation Loss')
-plt.xlabel('Epoch')
-plt.ylabel('Loss')
-plt.title('Training and Validation Loss over Epochs')
-plt.legend()
-plt.show()
-
-
-save_model('../04_finished_model/models/experiments', save_parameter, model, plt)
+save_model('../04_finished_model/models/experiments', save_parameters, model, train_losses, val_losses)
