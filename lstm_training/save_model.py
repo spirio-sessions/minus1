@@ -1,10 +1,11 @@
 import os
 import torch
+from matplotlib import pyplot as plt
 
 from lstm_training.LSTMModel import LSTMModel
 
 
-def save_model(save_path, save_parameters, model, plot, num=0):
+def save_model(save_path, save_parameters, model, num_epochs, train_losses, val_losses, num=0):
     """
     Save a trained LSTM model and its parameters to specified files.
 
@@ -53,10 +54,18 @@ def save_model(save_path, save_parameters, model, plot, num=0):
         print(f'Parameters saved to {parameter_file_path}')
 
         # Save the plot
-        plot.savefig(plot_file_path)
+        plt.figure(figsize=(10, 6))
+        plt.plot(range(1, num_epochs + 1), train_losses, label='Training Loss')
+        plt.plot(range(1, num_epochs + 1), val_losses, label='Validation Loss')
+        plt.xlabel('Epoch')
+        plt.ylabel('Loss')
+        plt.title('Training and Validation Loss over Epochs')
+        plt.legend()
+        plt.show()
+        plt.savefig(plot_file_path)
         print(f'Plot saved to {plot_file_path}')
     else:
-        save_model(save_path, save_parameters, model, plot, num + 1)
+        save_model(save_path, save_parameters, model, num_epochs, train_losses, val_losses, num + 1)
 
 
 # Save plot
