@@ -1,0 +1,38 @@
+{
+    "songname": "midi-unprocessed_01_r1_2006_01-09_orig_mid--audio_01_r1_2006_01_track01_wav-split",
+    "max_context_length": 5,
+    "threshold": 0.15,
+    "initial_context_length": 5,
+    "song_data": {
+        "sos_token": [
+            [
+                1,
+                1,
+                1,
+                1,
+                1,
+                1,
+                1,
+                1,
+                1,
+                1,
+                1,
+                1,
+                1,
+                1,
+                1,
+                1,
+                1,
+                1,
+                1,
+                1,
+                1,
+                1,
+                1,
+                1
+            ]
+        ],
+        "snapshot_interval": 0.1,
+        "song_length": 24
+    }
+}
