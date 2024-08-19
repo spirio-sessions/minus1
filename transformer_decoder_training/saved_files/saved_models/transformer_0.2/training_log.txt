@@ -1,0 +1,5 @@
+Epoch: 1, Train loss: 0.163, Val loss: 0.152, Epoch time = 89.569s
+Epoch: 2, Train loss: 0.151, Val loss: 0.147, Epoch time = 90.001s
+Epoch: 3, Train loss: 0.146, Val loss: 0.144, Epoch time = 89.872s
+Epoch: 4, Train loss: 0.141, Val loss: 0.144, Epoch time = 89.936s
+Epoch: 5, Train loss: 0.136, Val loss: 0.144, Epoch time = 87.473s
