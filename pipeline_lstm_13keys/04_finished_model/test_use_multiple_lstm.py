@@ -88,10 +88,28 @@ for model_file in model_files:
     # Create and save a heatmap of Predicted Harmony Data
     plt.figure(figsize=(20, 10))  # Adjust the size as necessary
     sns.heatmap(predicted_harmony_df, cmap='coolwarm', cbar_kws={'label': 'Probability of pressing the key'}, center=0.5, vmin=0, vmax=1)  # Adjust color map and limits based on your data
-    plt.title('Heatmap of Predicted Harmony Data')
+    plt.title(f'Heatmap of Predicted Harmony Data of {model_name}')
     plt.xlabel('Keys on piano, C -> Bb')
     plt.ylabel('Snapshot in MIDI')
     plt.savefig(f"{output_path}{model_name}_harmony_heatmap.png")
     plt.show()
 
     print(f"Heatmap for model {model_name} saved successfully!")
+
+
+plt.figure(figsize=(20, 10))  # Adjust the size as necessary
+sns.heatmap(original_harmony_df, cmap='coolwarm', cbar_kws={'label': 'Probability of pressing the key'}, center=0.5, vmin=0, vmax=1)  # Adjust color map and limits based on your data
+plt.title('Heatmap of Predicted Harmony Data')
+plt.xlabel('Keys on piano, C -> Bb')
+plt.ylabel('Snapshot in MIDI')
+plt.savefig(f"{output_path}{'original_harmony'}_harmony_heatmap.png")
+plt.show()
+
+plt.figure(figsize=(20, 10))  # Adjust the size as necessary
+sns.heatmap(original_melody_df, cmap='coolwarm', cbar_kws={'label': 'Probability of pressing the key'}, center=0.5, vmin=0, vmax=1)  # Adjust color map and limits based on your data
+plt.title('Heatmap of Predicted Harmony Data')
+plt.xlabel('Keys on piano, C -> Bb')
+plt.ylabel('Snapshot in MIDI')
+plt.savefig(f"{output_path}{'original_melody'}_harmony_heatmap.png")
+plt.show()
+plt.close()

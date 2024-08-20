@@ -38,38 +38,52 @@ def interval_quality_all_notes(melody_notes, harmony_notes):
 
     return penalties
 
+def interval_quality_based_on_highest(melody_notes, harmony_notes):
+    # Find the highest note in the melody
+    highest_note = melody_notes.max(dim=1, keepdim=True).values
+
+    # Calculate intervals between the highest melody note and all harmony notes
+    intervals = torch.abs(highest_note - harmony_notes) % 12
+
+    # Define penalties based on the intervals
+    penalties = torch.where(intervals == 0, torch.tensor(1.0, device=melody_notes.device),
+                torch.where(intervals == 7, torch.tensor(0.0, device=melody_notes.device),
+                torch.where((intervals == 4) | (intervals == 5), torch.tensor(0.1, device=melody_notes.device),
+                torch.where((intervals == 3) | (intervals == 8), torch.tensor(0.2, device=melody_notes.device),
+                torch.where((intervals == 2) | (intervals == 9), torch.tensor(0.3, device=melody_notes.device),
+                torch.where((intervals == 1) | (intervals == 11), torch.tensor(0.5, device=melody_notes.device),
+                torch.where(intervals == 6, torch.tensor(0.7, device=melody_notes.device), torch.tensor(0.4, device=melody_notes.device))))))))
+
+    return penalties
+
 # Custom loss function
 class MusicTheoryLoss(nn.Module):
     def __init__(self, alpha=1.0, beta=1.0):
         super(MusicTheoryLoss, self).__init__()
         self.alpha = alpha
         self.beta = beta
-        self.mse_loss = nn.MSELoss()
+        self.nn_loss = nn.BCEWithLogitsLoss()
 
-    def forward(self, outputs, targets, melodies, threshold=0.2):
+    def forward(self, outputs, targets, threshold=0.2):
         """
         :param outputs: predictions made by model
         :param targets: ground truth values corresponding to the "outputs"
-        :param melodies: input melodies, which are necessary for computing the harmony penalties
         :param threshold: threshhold at what point a note gets played or not
         :return: a double-value that represents the amount of loss calculated
         """
-        mse_loss = self.mse_loss(outputs, targets)
+        # Separate harmony and melody components from outputs and targets
+        harmony_output = outputs[:, :12]
+        melody_output = outputs[:, 12:]
+        harmony_target = targets[:, :12]
+        melody_target = targets[:, 12:]
 
-        # Ensure tensors are squeezed correctly
-        melodies = melodies.squeeze(1)  # Changes melodies Tensor(60, 1, 12) to Tensor(60, 12)
-        harmony = outputs.squeeze(1)    # Ensure harmony Tensor is of shape (batch_size, seq_length)
+        bce_loss = self.nn_loss(outputs, targets)
 
-        # Looking at all notes at the same time
-        # Extracting played notes
-        # melody_notes = (melodies > 0).nonzero(as_tuple=True)  # Indices of played melody notes
-        # harmony_notes = (harmony > threshold).nonzero(as_tuple=True)  # Indices of played harmony notes
+        penalties = interval_quality_based_on_highest(melody_target, harmony_output)
 
-        # Calculate harmony loss using interval quality
-        penalties = interval_quality_all_notes(melodies, harmony)
-        num_melody_notes = (melodies > 0).sum(dim=1).float().clamp(min=1)  # Avoid division by zero
-        num_harmony_notes = (harmony > threshold).sum(dim=1).float().clamp(min=1)  # Avoid division by zero
+        num_melody_notes = (melody_target > 0).sum(dim=1).float().clamp(min=1)
+        num_harmony_notes = (harmony_output > threshold).sum(dim=1).float().clamp(min=1)
 
-        harmony_loss = (penalties.sum(dim=1).sum(dim=1) / (num_melody_notes * num_harmony_notes)).mean()
+        harmony_loss = (penalties.sum(dim=1) / (num_melody_notes * num_harmony_notes)).mean()
 
-        return self.alpha * mse_loss + self.beta * harmony_loss
+        return self.alpha * bce_loss + self.beta * harmony_loss
