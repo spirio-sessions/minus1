@@ -327,3 +327,8 @@ pyrightconfig.json
 
 # ignore saved Transformer models + midi files
 # /transformer_decoder_training/saved_files/
+
+# ignore checkpoint files + finished model files
+transformer_decoder_training/saved_files/**/*checkpoints*/
+transformer_decoder_training/saved_files/**/*.pth
+

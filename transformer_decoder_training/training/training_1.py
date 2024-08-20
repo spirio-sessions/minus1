@@ -1,9 +1,12 @@
 import torch
-
+from tqdm import tqdm
 
 def train_loop(model, opt, loss_fn, dataloader, pad_token, device):
     model.train()
     total_loss = 0
+
+    # Initialize tqdm progress bar with the total number of batches
+    progress_bar = tqdm(total=len(dataloader), desc="Training", leave=False)
 
     for batch in dataloader:
         # Move data to GPU
@@ -33,6 +36,12 @@ def train_loop(model, opt, loss_fn, dataloader, pad_token, device):
         opt.step()
 
         total_loss += loss.detach().item()
+
+        # Update the progress bar by 1 step after processing each batch
+        progress_bar.update(1)
+
+    # Close the progress bar after the loop
+    progress_bar.close()
 
     return total_loss / len(dataloader)
 
