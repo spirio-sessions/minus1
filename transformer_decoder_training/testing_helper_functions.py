@@ -17,10 +17,10 @@ def create_json_testing_template():
     return template
 
 
-def save_json_testing_configuration(config, project_path: Path):
+def save_json_testing_configuration(config, project_path: Path, overwrite=False):
     # create project dir
     testing_dir = project_path / "tests"
-    testing_dir.mkdir(exist_ok=True)
+    testing_dir.mkdir(exist_ok=overwrite)
 
     test_row_configuration_path = testing_dir / f"{config['test_row_name']}_configuration.json"
     with test_row_configuration_path.open('w') as json_file:
@@ -244,9 +244,14 @@ def testinference_for_model(model, model_project_name: str, projects_dir: str, d
             print("sequecne tensor:", sequence.shape)
 
             seq_with_start = torch.vstack((start_token, sequence))
+            print("sequence with start token tensor:", seq_with_start.shape)
+
 
             context_seq, continuing_seq, original_seq = inference_and_visualize_1.prepare_sequence(seq_with_start,
                                                                                                    configuration["initial_context_length"])
+            print("context_seq tensor:", context_seq.shape)
+            print("continuing seq", continuing_seq.shape)
+
             tokens_with_truth, generated_logits = inference_5.inference(model,
                                                                         context_seq,
                                                                         continuing_seq,

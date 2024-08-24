@@ -53,10 +53,10 @@ def print_json_parameters(data, indent=0):
             print(value)
 
 
-def save_json_config(config, projects_path: Path):
+def save_json_config(config, projects_path: Path, overwrite=False):
     # create project dir
     project_dir = projects_path / config["model_project_name"]
-    project_dir.mkdir(exist_ok=True)
+    project_dir.mkdir(exist_ok=overwrite)
 
     # Save the configuration file to the project directory
     config_path = project_dir / f"{config['model_project_name']}_config.json"
@@ -223,7 +223,7 @@ def train_model_from_config(config_file: str, dataset_dir, device):
 
     # update json with model topology
     config["model_params"]["model_topology"] = str(model)
-    save_json_config(config, model_project_dir.parent)
+    save_json_config(config, model_project_dir.parent, overwrite=True)
 
     print("Start training Model with following parameters:")
     print("=============================")
