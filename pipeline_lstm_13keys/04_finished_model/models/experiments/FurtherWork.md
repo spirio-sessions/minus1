@@ -45,3 +45,11 @@ nicht direkt besser, eher schlechter.
 
 Pipeline:
 seq16 probieren mit Notenqualität
+
+
+
+
+
+INFERNECE:
+
+Artificially delete all notes that are only 1-3 snapshots long?

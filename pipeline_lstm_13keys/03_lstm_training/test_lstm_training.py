@@ -1,13 +1,11 @@
-import os
 from datetime import datetime
-
 import torch
-from matplotlib import pyplot as plt
 from torch import nn
 from tqdm import tqdm
 
 from lstm_training.LSTMModel import LSTMModel
 from lstm_training.load_data_from_csv import load_data_from_csv
+from lstm_training.music_theory_loss import MusicTheoryLoss
 from lstm_training.prepare_dataset_dataloaders import prepare_dataset_dataloaders
 from lstm_training.save_model import save_model
 
@@ -24,11 +22,11 @@ hidden_size = 512
 num_layers = 4
 OUTPUT_SIZE = 24
 learning_rate = 0.0001
-num_epochs = 10
+num_epochs = 15
 batch_size = 256
 seq_length = 8
-stride = 2
-databank = 'csv_transposed'
+stride = 1
+databank = 'csv'
 data_cap = 0
 
 
@@ -46,8 +44,9 @@ train_loader, val_loader = prepare_dataset_dataloaders(data, seq_length, stride,
 
 # Model, loss function, optimizer
 model = LSTMModel(INPUT_SIZE, hidden_size, num_layers, OUTPUT_SIZE).to(device)
-# criterion = nn.MSELoss()
+
 criterion = nn.BCEWithLogitsLoss()
+# criterion = MusicTheoryLoss(alpha=0.5, beta=0.5)
 optimizer = torch.optim.Adam(model.parameters(), lr=learning_rate)
 
 train_losses = []
@@ -75,7 +74,7 @@ for epoch in range(num_epochs):
         outputs = outputs.reshape(-1, OUTPUT_SIZE)  # (batch_size * seq_length, OUTPUT_SIZE)
         targets = targets.reshape(-1, OUTPUT_SIZE)  # (batch_size * seq_length, OUTPUT_SIZE)
         # targets = targets.argmax(dim=1)  # flattens it to (batch_size * sql_length, _)
-        # Normale Cross-entrophy ohne Argmax probieren, da er nur in BinaryCrossEntropy richtig ist.
+        # Normale Cross-entropy ohne Argmax probieren, da er nur in BinaryCrossEntropy richtig ist.
 
         # Loss computation
         loss = criterion(outputs, targets)
