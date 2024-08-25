@@ -21,7 +21,7 @@ def create_json_testing_template():
     return template
 
 
-def save_json_testing_configuration(config, project_path: Path, overwrite=False):
+def save_json_testing_configuration_to_project(config, project_path: Path, overwrite=False):
     # create project dir
     testing_dir = project_path / "tests"
     testing_dir.mkdir(exist_ok=overwrite)
@@ -35,6 +35,23 @@ def save_json_testing_configuration(config, project_path: Path, overwrite=False)
     test_row_dir.mkdir(exist_ok=True)
 
     return test_row_configuration_path
+
+
+def save_json_testing_configuration(config, configurations_dir, overwrite=False):
+    configurations_dir = Path(configurations_dir)
+    if not configurations_dir.exists():
+        raise ValueError(f"The directory {configurations_dir} does not exist")
+
+    test_row_configuration_path = configurations_dir / f"{config['test_row_name']}_configuration.json"
+
+    if not overwrite and test_row_configuration_path.exists():
+        print("configuration file already exist and overwrite set to False. Skipping")
+        return
+
+    with test_row_configuration_path.open('w') as json_file:
+        json.dump(config, json_file, indent=4)
+
+    print(f"Configuration saved to {test_row_configuration_path}")
 
 
 def copy_testing_templates_to_all_models(projects_dir: str, dir_with_configs: str, override=False):
@@ -233,7 +250,7 @@ def _prepare_songs_for_testing(testing_dataset_dir: str, model_config):
     return test_songs_dict
 
 
-def testinference_for_model(model, model_project_name: str, projects_dir: str, device: str, testing_dataset_dir: str):
+def testinference_for_model(model, model_project_name: str, projects_dir: str, device: str, testing_dataset_dir: str, override=False):
     from transformer_decoder_training.transformer_inference_eval import inference_and_visualize_1
     from transformer_decoder_training.inference import inference_5
 
@@ -286,6 +303,14 @@ def testinference_for_model(model, model_project_name: str, projects_dir: str, d
 
         # process each test song
         for songname, sequence in test_songs_dict.items():
+
+            # check if song already exist in this test configuration
+            test_song_configuration = specific_configuration_dir / f"{songname}_configuration.json"
+            if test_song_configuration.exists() and not override:
+                print(f"The song {songname} does already exist for this configuration, skipping")
+                progress_bar_sequences.update(1)
+                continue
+
 
             start_token = torch.tensor(config["training_data_params"]["sos_token"], dtype=torch.float32).to(device)
             pad_token = torch.tensor(config["training_data_params"]["pad_token"], dtype=torch.float32).to(device)
@@ -372,7 +397,7 @@ def testinference_for_model(model, model_project_name: str, projects_dir: str, d
     progress_bar_testing_configs.close()
 
 
-def testinference_for_all_models(projects_dir: str, test_data_dir: str, device):
+def testinference_for_all_models(projects_dir: str, test_data_dir: str, device, override=False):
     # Find all projects
     projects_path = Path(projects_dir)
     if not projects_path.exists():
@@ -389,6 +414,10 @@ def testinference_for_all_models(projects_dir: str, test_data_dir: str, device):
     progress_bar_testing = tqdm(total=len(project_paths), desc="Projects",
                                 leave=False)
     for project_path in project_paths:
+
+        print(f"Testing model {project_path.name}")
+        print(f"At location {project_path}")
+
         # load model
         try:
             model = load_transformer_model(project_path.name, projects_dir, device, load_best_checkpoint=True)
@@ -399,7 +428,7 @@ def testinference_for_all_models(projects_dir: str, test_data_dir: str, device):
 
         # do testing
         try:
-            testinference_for_model(model, project_path.name, projects_dir, device, test_data_dir)
+            testinference_for_model(model, project_path.name, projects_dir, device, test_data_dir, override=override)
         except Exception as e:
             print(f"Could not test model from project {project_path}, skipping. Error: {e}")
         progress_bar_testing.update(1)
