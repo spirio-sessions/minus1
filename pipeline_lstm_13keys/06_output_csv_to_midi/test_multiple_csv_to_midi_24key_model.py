@@ -4,8 +4,6 @@ import pandas as pd
 from mido import MidiFile, MidiTrack, Message
 
 from data_preperation.globals import INTERVAL
-from lstm_training.normalize_column import normalize_column
-from lstm_training.normalize_each_column_itself import normalize_each_column_itself
 
 """
 This script converts the predicted harmony and the original melody into a MIDI-file.
@@ -20,16 +18,16 @@ This version uses the 12-key data model.
 original_melody_df = pd.read_csv('../04_finished_model/models/experiments/results/original_melody.csv')
 original_harmony_df = pd.read_csv('../04_finished_model/models/experiments/results/original_harmony.csv')
 
-predicted_data_df = pd.read_csv('../04_finished_model/models/experiments/results/2_0406_seq8_customLoss_lstm_predicted_data.csv')
-predicted_harmony_df = pd.read_csv('../04_finished_model/models/experiments/results/2_0406_seq8_customLoss_lstm_predicted_harmony.csv')
+predicted_data_df = pd.read_csv('../04_finished_model/models/experiments/results/1664_00001LR_50epochs_lstm_predicted_data.csv')
+predicted_harmony_df = pd.read_csv('../04_finished_model/models/experiments/results/1664_00001LR_50epochs_lstm_predicted_harmony.csv')
 
 
 # Apply threshold to predicted harmony data
 
-predicted_harmony_df_normalized_each_column = predicted_harmony_df.apply(normalize_each_column_itself)
-predicted_harmony_df_normalized = predicted_harmony_df.apply(lambda col: normalize_column(col))
+# predicted_harmony_df_normalized_each_column = predicted_harmony_df.apply(normalize_each_column_itself)
+# predicted_harmony_df_normalized = predicted_harmony_df.apply(lambda col: normalize_column(col))
 
-threshold = 0.3
+threshold = 0.7
 predicted_harmony = predicted_harmony_df.map(lambda x: 1 if x > threshold else 0)
 # predicted_harmony = predicted_harmony_df_normalized.map(lambda x: 1 if x > threshold else 0)
 # predicted_harmony = predicted_harmony_df_normalized_each_column.map(lambda x: 1 if x > threshold else 0)

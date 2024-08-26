@@ -1,6 +1,5 @@
 {
     "model_name": "1664_seq8_00001LrR_stride1_15epoch_lstm",
-    "total_notes": 2518.0364529612903,
     "average_certainty": 0.039199770424081355,
     "highest_certainty": 0.9434889,
     "lowest_certainty": 0.0,
@@ -53,5 +52,20 @@
             "E",
             0.017317822747679807
         ]
-    ]
+    ],
+    "distinct_notes": 11,
+    "note_counts": {
+        "C": 0.0,
+        "C#": 2.0,
+        "D": 0.0,
+        "D#": 0.0,
+        "E": 0.0,
+        "F": 0.0,
+        "F#": 3.0,
+        "G": 9.0,
+        "G#": 323.0,
+        "A": 0.0,
+        "A#": 0.0,
+        "Bb": 0.0
+    }
 }

@@ -1,6 +1,5 @@
 {
     "model_name": "1955_seq16_00001LR_stride4_lstm",
-    "total_notes": 4157.12627750934,
     "average_certainty": 0.06471645615401551,
     "highest_certainty": 0.81284386,
     "lowest_certainty": 0.0,
@@ -53,5 +52,20 @@
             "F#",
             0.0165467442508201
         ]
-    ]
+    ],
+    "distinct_notes": 11,
+    "note_counts": {
+        "C": 2.0,
+        "C#": 0.0,
+        "D": 0.0,
+        "D#": 71.0,
+        "E": 0.0,
+        "F": 0.0,
+        "F#": 0.0,
+        "G": 0.0,
+        "G#": 0.0,
+        "A": 84.0,
+        "A#": 4.0,
+        "Bb": 0.0
+    }
 }

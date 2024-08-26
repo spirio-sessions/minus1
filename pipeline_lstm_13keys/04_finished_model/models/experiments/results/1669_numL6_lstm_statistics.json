@@ -1,6 +1,5 @@
 {
     "model_name": "1669_numL6_lstm",
-    "total_notes": 1469.4446655584,
     "average_certainty": 0.02287571868669282,
     "highest_certainty": 0.66817784,
     "lowest_certainty": 0.0,
@@ -53,5 +52,20 @@
             "F#",
             0.0074955507929945825
         ]
-    ]
+    ],
+    "distinct_notes": 0,
+    "note_counts": {
+        "C": 0.0,
+        "C#": 0.0,
+        "D": 0.0,
+        "D#": 0.0,
+        "E": 0.0,
+        "F": 0.0,
+        "F#": 0.0,
+        "G": 0.0,
+        "G#": 0.0,
+        "A": 0.0,
+        "A#": 0.0,
+        "Bb": 0.0
+    }
 }

@@ -1,6 +1,5 @@
 {
     "model_name": "2328_seq32_180epochs_lstm",
-    "total_notes": 3030.768235319674,
     "average_certainty": 0.047181770896688374,
     "highest_certainty": 0.9803365,
     "lowest_certainty": 0.0,
@@ -53,5 +52,20 @@
             "Bb",
             0.01025030544253568
         ]
-    ]
+    ],
+    "distinct_notes": 7,
+    "note_counts": {
+        "C": 43.0,
+        "C#": 12.0,
+        "D": 2.0,
+        "D#": 24.0,
+        "E": 29.0,
+        "F": 21.0,
+        "F#": 3.0,
+        "G": 16.0,
+        "G#": 28.0,
+        "A": 6.0,
+        "A#": 12.0,
+        "Bb": 3.0
+    }
 }

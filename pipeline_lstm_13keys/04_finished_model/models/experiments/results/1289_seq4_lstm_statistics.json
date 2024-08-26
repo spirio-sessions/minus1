@@ -1,6 +1,5 @@
 {
     "model_name": "1289_seq4_lstm",
-    "total_notes": 3190.92614684888,
     "average_certainty": 0.04967504431858896,
     "highest_certainty": 0.84109527,
     "lowest_certainty": 0.0,
@@ -53,5 +52,20 @@
             "Bb",
             0.014832872218273866
         ]
-    ]
+    ],
+    "distinct_notes": 0,
+    "note_counts": {
+        "C": 0.0,
+        "C#": 0.0,
+        "D": 0.0,
+        "D#": 5.0,
+        "E": 0.0,
+        "F": 0.0,
+        "F#": 1.0,
+        "G": 2.0,
+        "G#": 0.0,
+        "A": 0.0,
+        "A#": 55.0,
+        "Bb": 0.0
+    }
 }

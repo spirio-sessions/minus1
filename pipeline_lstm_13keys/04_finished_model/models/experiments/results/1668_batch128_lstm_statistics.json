@@ -1,6 +1,5 @@
 {
     "model_name": "1668_batch128_lstm",
-    "total_notes": 2030.53438999862,
     "average_certainty": 0.031610535992256994,
     "highest_certainty": 0.92329586,
     "lowest_certainty": 0.0,
@@ -53,5 +52,20 @@
             "Bb",
             0.005328449429491873
         ]
-    ]
+    ],
+    "distinct_notes": 5,
+    "note_counts": {
+        "C": 0.0,
+        "C#": 0.0,
+        "D": 0.0,
+        "D#": 0.0,
+        "E": 0.0,
+        "F": 247.0,
+        "F#": 0.0,
+        "G": 0.0,
+        "G#": 32.0,
+        "A": 0.0,
+        "A#": 0.0,
+        "Bb": 0.0
+    }
 }
