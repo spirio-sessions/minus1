@@ -1,0 +1,14 @@
+Epoch: 1, Train loss: 0.187, Val loss: 0.163, Epoch time = 189.056s
+Epoch: 2, Train loss: 0.165, Val loss: 0.158, Epoch time = 181.977s
+Epoch: 3, Train loss: 0.160, Val loss: 0.154, Epoch time = 183.726s
+Epoch: 4, Train loss: 0.156, Val loss: 0.151, Epoch time = 183.488s
+Epoch: 5, Train loss: 0.154, Val loss: 0.149, Epoch time = 184.008s
+Epoch: 6, Train loss: 0.151, Val loss: 0.147, Epoch time = 183.876s
+Epoch: 7, Train loss: 0.148, Val loss: 0.144, Epoch time = 183.827s
+Epoch: 8, Train loss: 0.145, Val loss: 0.142, Epoch time = 183.828s
+Epoch: 9, Train loss: 0.143, Val loss: 0.140, Epoch time = 183.822s
+Epoch: 10, Train loss: 0.140, Val loss: 0.139, Epoch time = 184.051s
+Epoch: 11, Train loss: 0.137, Val loss: 0.139, Epoch time = 183.741s
+Epoch: 12, Train loss: 0.134, Val loss: 0.138, Epoch time = 187.609s
+Epoch: 13, Train loss: 0.131, Val loss: 0.139, Epoch time = 187.922s
+Epoch: 14, Train loss: 0.127, Val loss: 0.139, Epoch time = 186.490s

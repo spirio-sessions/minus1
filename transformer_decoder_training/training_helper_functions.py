@@ -3,6 +3,8 @@ import torch
 import numpy as np
 from pathlib import Path
 
+import transformer_decoder_training.loss_functions.focal_loss
+
 
 def create_json_template():
     # Create the template with the desired structure and empty values
@@ -20,7 +22,11 @@ def create_json_template():
             "learning_rate": None,
             "num_epochs": None,
             "optimizer": "",
-            "loss_fn": ""
+            "loss_fn": "",
+            "loss_fn_parameters": {
+                "alpha": None,
+                "gamma": None,
+            }
         },
         "training_data_params": {
             "sos_token": [],
@@ -53,10 +59,10 @@ def print_json_parameters(data, indent=0):
             print(value)
 
 
-def save_json_config(config, projects_path: Path):
+def save_json_config(config, projects_path: Path, overwrite=False):
     # create project dir
     project_dir = projects_path / config["model_project_name"]
-    project_dir.mkdir(exist_ok=True)
+    project_dir.mkdir(exist_ok=overwrite)
 
     # Save the configuration file to the project directory
     config_path = project_dir / f"{config['model_project_name']}_config.json"
@@ -124,6 +130,18 @@ def _load_loss_fn(config):
         loss_fn = nn.BCEWithLogitsLoss()
     elif loss_fn_name == "MultiLabelSoftMarginLoss":
         loss_fn = nn.MultiLabelSoftMarginLoss()
+    elif loss_fn_name == "FocalLoss":
+        alpha = config["training_params"]["loss_fn_parameters"]["alpha"]
+        gamma = config["training_params"]["loss_fn_parameters"]["gamma"]
+
+        if alpha is None:
+            raise ValueError("alpha needs to be defined with tis loss function")
+        if gamma is None:
+            raise ValueError("gamma needs to be defined with tis loss function")
+        loss_fn = transformer_decoder_training.loss_functions.focal_loss.FocalLoss(alpha=alpha, gamma=gamma)
+
+        print(f"Initializing Focal Loss with alpha={alpha} and gamma={gamma}")
+
     else:
         raise ValueError(f"Unsupported loss function type: {loss_fn_name}")
 
@@ -174,7 +192,7 @@ def _train_model_epochs(model_dir, model, optimizer, loss_fn, pad_token, train_l
         val_loss = training_1.validation_loop(model, loss_fn, val_loader, pad_token, device)
 
         # Log epoch information to console and file
-        epoch_info = (f"Epoch: {epoch}, Train loss: {train_loss:.3f}, Val loss: {val_loss:.3f}, "
+        epoch_info = (f"Epoch: {epoch}, Train loss: {train_loss:.5f}, Val loss: {val_loss:.5f}, "
                       f"Epoch time = {(end_time - start_time):.3f}s")
         print(epoch_info)
 
@@ -223,7 +241,7 @@ def train_model_from_config(config_file: str, dataset_dir, device):
 
     # update json with model topology
     config["model_params"]["model_topology"] = str(model)
-    save_json_config(config, model_project_dir.parent)
+    save_json_config(config, model_project_dir.parent, overwrite=True)
 
     print("Start training Model with following parameters:")
     print("=============================")

@@ -332,3 +332,6 @@ pyrightconfig.json
 transformer_decoder_training/saved_files/**/*checkpoints*/
 transformer_decoder_training/saved_files/**/*.pth
 
+# ignore transformer test files
+transformer_decoder_training/saved_files/**/*tests*/
+

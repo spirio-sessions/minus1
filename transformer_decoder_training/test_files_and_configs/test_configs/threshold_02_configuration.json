@@ -1,0 +1,7 @@
+{
+    "test_row_name": "threshold_02",
+    "max_context_length": null,
+    "threshold": 0.2,
+    "initial_context_length": null,
+    "inference_method": "inference"
+}

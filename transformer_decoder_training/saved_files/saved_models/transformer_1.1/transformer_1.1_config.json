@@ -1,5 +1,5 @@
 {
-    "model_project_name": "transformer_1.0",
+    "model_project_name": "transformer_1.1",
     "model_params": {
         "model_topology": "Transformer(\n  (embedding): Linear(in_features=24, out_features=1024, bias=True)\n  (pos_emb): SinusoidalPosEmb()\n  (blocks): ModuleList(\n    (0-7): 8 x TransformerBlock(\n      (norm1): LayerNorm((1024,), eps=1e-05, elementwise_affine=True)\n      (multihead_attn): MultiheadAttention(\n        (out_proj): NonDynamicallyQuantizableLinear(in_features=1024, out_features=1024, bias=True)\n      )\n      (norm2): LayerNorm((1024,), eps=1e-05, elementwise_affine=True)\n      (mlp): Sequential(\n        (0): Linear(in_features=1024, out_features=4096, bias=True)\n        (1): ELU(alpha=1.0)\n        (2): Linear(in_features=4096, out_features=1024, bias=True)\n      )\n    )\n  )\n  (fc_out): Linear(in_features=1024, out_features=24, bias=True)\n)",
         "num_emb": 24,
@@ -72,8 +72,8 @@
             ]
         ],
         "snapshot_interval": 0.1,
-        "batch_size": 32,
-        "sequence_length": 512,
+        "batch_size": 17,
+        "sequence_length": 1024,
         "stride": 256,
         "test_size": 0.2
     }
