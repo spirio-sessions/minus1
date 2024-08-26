@@ -307,7 +307,7 @@ def testinference_for_model(model, model_project_name: str, projects_dir: str, d
             # check if song already exist in this test configuration
             test_song_configuration = specific_configuration_dir / f"{songname}_configuration.json"
             if test_song_configuration.exists() and not override:
-                print(f"The song {songname} does already exist for this configuration, skipping")
+                print(f"The song {songname} does already exist for the configuration {test_song_configuration}, skipping")
                 progress_bar_sequences.update(1)
                 continue
 
@@ -415,8 +415,12 @@ def testinference_for_all_models(projects_dir: str, test_data_dir: str, device, 
                                 leave=False)
     for project_path in project_paths:
 
+        print("")
+        print("==============================")
         print(f"Testing model {project_path.name}")
         print(f"At location {project_path}")
+        print("==============================")
+        print("")
 
         # load model
         try:
