@@ -72,8 +72,8 @@ def calculate_distinct_notes(df, threshold=0.7, min_duration=3):
     return combined_notes_count
 
 
-def calculate_composite_score(stats, distinct_notes, average_certainty_weight=1.0,
-                              highest_certainty_weight=100, lowest_certainty_weight=100,
+def calculate_composite_score(stats, distinct_notes, average_certainty_weight=100,
+                              highest_certainty_weight=500, lowest_certainty_weight=500,
                               note_ranking_diff_weight=50, distinct_notes_weight=5):
     # Composite score considering distinct notes
     score_average_certainty_diff = stats['average_certainty_diff'] * average_certainty_weight
