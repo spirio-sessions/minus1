@@ -150,7 +150,7 @@ def load_transformer_model(model_project_name: str, projects_dir: str, device: s
     if load_best_checkpoint:
         train_log = Path(project_path) / "training_log.txt"
         if not train_log.exists():
-            raise ValueError(f"the file {model_project_name} does not exist in {project_path}")
+            raise ValueError(f"the file {train_log} does not exist in {project_path}")
 
         best_epoch = _find_best_epoch(str(train_log))
         print(f"Best epoch is epoch number {best_epoch}")
