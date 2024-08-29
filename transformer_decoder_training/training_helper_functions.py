@@ -4,6 +4,7 @@ import numpy as np
 from pathlib import Path
 
 import transformer_decoder_training.loss_functions.focal_loss
+import transformer_decoder_training.loss_functions.music_theory_loss
 
 
 def create_json_template():
@@ -141,6 +142,18 @@ def _load_loss_fn(config):
         loss_fn = transformer_decoder_training.loss_functions.focal_loss.FocalLoss(alpha=alpha, gamma=gamma)
 
         print(f"Initializing Focal Loss with alpha={alpha} and gamma={gamma}")
+
+    elif loss_fn_name == "MusicTheoryLoss":
+        alpha = config["training_params"]["loss_fn_parameters"]["alpha"]
+        gamma = config["training_params"]["loss_fn_parameters"]["gamma"]
+
+        if alpha is None:
+            raise ValueError("alpha needs to be defined with tis loss function")
+        if gamma is None:
+            raise ValueError("gamma needs to be defined with tis loss function")
+
+        loss_fn = transformer_decoder_training.loss_functions.music_theory_loss.MusicTheoryLoss(alpha, gamma)
+        print(f"Initializing Custom music theory Loss with alpha={alpha} and beta={gamma}")
 
     else:
         raise ValueError(f"Unsupported loss function type: {loss_fn_name}")

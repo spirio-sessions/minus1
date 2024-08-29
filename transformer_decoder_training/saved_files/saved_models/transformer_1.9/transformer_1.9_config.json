@@ -1,0 +1,84 @@
+{
+    "model_project_name": "transformer_1.9",
+    "model_params": {
+        "model_topology": "Transformer(\n  (embedding): Linear(in_features=24, out_features=24, bias=True)\n  (pos_emb): SinusoidalPosEmb()\n  (blocks): ModuleList(\n    (0): TransformerBlock(\n      (norm1): LayerNorm((24,), eps=1e-05, elementwise_affine=True)\n      (multihead_attn): MultiheadAttention(\n        (out_proj): NonDynamicallyQuantizableLinear(in_features=24, out_features=24, bias=True)\n      )\n      (norm2): LayerNorm((24,), eps=1e-05, elementwise_affine=True)\n      (mlp): Sequential(\n        (0): Linear(in_features=24, out_features=96, bias=True)\n        (1): ELU(alpha=1.0)\n        (2): Linear(in_features=96, out_features=24, bias=True)\n      )\n    )\n  )\n  (fc_out): Linear(in_features=24, out_features=24, bias=True)\n)",
+        "num_emb": 24,
+        "hidden_size": 24,
+        "num_layers": 1,
+        "num_heads": 1,
+        "output_dim": null
+    },
+    "training_params": {
+        "learning_rate": 0.0001,
+        "num_epochs": 200,
+        "optimizer": "Adam",
+        "loss_fn": "BCEWithLogitsLoss",
+        "loss_fn_parameters": {
+            "alpha": null,
+            "gamma": null
+        }
+    },
+    "training_data_params": {
+        "sos_token": [
+            [
+                1,
+                1,
+                1,
+                1,
+                1,
+                1,
+                1,
+                1,
+                1,
+                1,
+                1,
+                1,
+                1,
+                1,
+                1,
+                1,
+                1,
+                1,
+                1,
+                1,
+                1,
+                1,
+                1,
+                1
+            ]
+        ],
+        "pad_token": [
+            [
+                2,
+                2,
+                2,
+                2,
+                2,
+                2,
+                2,
+                2,
+                2,
+                2,
+                2,
+                2,
+                2,
+                2,
+                2,
+                2,
+                2,
+                2,
+                2,
+                2,
+                2,
+                2,
+                2,
+                2
+            ]
+        ],
+        "snapshot_interval": 0.05,
+        "batch_size": 64,
+        "sequence_length": 512,
+        "stride": 256,
+        "test_size": 0.2
+    }
+}

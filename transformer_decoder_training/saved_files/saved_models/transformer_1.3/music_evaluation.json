@@ -1,0 +1,181 @@
+{
+    "score_weights": null,
+    "test_rows": [
+        {
+            "name": "threshold_005",
+            "songs": [
+                {
+                    "song_name": "midi-unprocessed_04_r1_2008_01-04_orig_mid--audio_04_r1_2008_wav--1-split_configuration",
+                    "combined_harmony_score": 1.560488346281909,
+                    "notes_per_snapshot_score": 0.14798372179060304
+                },
+                {
+                    "song_name": "simple_test_configuration",
+                    "combined_harmony_score": -3.997154471544716,
+                    "notes_per_snapshot_score": 0.16260162601626016
+                },
+                {
+                    "song_name": "short_cord_progression_configuration",
+                    "combined_harmony_score": -10.180508474576271,
+                    "notes_per_snapshot_score": 0.5932203389830508
+                }
+            ],
+            "harmony_average": -4.205724866613026,
+            "notes_per_snapshot_average": 0.3012685622633047
+        },
+        {
+            "name": "threshold_01",
+            "songs": [
+                {
+                    "song_name": "midi-unprocessed_04_r1_2008_01-04_orig_mid--audio_04_r1_2008_wav--1-split_configuration",
+                    "combined_harmony_score": 0.9807621161672216,
+                    "notes_per_snapshot_score": 0.07399186089530152
+                },
+                {
+                    "song_name": "simple_test_configuration",
+                    "combined_harmony_score": -3.9943089430894307,
+                    "notes_per_snapshot_score": 0.16260162601626016
+                },
+                {
+                    "song_name": "short_cord_progression_configuration",
+                    "combined_harmony_score": 0.9669491525423729,
+                    "notes_per_snapshot_score": 0.5084745762711864
+                }
+            ],
+            "harmony_average": -0.6821992247932788,
+            "notes_per_snapshot_average": 0.24835602106091603
+        },
+        {
+            "name": "threshold_015",
+            "songs": [
+                {
+                    "song_name": "midi-unprocessed_04_r1_2008_01-04_orig_mid--audio_04_r1_2008_wav--1-split_configuration",
+                    "combined_harmony_score": 0.0,
+                    "notes_per_snapshot_score": 0.03699593044765076
+                },
+                {
+                    "song_name": "simple_test_configuration",
+                    "combined_harmony_score": 3.0,
+                    "notes_per_snapshot_score": 0.12195121951219512
+                },
+                {
+                    "song_name": "short_cord_progression_configuration",
+                    "combined_harmony_score": 0.9864406779661017,
+                    "notes_per_snapshot_score": 0.3389830508474576
+                }
+            ],
+            "harmony_average": 1.328813559322034,
+            "notes_per_snapshot_average": 0.1659767336024345
+        },
+        {
+            "name": "threshold_02",
+            "songs": [
+                {
+                    "song_name": "midi-unprocessed_04_r1_2008_01-04_orig_mid--audio_04_r1_2008_wav--1-split_configuration",
+                    "combined_harmony_score": 0.0,
+                    "notes_per_snapshot_score": 0.03699593044765076
+                },
+                {
+                    "song_name": "simple_test_configuration",
+                    "combined_harmony_score": 3.0,
+                    "notes_per_snapshot_score": 0.12195121951219512
+                },
+                {
+                    "song_name": "short_cord_progression_configuration",
+                    "combined_harmony_score": -1.0,
+                    "notes_per_snapshot_score": 0.1694915254237288
+                }
+            ],
+            "harmony_average": 0.6666666666666666,
+            "notes_per_snapshot_average": 0.10947955846119156
+        },
+        {
+            "name": "threshold_025",
+            "songs": [
+                {
+                    "song_name": "midi-unprocessed_04_r1_2008_01-04_orig_mid--audio_04_r1_2008_wav--1-split_configuration",
+                    "combined_harmony_score": 0.0,
+                    "notes_per_snapshot_score": 0.0
+                },
+                {
+                    "song_name": "simple_test_configuration",
+                    "combined_harmony_score": 3.0,
+                    "notes_per_snapshot_score": 0.12195121951219512
+                },
+                {
+                    "song_name": "short_cord_progression_configuration",
+                    "combined_harmony_score": 0.9991525423728813,
+                    "notes_per_snapshot_score": 0.1694915254237288
+                }
+            ],
+            "harmony_average": 1.333050847457627,
+            "notes_per_snapshot_average": 0.09714758164530797
+        },
+        {
+            "name": "threshold_05",
+            "songs": [
+                {
+                    "song_name": "midi-unprocessed_04_r1_2008_01-04_orig_mid--audio_04_r1_2008_wav--1-split_configuration",
+                    "combined_harmony_score": 0.0,
+                    "notes_per_snapshot_score": 0.0
+                },
+                {
+                    "song_name": "simple_test_configuration",
+                    "combined_harmony_score": 3.0,
+                    "notes_per_snapshot_score": 0.12195121951219512
+                },
+                {
+                    "song_name": "short_cord_progression_configuration",
+                    "combined_harmony_score": 0.0,
+                    "notes_per_snapshot_score": 0.0
+                }
+            ],
+            "harmony_average": 1.0,
+            "notes_per_snapshot_average": 0.04065040650406504
+        },
+        {
+            "name": "threshold_03",
+            "songs": [
+                {
+                    "song_name": "midi-unprocessed_04_r1_2008_01-04_orig_mid--audio_04_r1_2008_wav--1-split_configuration",
+                    "combined_harmony_score": 0.0,
+                    "notes_per_snapshot_score": 0.0
+                },
+                {
+                    "song_name": "simple_test_configuration",
+                    "combined_harmony_score": 3.0,
+                    "notes_per_snapshot_score": 0.12195121951219512
+                },
+                {
+                    "song_name": "short_cord_progression_configuration",
+                    "combined_harmony_score": -0.002542372881355932,
+                    "notes_per_snapshot_score": 0.1694915254237288
+                }
+            ],
+            "harmony_average": 0.9991525423728813,
+            "notes_per_snapshot_average": 0.09714758164530797
+        },
+        {
+            "name": "top_k",
+            "songs": [
+                {
+                    "song_name": "midi-unprocessed_04_r1_2008_01-04_orig_mid--audio_04_r1_2008_wav--1-split_configuration",
+                    "combined_harmony_score": 0.2349241583425823,
+                    "notes_per_snapshot_score": 15.390307066222716
+                },
+                {
+                    "song_name": "simple_test_configuration",
+                    "combined_harmony_score": 3.0,
+                    "notes_per_snapshot_score": 0.12195121951219512
+                },
+                {
+                    "song_name": "short_cord_progression_configuration",
+                    "combined_harmony_score": 1.5466101694915255,
+                    "notes_per_snapshot_score": 60.0
+                }
+            ],
+            "harmony_average": 1.5938447759447028,
+            "notes_per_snapshot_average": 25.17075276191164
+        }
+    ]
+}
