@@ -29,6 +29,9 @@ def count_key_presses(sequence_tensor):
 import numpy as np
 import itertools
 
+import numpy as np
+import itertools
+
 # Define common harmonic intervals and chords (in semitones)
 harmonic_intervals = [
     {0, 7},  # Perfect fifth
@@ -65,35 +68,41 @@ def detect_harmony_and_disharmony_score(snapshot):
     """
     active_notes = np.where(np.array(snapshot) == 1.0)[0]
     if len(active_notes) < 2:
-        return {'harmony_score': 0, 'disharmony_score': 0}  # Need at least 2 notes to score
+        return {'harmony_score': 0, 'disharmony_score': 0.5}  # punish slightly since no harmony is possible
 
     harmony_score = 0
     disharmony_score = 0
-    disharmony_detected = False
 
-    # Check all possible pairs and combinations of active notes for harmonic and dissonant intervals
-    for combination_size in range(2, len(active_notes) + 1):
-        for combination in itertools.combinations(active_notes, combination_size):
-            intervals = set((np.array(combination) - combination[0]) % 12)
+    # Calculate intervals between the first note and the others
+    intervals = set((active_notes - active_notes[0]) % 12)
+    #print(intervals)
 
-            # Check for dissonant intervals first
-            for dissonant in dissonant_intervals:
-                if dissonant.issubset(intervals):
-                    disharmony_score += 1  # Increase disharmony score for each detected dissonant interval
-                    disharmony_detected = True
+    # detect disharmonies
+    for dissonant_interval in dissonant_intervals:
+        if dissonant_interval.issubset(intervals):
+            disharmony_score += 1
 
-            # Check for harmonic intervals only if no disharmony detected yet
-            if not disharmony_detected:
-                for harmonic in harmonic_intervals:
-                    if harmonic.issubset(intervals):
-                        harmony_score += 1  # Increase harmony score for each detected harmonic interval
+    # ignore harmony if disharmony is detected
+    if disharmony_score > 0:
+        return {'harmony_score': harmony_score, 'disharmony_score': disharmony_score}
 
-                # Check for chords
-                for chord in chord_intervals:
-                    if chord.issubset(intervals):
-                        harmony_score += 2  # Increase harmony score more for detected chords
+    # detect chord:
+    if len(active_notes >= 3):
+        for chord in chord_intervals:
+            if chord.issubset(intervals):
+                harmony_score += 2
 
+        if harmony_score > 0:
+            return {'harmony_score': harmony_score, 'disharmony_score': disharmony_score}
+
+
+    # detect harmonies:
+    for harmonic in harmonic_intervals:
+        if harmonic.issubset(intervals):
+            harmony_score += 1
     return {'harmony_score': harmony_score, 'disharmony_score': disharmony_score}
+
+
 
 
 def compute_quality_scores(sequence_tensor):

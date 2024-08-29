@@ -6,11 +6,11 @@
             "songs": [
                 {
                     "song_name": "midi-unprocessed_04_r1_2008_01-04_orig_mid--audio_04_r1_2008_wav--1-split_configuration",
-                    "combined_harmony_score": -50.5625,
+                    "combined_harmony_score": -1.0,
                     "notes_per_snapshot_score": 14.583333333333334
                 }
             ],
-            "harmony_average": -50.5625,
+            "harmony_average": -1.0,
             "notes_per_snapshot_average": 14.583333333333334
         }
     ]
