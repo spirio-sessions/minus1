@@ -32,27 +32,77 @@ import itertools
 import numpy as np
 import itertools
 
-# Define common harmonic intervals and chords (in semitones)
-harmonic_intervals = [
-    {0, 7},  # Perfect fifth
-    {0, 4},  # Major third
-    {0, 3},  # Minor third
-    {0, 5},  # Perfect fourth
-]
+# # Define common harmonic intervals and chords (in semitones)
+# harmonic_intervals = [
+#     {0, 7},  # Perfect fifth
+#     {0, 4},  # Major third
+#     {0, 3},  # Minor third
+#     {0, 5},  # Perfect fourth
+# ]
+#
+# chord_intervals = [
+#     {0, 4, 7},  # Major triad
+#     {0, 3, 7},  # Minor triad
+#     {0, 3, 6},  # Diminished triad
+#     {0, 4, 8},  # Augmented triad
+# ]
+#
+# # Define dissonant intervals
+# dissonant_intervals = [
+#     {0, 1},  # Minor second
+#     {0, 6},  # Tritone
+#     {0, 10},  # Minor seventh
+# ]
+#
+# def detect_harmony_and_disharmony_score(snapshot):
+#     """
+#     Detect if a snapshot contains harmonic intervals, chords, or dissonant intervals,
+#     and return a score based on the number and type of harmonies and disharmonies detected.
+#
+#     Args:
+#         snapshot (list or np.array): A list or array representing a snapshot of notes (1.0 if active, 0.0 if not).
+#
+#     Returns:
+#         dict: A dictionary with scores for harmony and disharmony.
+#     """
+#     active_notes = np.where(np.array(snapshot) == 1.0)[0]
+#     if len(active_notes) < 2:
+#         return {'harmony_score': 0, 'disharmony_score': 0}
+#
+#     harmony_score = 0
+#     disharmony_score = 0
+#
+#     # Calculate intervals between the first note and the others
+#     intervals = set((active_notes - active_notes[0]) % 12)
+#     #print(intervals)
+#
+#     # detect disharmonies
+#     for dissonant_interval in dissonant_intervals:
+#         if dissonant_interval.issubset(intervals):
+#             disharmony_score += 1
+#
+#     # ignore harmony if disharmony is detected
+#     if disharmony_score > 0:
+#         return {'harmony_score': harmony_score, 'disharmony_score': disharmony_score}
+#
+#     # detect chord:
+#     if len(active_notes >= 3):
+#         for chord in chord_intervals:
+#             if chord.issubset(intervals):
+#                 harmony_score += 2
+#
+#         if harmony_score > 0:
+#             return {'harmony_score': harmony_score, 'disharmony_score': disharmony_score}
+#
+#
+#     # detect harmonies:
+#     for harmonic in harmonic_intervals:
+#         if harmonic.issubset(intervals):
+#             harmony_score += 1
+#     return {'harmony_score': harmony_score, 'disharmony_score': disharmony_score}
 
-chord_intervals = [
-    {0, 4, 7},  # Major triad
-    {0, 3, 7},  # Minor triad
-    {0, 3, 6},  # Diminished triad
-    {0, 4, 8},  # Augmented triad
-]
 
-# Define dissonant intervals
-dissonant_intervals = [
-    {0, 1},  # Minor second
-    {0, 6},  # Tritone
-    {0, 10},  # Minor seventh
-]
+import numpy as np
 
 
 def detect_harmony_and_disharmony_score(snapshot):
@@ -66,18 +116,41 @@ def detect_harmony_and_disharmony_score(snapshot):
     Returns:
         dict: A dictionary with scores for harmony and disharmony.
     """
+    # Define intervals for dissonance and harmony
+    dissonant_intervals = [
+        {1, 2},  # Minor 2nd
+        {6},  # Tritone
+        {11}  # Major 7th
+    ]
+    harmonic_intervals = [
+        {4, 7},  # Major 3rd and Perfect 5th
+        {3, 7},  # Minor 3rd and Perfect 5th
+        {4, 8},  # Major 3rd and Minor 6th
+        {3, 8}  # Minor 3rd and Minor 6th
+    ]
+    chord_intervals = [
+        {0, 4, 7},  # Major Triad
+        {0, 3, 7},  # Minor Triad
+        {0, 3, 6},  # Diminished Triad
+        {0, 4, 8},  # Augmented Triad
+    ]
+
     active_notes = np.where(np.array(snapshot) == 1.0)[0]
     if len(active_notes) < 2:
-        return {'harmony_score': 0, 'disharmony_score': 0.5}  # punish slightly since no harmony is possible
+        return {'harmony_score': 0, 'disharmony_score': 0}
 
     harmony_score = 0
     disharmony_score = 0
 
-    # Calculate intervals between the first note and the others
-    intervals = set((active_notes - active_notes[0]) % 12)
-    #print(intervals)
+    # Calculate all intervals modulo 12
+    intervals = set()
+    for i in range(len(active_notes)):
+        for j in range(i + 1, len(active_notes)):
+            interval = (active_notes[j] - active_notes[i]) % 12
+            intervals.add(interval)
+            intervals.add(12 - interval)  # Add the inversion of the interval as well
 
-    # detect disharmonies
+    # Detect dissonances
     for dissonant_interval in dissonant_intervals:
         if dissonant_interval.issubset(intervals):
             disharmony_score += 1
@@ -86,8 +159,8 @@ def detect_harmony_and_disharmony_score(snapshot):
     if disharmony_score > 0:
         return {'harmony_score': harmony_score, 'disharmony_score': disharmony_score}
 
-    # detect chord:
-    if len(active_notes >= 3):
+    # Detect chords:
+    if len(active_notes) >= 3:
         for chord in chord_intervals:
             if chord.issubset(intervals):
                 harmony_score += 2
@@ -95,14 +168,12 @@ def detect_harmony_and_disharmony_score(snapshot):
         if harmony_score > 0:
             return {'harmony_score': harmony_score, 'disharmony_score': disharmony_score}
 
-
-    # detect harmonies:
+    # Detect harmonies if no dissonance is detected:
     for harmonic in harmonic_intervals:
         if harmonic.issubset(intervals):
             harmony_score += 1
+
     return {'harmony_score': harmony_score, 'disharmony_score': disharmony_score}
-
-
 
 
 def compute_quality_scores(sequence_tensor):
@@ -129,4 +200,5 @@ def compute_quality_scores(sequence_tensor):
     harmony_score = harmony_score / sequence_tensor.shape[0]
     disharmony_score = disharmony_score / sequence_tensor.shape[0]
 
-    return {'harmony_score': harmony_score, 'disharmony_score': disharmony_score, "notes_per_snapshot": notes_per_snapshot}
+    return {'harmony_score': harmony_score, 'disharmony_score': disharmony_score,
+            "notes_per_snapshot": notes_per_snapshot}

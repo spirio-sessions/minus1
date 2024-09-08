@@ -2,220 +2,41 @@
     "score_weights": null,
     "test_rows": [
         {
-            "name": "threshold_005",
-            "songs": [
-                {
-                    "song_name": "midi-unprocessed_04_r1_2008_01-04_orig_mid--audio_04_r1_2008_wav--1-split_configuration",
-                    "combined_harmony_score": -2.6014919513152726,
-                    "notes_per_snapshot_score": 0.21594032194738907
-                },
-                {
-                    "song_name": "simple_test_configuration",
-                    "combined_harmony_score": -1.9980464510527458,
-                    "notes_per_snapshot_score": 0.15194269589754722
-                },
-                {
-                    "song_name": "short_cord_progression_configuration",
-                    "combined_harmony_score": 2.0,
-                    "notes_per_snapshot_score": 0.1953125
-                },
-                {
-                    "song_name": "moritz_maria_configuration",
-                    "combined_harmony_score": -2.68868778280543,
-                    "notes_per_snapshot_score": 0.36199095022624433
-                }
-            ],
-            "harmony_average": -1.322056546293362,
-            "notes_per_snapshot_average": 0.23129661701779514
-        },
-        {
-            "name": "threshold_01",
-            "songs": [
-                {
-                    "song_name": "midi-unprocessed_04_r1_2008_01-04_orig_mid--audio_04_r1_2008_wav--1-split_configuration",
-                    "combined_harmony_score": -2.161955241460542,
-                    "notes_per_snapshot_score": 0.5889281507656066
-                },
-                {
-                    "song_name": "simple_test_configuration",
-                    "combined_harmony_score": -1.0,
-                    "notes_per_snapshot_score": 0.08682439765574126
-                },
-                {
-                    "song_name": "short_cord_progression_configuration",
-                    "combined_harmony_score": 2.0,
-                    "notes_per_snapshot_score": 0.146484375
-                },
-                {
-                    "song_name": "moritz_maria_configuration",
-                    "combined_harmony_score": -0.9834841628959275,
-                    "notes_per_snapshot_score": 0.27149321266968324
-                }
-            ],
-            "harmony_average": -0.5363598510891174,
-            "notes_per_snapshot_average": 0.27343253402275774
-        },
-        {
-            "name": "threshold_015",
-            "songs": [
-                {
-                    "song_name": "midi-unprocessed_04_r1_2008_01-04_orig_mid--audio_04_r1_2008_wav--1-split_configuration",
-                    "combined_harmony_score": -0.6727522575579112,
-                    "notes_per_snapshot_score": 0.4122497055359246
-                },
-                {
-                    "song_name": "simple_test_configuration",
-                    "combined_harmony_score": -1.0,
-                    "notes_per_snapshot_score": 0.08682439765574126
-                },
-                {
-                    "song_name": "short_cord_progression_configuration",
-                    "combined_harmony_score": 2.0,
-                    "notes_per_snapshot_score": 0.146484375
-                },
-                {
-                    "song_name": "moritz_maria_configuration",
-                    "combined_harmony_score": -0.8176470588235294,
-                    "notes_per_snapshot_score": 0.22624434389140274
-                }
-            ],
-            "harmony_average": -0.12259982909536016,
-            "notes_per_snapshot_average": 0.21795070552076717
-        },
-        {
             "name": "threshold_02",
             "songs": [
                 {
-                    "song_name": "midi-unprocessed_04_r1_2008_01-04_orig_mid--audio_04_r1_2008_wav--1-split_configuration",
-                    "combined_harmony_score": 1.782292893600314,
-                    "notes_per_snapshot_score": 0.39261876717707106
-                },
-                {
                     "song_name": "simple_test_configuration",
-                    "combined_harmony_score": 1.0,
+                    "single_harmony_score": 4.0,
+                    "single_disharmony_score": 0.0,
+                    "combined_harmony_score": 4.0,
                     "notes_per_snapshot_score": 0.06511829824180596
                 },
                 {
                     "song_name": "short_cord_progression_configuration",
-                    "combined_harmony_score": 2.0,
+                    "single_harmony_score": 4.0,
+                    "single_disharmony_score": 0.0,
+                    "combined_harmony_score": 4.0,
                     "notes_per_snapshot_score": 0.146484375
                 },
                 {
                     "song_name": "moritz_maria_configuration",
-                    "combined_harmony_score": -0.5,
+                    "single_harmony_score": 0.0,
+                    "single_disharmony_score": 0.0,
+                    "combined_harmony_score": 0.0,
                     "notes_per_snapshot_score": 0.04524886877828054
+                },
+                {
+                    "song_name": "raindrop_prelude_configuration",
+                    "single_harmony_score": 0.0,
+                    "single_disharmony_score": 0.7994153361816956,
+                    "combined_harmony_score": -0.7994153361816956,
+                    "notes_per_snapshot_score": 0.11243534967393749
                 }
             ],
-            "harmony_average": 1.0705732234000784,
-            "notes_per_snapshot_average": 0.16236757729928938
-        },
-        {
-            "name": "threshold_025",
-            "songs": [
-                {
-                    "song_name": "midi-unprocessed_04_r1_2008_01-04_orig_mid--audio_04_r1_2008_wav--1-split_configuration",
-                    "combined_harmony_score": 0.4146054181389871,
-                    "notes_per_snapshot_score": 0.47114252061248524
-                },
-                {
-                    "song_name": "simple_test_configuration",
-                    "combined_harmony_score": 1.0,
-                    "notes_per_snapshot_score": 0.06511829824180596
-                },
-                {
-                    "song_name": "short_cord_progression_configuration",
-                    "combined_harmony_score": 2.0,
-                    "notes_per_snapshot_score": 0.146484375
-                },
-                {
-                    "song_name": "moritz_maria_configuration",
-                    "combined_harmony_score": -0.5,
-                    "notes_per_snapshot_score": 0.04524886877828054
-                }
-            ],
-            "harmony_average": 0.7286513545347468,
-            "notes_per_snapshot_average": 0.18199851565814293
-        },
-        {
-            "name": "threshold_05",
-            "songs": [
-                {
-                    "song_name": "midi-unprocessed_04_r1_2008_01-04_orig_mid--audio_04_r1_2008_wav--1-split_configuration",
-                    "combined_harmony_score": -0.38928150765606595,
-                    "notes_per_snapshot_score": 0.03926187671770711
-                },
-                {
-                    "song_name": "simple_test_configuration",
-                    "combined_harmony_score": 1.0,
-                    "notes_per_snapshot_score": 0.06511829824180596
-                },
-                {
-                    "song_name": "short_cord_progression_configuration",
-                    "combined_harmony_score": 2.0,
-                    "notes_per_snapshot_score": 0.146484375
-                },
-                {
-                    "song_name": "moritz_maria_configuration",
-                    "combined_harmony_score": -0.5,
-                    "notes_per_snapshot_score": 0.04524886877828054
-                }
-            ],
-            "harmony_average": 0.5276796230859835,
-            "notes_per_snapshot_average": 0.0740283546844484
-        },
-        {
-            "name": "threshold_03",
-            "songs": [
-                {
-                    "song_name": "midi-unprocessed_04_r1_2008_01-04_orig_mid--audio_04_r1_2008_wav--1-split_configuration",
-                    "combined_harmony_score": 0.9815469179426777,
-                    "notes_per_snapshot_score": 0.07852375343541422
-                },
-                {
-                    "song_name": "simple_test_configuration",
-                    "combined_harmony_score": 1.0,
-                    "notes_per_snapshot_score": 0.06511829824180596
-                },
-                {
-                    "song_name": "short_cord_progression_configuration",
-                    "combined_harmony_score": 2.0,
-                    "notes_per_snapshot_score": 0.146484375
-                },
-                {
-                    "song_name": "moritz_maria_configuration",
-                    "combined_harmony_score": -0.5,
-                    "notes_per_snapshot_score": 0.04524886877828054
-                }
-            ],
-            "harmony_average": 0.8703867294856694,
-            "notes_per_snapshot_average": 0.08384382386387518
-        },
-        {
-            "name": "top_k",
-            "songs": [
-                {
-                    "song_name": "midi-unprocessed_04_r1_2008_01-04_orig_mid--audio_04_r1_2008_wav--1-split_configuration",
-                    "combined_harmony_score": -0.21868865331762857,
-                    "notes_per_snapshot_score": 12.288967412642323
-                },
-                {
-                    "song_name": "simple_test_configuration",
-                    "combined_harmony_score": 1.0,
-                    "notes_per_snapshot_score": 0.06511829824180596
-                },
-                {
-                    "song_name": "short_cord_progression_configuration",
-                    "combined_harmony_score": 0.25390625,
-                    "notes_per_snapshot_score": 30.029296875
-                },
-                {
-                    "song_name": "moritz_maria_configuration",
-                    "combined_harmony_score": 0.15520361990950227,
-                    "notes_per_snapshot_score": 7.239819004524888
-                }
-            ],
-            "harmony_average": 0.29760530414796843,
-            "notes_per_snapshot_average": 12.405800397602254
+            "single_harmony_average": 2.0,
+            "single_disharmony_average": 0.1998538340454239,
+            "harmony_average": 1.800146165954576,
+            "notes_per_snapshot_average": 0.09232172292350599
         }
     ]
 }

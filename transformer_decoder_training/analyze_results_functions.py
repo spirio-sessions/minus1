@@ -134,6 +134,8 @@ def analyze_snapshots_for_project(project_dir: str, score_weights=None):
 
             song_scores.append({
                 "song_name": json_file.stem,
+                "single_harmony_score": scores['harmony_score'],
+                "single_disharmony_score": scores['disharmony_score'],
                 "combined_harmony_score": combined_harmony_score,
                 "notes_per_snapshot_score": scores['notes_per_snapshot'] * 100
             })
@@ -141,11 +143,17 @@ def analyze_snapshots_for_project(project_dir: str, score_weights=None):
         # Calculate the average scores for the test row
         harmony_average = sum(song['combined_harmony_score'] for song in song_scores) / len(song_scores) if song_scores else 0
         notes_per_snapshot_average = sum(song['notes_per_snapshot_score'] for song in song_scores) / len(song_scores) if song_scores else 0
+        harmony_single_average = sum(song['single_harmony_score'] for song in song_scores) / len(
+            song_scores) if song_scores else 0
+        disharmony_single_average = sum(song['single_disharmony_score'] for song in song_scores) / len(
+            song_scores) if song_scores else 0
 
         # Append the result to the music_score_evaluation structure
         music_score_evaluation["test_rows"].append({
             "name": test_row.name,
             "songs": song_scores,
+            "single_harmony_average": harmony_single_average,
+            "single_disharmony_average": disharmony_single_average,
             "harmony_average": harmony_average,
             "notes_per_snapshot_average": notes_per_snapshot_average
         })

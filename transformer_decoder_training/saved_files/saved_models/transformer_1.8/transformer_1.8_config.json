@@ -10,12 +10,12 @@
     },
     "training_params": {
         "learning_rate": 0.0001,
-        "num_epochs": 100,
+        "num_epochs": 200,
         "optimizer": "Adam",
         "loss_fn": "BCEWithLogitsLoss",
         "loss_fn_parameters": {
-            "alpha": null,
-            "gamma": null
+            "alpha": 1,
+            "gamma": 1
         }
     },
     "training_data_params": {
@@ -77,8 +77,8 @@
         ],
         "snapshot_interval": 0.5,
         "batch_size": 32,
-        "sequence_length": 512,
-        "stride": 10,
+        "sequence_length": 102,
+        "stride": 50,
         "test_size": 0.2
     }
 }

@@ -1,0 +1,42 @@
+{
+    "score_weights": null,
+    "test_rows": [
+        {
+            "name": "threshold_02",
+            "songs": [
+                {
+                    "song_name": "simple_test_configuration",
+                    "single_harmony_score": 4.0,
+                    "single_disharmony_score": 0.0,
+                    "combined_harmony_score": 4.0,
+                    "notes_per_snapshot_score": 0.09768804949527841
+                },
+                {
+                    "song_name": "short_cord_progression_configuration",
+                    "single_harmony_score": 1.25390625,
+                    "single_disharmony_score": 0.33203125,
+                    "combined_harmony_score": 0.921875,
+                    "notes_per_snapshot_score": 23.828125
+                },
+                {
+                    "song_name": "moritz_maria_configuration",
+                    "single_harmony_score": 4.0,
+                    "single_disharmony_score": 0.0,
+                    "combined_harmony_score": 4.0,
+                    "notes_per_snapshot_score": 0.44510385756676557
+                },
+                {
+                    "song_name": "raindrop_prelude_configuration",
+                    "single_harmony_score": 0.0024046719340432843,
+                    "single_disharmony_score": 1.9711439367914807,
+                    "combined_harmony_score": -1.9687392648574373,
+                    "notes_per_snapshot_score": 0.13740982480247338
+                }
+            ],
+            "single_harmony_average": 2.3140777304835107,
+            "single_disharmony_average": 0.5757937966978701,
+            "harmony_average": 1.7382839337856406,
+            "notes_per_snapshot_average": 6.127081682966129
+        }
+    ]
+}

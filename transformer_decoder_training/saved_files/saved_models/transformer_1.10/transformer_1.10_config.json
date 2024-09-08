@@ -14,8 +14,8 @@
         "optimizer": "Adam",
         "loss_fn": "BCEWithLogitsLoss",
         "loss_fn_parameters": {
-            "alpha": null,
-            "gamma": null
+            "alpha": 1,
+            "gamma": 1
         }
     },
     "training_data_params": {
@@ -75,10 +75,10 @@
                 2
             ]
         ],
-        "snapshot_interval": 0.05,
-        "batch_size": 64,
+        "snapshot_interval": 0.1,
+        "batch_size": 32,
         "sequence_length": 512,
         "stride": 256,
-        "test_size": 0.1
+        "test_size": 0.2
     }
 }

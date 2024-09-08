@@ -2,16 +2,41 @@
     "score_weights": null,
     "test_rows": [
         {
-            "name": "threshold_005",
+            "name": "threshold_02",
             "songs": [
                 {
-                    "song_name": "midi-unprocessed_04_r1_2008_01-04_orig_mid--audio_04_r1_2008_wav--1-split_configuration",
-                    "combined_harmony_score": -1.0,
-                    "notes_per_snapshot_score": 14.583333333333334
+                    "song_name": "simple_test_configuration",
+                    "single_harmony_score": 4.0,
+                    "single_disharmony_score": 0.0,
+                    "combined_harmony_score": 4.0,
+                    "notes_per_snapshot_score": 0.7317073170731708
+                },
+                {
+                    "song_name": "short_cord_progression_configuration",
+                    "single_harmony_score": 0.0,
+                    "single_disharmony_score": 0.0,
+                    "combined_harmony_score": 0.0,
+                    "notes_per_snapshot_score": 0.0
+                },
+                {
+                    "song_name": "moritz_maria_configuration",
+                    "single_harmony_score": 0.0,
+                    "single_disharmony_score": 0.0,
+                    "combined_harmony_score": 0.0,
+                    "notes_per_snapshot_score": 1.1764705882352942
+                },
+                {
+                    "song_name": "raindrop_prelude_configuration",
+                    "single_harmony_score": 1.0,
+                    "single_disharmony_score": 0.0,
+                    "combined_harmony_score": 1.0,
+                    "notes_per_snapshot_score": 0.5076142131979695
                 }
             ],
-            "harmony_average": -1.0,
-            "notes_per_snapshot_average": 14.583333333333334
+            "single_harmony_average": 1.25,
+            "single_disharmony_average": 0.0,
+            "harmony_average": 1.25,
+            "notes_per_snapshot_average": 0.6039480296266087
         }
     ]
 }
